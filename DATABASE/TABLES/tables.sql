@@ -48,3 +48,17 @@ CREATE TABLE Teams_Tournaments (
     CONSTRAINT FK_Teams_Tournaments_Teams FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE,
     CONSTRAINT FK_Teams_Tournaments_Tournaments FOREIGN KEY (TournamentID) REFERENCES Tournaments(TournamentID) ON DELETE CASCADE
 );
+
+
+CREATE TABLE Matches (
+    MatchID INT PRIMARY KEY IDENTITY(1,1),
+    TournamentID INT NOT NULL,
+    HomeTeamID INT NOT NULL,
+    AwayTeamID INT NOT NULL,
+    HomeGoals INT DEFAULT 0,
+    AwayGoals INT DEFAULT 0,
+    MatchDate DATETIME NOT NULL,
+    CONSTRAINT FK_Matches_Tournaments FOREIGN KEY (TournamentID) REFERENCES Tournaments(TournamentID) ON DELETE NO ACTION,
+    CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION,
+    CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION
+);
