@@ -62,3 +62,14 @@ CREATE TABLE Matches (
     CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION,
     CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION
 );
+
+
+CREATE TABLE Player_Statistics (
+    StatisticID INT PRIMARY KEY IDENTITY(1,1),
+    PlayerID INT NOT NULL,
+    Goals INT DEFAULT 0,
+    Assists INT DEFAULT 0,
+    YellowCards INT DEFAULT 0,
+    RedCards INT DEFAULT 0,
+    CONSTRAINT FK_Player_Statistics FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID) ON DELETE CASCADE
+);
