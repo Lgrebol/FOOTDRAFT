@@ -39,3 +39,12 @@ CREATE TABLE Tournaments (
     StartDate DATE NOT NULL,
     EndDate DATE NULL
 );
+
+
+CREATE TABLE Teams_Tournaments (
+    TeamID INT NOT NULL,
+    TournamentID INT NOT NULL,
+    CONSTRAINT PK_Teams_Tournaments PRIMARY KEY (TeamID, TournamentID),
+    CONSTRAINT FK_Teams_Tournaments_Teams FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE,
+    CONSTRAINT FK_Teams_Tournaments_Tournaments FOREIGN KEY (TournamentID) REFERENCES Tournaments(TournamentID) ON DELETE CASCADE
+);
