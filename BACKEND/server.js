@@ -1,36 +1,26 @@
 const express = require('express');
-const mysql = require('mysql2');
-require('dotenv').config();
+const dotenv = require('dotenv');
+const connectToDatabase = require('./config/db'); // Importa el mòdul de connexió a la base de dades
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Connexió a la base de dades
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-});
-
-// Provar la connexió amb la base de dades
-connection.connect((err) => {
-  if (err) {
-    console.error('Error de connexió a la base de dades:', err);
-    return;
+// Endpoint de prova de connexió
+app.get('/test-connection', async (req, res) => {
+  try {
+    const pool = await connectToDatabase(); // Connexió amb la base de dades
+    const result = await pool.request().query('SELECT 1 + 1 AS result'); // Consulta simple
+    res.status(200).json({
+      message: 'Connexió a la base de dades exitosa!',
+      result: result.recordset,
+    });
+    pool.close(); // Tanca la connexió després d'usar-la
+  } catch (err) {
+    console.error('Error durant la connexió o consulta:', err);
+    res.status(500).send('Error de connexió amb la base de dades');
   }
-  console.log('Connexió establerta correctament a la base de dades');
-});
-
-// Endpoint de prova
-app.get('/test-connection', (req, res) => {
-  connection.query('SELECT 1 + 1 AS result', (err, results) => {
-    if (err) {
-      res.status(500).send('Error de connexió amb la base de dades');
-    } else {
-      res.status(200).send('Connexió a la base de dades exitosa!');
-    }
-  });
 });
 
 // Iniciar el servidor
