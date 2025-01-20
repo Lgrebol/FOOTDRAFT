@@ -30,3 +30,12 @@ CREATE TABLE Players (
     IsActive BIT DEFAULT 1,
     CONSTRAINT FK_Players_Teams FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
 );
+
+
+CREATE TABLE Tournaments (
+    TournamentID INT PRIMARY KEY IDENTITY(1,1),
+    TournamentName VARCHAR(100) NOT NULL,
+    TournamentType VARCHAR(20) CHECK (TournamentType IN ('Knockout', 'League', 'Mixed')),
+    StartDate DATE NOT NULL,
+    EndDate DATE NULL
+);
