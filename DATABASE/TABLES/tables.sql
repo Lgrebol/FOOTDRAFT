@@ -19,3 +19,14 @@ CREATE TABLE Teams (
     IsActive BIT DEFAULT 1,
     CONSTRAINT FK_Teams_Users FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
+
+
+CREATE TABLE Players (
+    PlayerID INT PRIMARY KEY IDENTITY(1,1),
+    PlayerName VARCHAR(50) NOT NULL,
+    Position VARCHAR(20) CHECK (Position IN ('Goalkeeper', 'Defender', 'Midfielder', 'Forward')),
+    Points INT DEFAULT 0,
+    TeamID INT NOT NULL,
+    IsActive BIT DEFAULT 1,
+    CONSTRAINT FK_Players_Teams FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
+);
