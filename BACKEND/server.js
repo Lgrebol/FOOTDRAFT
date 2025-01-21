@@ -1,3 +1,4 @@
+import userRoutes from "./routes/userRoutes.js"; 
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(cors());
-
+app.use("/api/v1", userRoutes);
 // Connexió amb la base de dades
 connectDb().catch((err) => {
   console.error("No s'ha pogut establir la connexió amb la base de dades:", err);
