@@ -1,29 +1,36 @@
+require('dotenv').config(); // Carrega les variables del fitxer .env
+
 const express = require('express');
-const dotenv = require('dotenv');
-const connectToDatabase = require('./config/db'); // Importa el mòdul de connexió a la base de dades
-
-dotenv.config();
-
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const sql = require('mssql');
 const app = express();
-const port = process.env.PORT || 5000;
 
-// Endpoint de prova de connexió
-app.get('/test-connection', async (req, res) => {
-  try {
-    const pool = await connectToDatabase(); // Connexió amb la base de dades
-    const result = await pool.request().query('SELECT 1 + 1 AS result'); // Consulta simple
-    res.status(200).json({
-      message: 'Connexió a la base de dades exitosa!',
-      result: result.recordset,
-    });
-    pool.close(); // Tanca la connexió després d'usar-la
-  } catch (err) {
-    console.error('Error durant la connexió o consulta:', err);
-    res.status(500).send('Error de connexió amb la base de dades');
-  }
+// Middleware
+app.use(bodyParser.json());
+app.use(cors());
+
+// Configuració de la connexió (variables des del fitxer .env)
+const dbConfig = {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    server: process.env.DB_SERVER,
+    database: process.env.DB_DATABASE,
+    options: {
+        encrypt: process.env.DB_ENCRYPT === 'true',
+        trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
+    },
+};
+
+// Connexió a la base de dades
+sql.connect(dbConfig)
+    .then(() => console.log('Connected to the database!'))
+    .catch((err) => console.error('Database connection failed:', err));
+
+// Endpoint de prova
+app.get('/', (req, res) => {
+    res.send('Backend for FOOTDRAFT is running');
 });
 
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor escoltant a http://localhost:${port}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
