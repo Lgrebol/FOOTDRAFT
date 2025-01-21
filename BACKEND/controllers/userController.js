@@ -1,11 +1,12 @@
-import { validationResult } from "express-validator";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
-import db from "../config/db";
-import sql from "mssql";
-import jwt from "jsonwebtoken";
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
+const connectDb = require("../config/db");
+const sql = require("mssql");
 
-export const registerUsers = async (req, res) => {
+// Registre d'usuaris
+exports.registerUsers = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.array() });
@@ -15,33 +16,36 @@ export const registerUsers = async (req, res) => {
   console.log("Dades rebudes en el servidor:", req.body);
 
   try {
-    const pool = await db();
+    const pool = await connectDb();
     const hashedPassword = await bcrypt.hash(password, 10);
+    const uuid = uuidv4();
 
     await pool
       .request()
-      .input("Name", sql.VarChar, name)
-      .input("Email", sql.VarChar, email)
-      .input("PasswordHash", sql.VarChar, hashedPassword)
+      .input("name", sql.VarChar, name)
+      .input("email", sql.VarChar, email)
+      .input("password", sql.VarChar, hashedPassword)
       .query(
-        "INSERT INTO Users (Name, Email, PasswordHash) VALUES (@Name, @Email, @PasswordHash)"
+        "INSERT INTO Users (Name, Email, PasswordHash) VALUES (@name, @email, @password)"
       );
 
-    res.status(200).json({ message: "Usuari registrat correctament" });
+    res.status(201).json({ message: "Usuari registrat correctament" });
   } catch (error) {
     console.error("Error al registrar l'usuari", error);
     res.status(500).json({ error: "Error al registrar l'usuari" });
   }
 };
 
-export const loginUsers = async (req, res) => {
+// Inici de sessió
+exports.loginUsers = async (req, res) => {
   const { email, password } = req.body;
+
   try {
-    const pool = await db();
+    const pool = await connectDb();
     const result = await pool
       .request()
-      .input("Email", sql.VarChar, email)
-      .query("SELECT * FROM Users WHERE Email = @Email");
+      .input("email", sql.VarChar, email)
+      .query("SELECT * FROM Users WHERE Email = @email");
 
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: "Usuari no trobat" });
@@ -56,11 +60,11 @@ export const loginUsers = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user.UserID, name: user.Name },
-      process.env.SECRET_KEY,
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ token });
+    res.status(200).json({ message: "Inici de sessió correcte", token });
   } catch (error) {
     console.error("Error al iniciar sessió:", error);
     res.status(500).json({ error: "Error al iniciar sessió" });
