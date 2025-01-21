@@ -1,8 +1,8 @@
-import userRoutes from "./routes/userRoutes.js"; 
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const connectDb = require("./config/db");
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDb from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -13,17 +13,18 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 app.use("/api/v1", userRoutes);
-// Connexió amb la base de dades
+
+// Database connection
 connectDb().catch((err) => {
-  console.error("No s'ha pogut establir la connexió amb la base de dades:", err);
+  console.error("Database connection error:", err);
 });
 
-// Endpoint de prova
+// Test endpoint
 app.get("/", (req, res) => {
   res.send("Backend for FOOTDRAFT is running");
 });
 
-// Inicialitza el servidor
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Servidor funcionant al port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

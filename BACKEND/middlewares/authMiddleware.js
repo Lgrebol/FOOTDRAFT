@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import fs from "fs";
-import { body } from "express-validator";
-import { validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 
 dotenv.config();
+
 
 const SECRET_KEY = process.env.SECRET_KEY;
 

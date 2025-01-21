@@ -1,5 +1,7 @@
-const sql = require("mssql");
-require("dotenv").config();
+import sql from "mssql";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const dbConfig = {
   server: process.env.DB_SERVER,
@@ -18,13 +20,13 @@ const connectDb = async () => {
   try {
     if (!pool) {
       pool = await sql.connect(dbConfig);
-      console.log("Connexió amb la base de dades correcta");
+      console.log("Database connection successful");
     }
     return pool;
   } catch (err) {
-    console.error("Error al connectar amb la base de dades:", err.message);
+    console.error("Database connection error:", err.message);
     throw err;
   }
 };
 
-module.exports = connectDb;
+export default connectDb;
