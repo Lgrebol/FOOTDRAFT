@@ -1,36 +1,28 @@
-require('dotenv').config(); // Carrega les variables del fitxer .env
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const connectDb = require("./config/db");
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const sql = require('mssql');
+dotenv.config();
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
-// Configuració de la connexió (variables des del fitxer .env)
-const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
-    options: {
-        encrypt: process.env.DB_ENCRYPT === 'true',
-        trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
-    },
-};
-
-// Connexió a la base de dades
-sql.connect(dbConfig)
-    .then(() => console.log('Connected to the database!'))
-    .catch((err) => console.error('Database connection failed:', err));
-
-// Endpoint de prova
-app.get('/', (req, res) => {
-    res.send('Backend for FOOTDRAFT is running');
+// Connexió amb la base de dades
+connectDb().catch((err) => {
+  console.error("No s'ha pogut establir la connexió amb la base de dades:", err);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+// Endpoint de prova
+app.get("/", (req, res) => {
+  res.send("Backend for FOOTDRAFT is running");
+});
+
+// Inicialitza el servidor
+app.listen(PORT, () => {
+  console.log(`Servidor funcionant al port ${PORT}`);
+});
