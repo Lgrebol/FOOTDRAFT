@@ -1,6 +1,6 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppConfig } from './app/app.config';  // Configuració de les rutes
 
-bootstrapApplication(AppComponent, appConfig)
+platformBrowserDynamic()
+  .bootstrapModule(AppConfig)
   .catch((err) => console.error(err));
