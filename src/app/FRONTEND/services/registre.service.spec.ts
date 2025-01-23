@@ -18,11 +18,26 @@ describe('RegistreService', () => {
 
   afterEach(() => {
     httpMock.verify();
-    localStorage.clear(); // Netejar localStorage després de cada test
+    localStorage.clear();
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should send a POST request to register a user', () => {
+    const mockResponse = { success: true };
+    const userData = { username: 'TestUser', email: 'test@example.com', password: 'Password123!' };
+  
+    service.register(userData.username, userData.email, userData.password).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+  
+    const req = httpMock.expectOne('http://localhost:3000/api/v1/register');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ name: userData.username, email: userData.email, password: userData.password });
+  
+    req.flush(mockResponse);
   });
 
 });
