@@ -65,4 +65,8 @@ describe('RegistreService', () => {
     expect(service.getToken()).toBe('testToken123');
   });
   
+  it('should set token in localStorage', () => {
+    service.setToken('newTestToken456');
+    expect(localStorage.getItem('authToken')).toBe('newTestToken456');
+  });  
 });
