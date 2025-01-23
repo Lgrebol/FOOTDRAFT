@@ -1,6 +1,6 @@
-import * as PlayerModel from "../models/playerModel.js";
+import * as PlayerModel from "../models/playerModel.js"; // Importa els models de players
 
-export const getPlayers = async (req, res) => {
+export const getAllPlayers = async (req, res) => {
   try {
     const players = await PlayerModel.getAllPlayers();
     res.json(players);
@@ -9,7 +9,7 @@ export const getPlayers = async (req, res) => {
   }
 };
 
-export const getPlayer = async (req, res) => {
+export const getPlayerById = async (req, res) => {
   try {
     const player = await PlayerModel.getPlayerById(req.params.id);
     if (!player) return res.status(404).json({ error: "Jugador no trobat" });
@@ -22,13 +22,13 @@ export const getPlayer = async (req, res) => {
 export const addPlayer = async (req, res) => {
   try {
     const newPlayer = await PlayerModel.createPlayer(req.body);
-    res.status(201).json(newPlayer);
+    res.status(201).json(newPlayer); // Retorna el nou jugador creat
   } catch (error) {
     res.status(500).json({ error: "Error creant jugador" });
   }
 };
 
-export const editPlayer = async (req, res) => {
+export const updatePlayer = async (req, res) => {
   try {
     await PlayerModel.updatePlayer(req.params.id, req.body);
     res.json({ message: "Jugador actualitzat correctament" });
@@ -37,7 +37,7 @@ export const editPlayer = async (req, res) => {
   }
 };
 
-export const removePlayer = async (req, res) => {
+export const deletePlayer = async (req, res) => {
   try {
     await PlayerModel.deletePlayer(req.params.id);
     res.json({ message: "Jugador eliminat correctament" });

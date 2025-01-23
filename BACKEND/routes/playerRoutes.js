@@ -1,13 +1,12 @@
 import express from "express";
-import { getPlayers, getPlayer, addPlayer, editPlayer, removePlayer } from "../controllers/playerController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { getAllPlayers, getPlayerById, addPlayer, updatePlayer, deletePlayer } from "../controllers/playerController.js"; // Assegura't que s'importin totes les funcions correctament
 
 const router = express.Router();
 
-router.get("/players", authMiddleware, getPlayers);
-router.get("/players/:id", authMiddleware, getPlayer);
-router.post("/players", authMiddleware, addPlayer);
-router.put("/players/:id", authMiddleware, editPlayer);
-router.delete("/players/:id", authMiddleware, removePlayer);
+router.get("/", getAllPlayers);        // Ruta per obtenir tots els jugadors
+router.get("/:id", getPlayerById);     // Ruta per obtenir un jugador per ID
+router.post("/", addPlayer);           // Ruta per crear un jugador
+router.put("/:id", updatePlayer);     // Ruta per actualitzar un jugador
+router.delete("/:id", deletePlayer);  // Ruta per eliminar un jugador
 
 export default router;

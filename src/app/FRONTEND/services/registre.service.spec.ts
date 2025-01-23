@@ -33,7 +33,7 @@ describe('RegistreService', () => {
       expect(response).toEqual(mockResponse);
     });
   
-    const req = httpMock.expectOne('http://localhost:3000/api/v1/register');
+    const req = httpMock.expectOne('http://localhost:3000/api/v1/users/register');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ name: userData.username, email: userData.email, password: userData.password });
   
@@ -48,7 +48,7 @@ describe('RegistreService', () => {
       expect(response).toEqual(mockResponse);
     });
   
-    const req = httpMock.expectOne('http://localhost:3000/api/v1/login');
+    const req = httpMock.expectOne('http://localhost:3000/api/v1/users/login');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(loginData);
   

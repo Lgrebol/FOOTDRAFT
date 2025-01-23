@@ -13,20 +13,22 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use("/api/v1/", userRoutes);
-app.use("/api/v1/", playerRoutes);
 
-// Database connection
+// Rutes amb prefix únic per a cada recurs
+app.use("/api/v1/users", userRoutes); // Canviat a /api/v1/users
+app.use("/api/v1/players", playerRoutes); // Rutes per a jugadors
+
+// Connexió a la base de dades
 connectDb().catch((err) => {
   console.error("Database connection error:", err);
 });
 
-// Test endpoint
+// Ruta de prova
 app.get("/", (req, res) => {
-  res.send("Backend for FOOTDRAFT is running");
+  res.send("Backend per FOOTDRAFT està en execució");
 });
 
-// Start the server
+// Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

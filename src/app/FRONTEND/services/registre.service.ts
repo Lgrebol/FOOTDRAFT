@@ -6,8 +6,8 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class RegistreService {
-  private apiURLRegister = 'http://localhost:3000/api/v1/register';
-  private apiURLValidate = 'http://localhost:3000/api/v1/login';
+  private apiURLRegister = 'http://localhost:3000/api/v1/users/register';
+  private apiURLValidate = 'http://localhost:3000/api/v1/users/login';
   private storage: Record<string, string> = {};
 
   constructor(private http: HttpClient) {}
