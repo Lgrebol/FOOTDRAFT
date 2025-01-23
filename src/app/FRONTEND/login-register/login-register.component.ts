@@ -35,6 +35,7 @@ export class LoginRegisterComponent implements AfterViewInit {
     private router: Router,
     private registreService: RegistreService
   ) {}
+
   ngOnInit() {}
 
   ngAfterViewInit() {
@@ -52,21 +53,59 @@ export class LoginRegisterComponent implements AfterViewInit {
   }
 
   onSubmit() {
-    if (this.username && this.email && this.password && this.passwordMatchValidator() && this.passwordValidator()) {
-      this.registreService.register(this.username, this.email, this.password).subscribe(response => {
-        console.log('Registre correcte', response);
-      });
-    }
-  }
+    this.usernameError = false;
+    this.emailError = false;
+    this.passwordError = false;
+    this.confirmPasswordMismatchError = false;
+    this.passwordRegexError = false;
 
-  passwordMatchValidator() {
-    return this.password === this.confirmPassword;
-  }
-  
-  passwordValidator() {
-    const minLength = 6;
-    const symbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
-    return this.password.length >= minLength && symbolRegex.test(this.password);
+    let formValid = true;
+
+    if (!this.username) {
+      this.usernameError = true;
+      formValid = false;
+    }
+
+    if (!this.email) {
+      this.emailError = true;
+      formValid = false;
+    }
+
+    if (!this.password) {
+      this.passwordError = true;
+      formValid = false;
+    } else if (!this.passwordValidator()) {
+      this.passwordRegexError = true;
+      formValid = false;
+    }
+
+    if (!this.confirmPassword) {
+      this.passwordError = true;
+      formValid = false;
+    }
+
+    if (!this.passwordMatchValidator()) {
+      this.confirmPasswordMismatchError = true;
+      formValid = false;
+    }
+
+    if (formValid) {
+      console.log('Dades enviades:', {
+        username: this.username,
+        email: this.email,
+        password: this.password,
+      });
+
+      this.registreService.register(this.username, this.email, this.password).subscribe(
+        (response) => {
+          console.log('Registre correcte', response);
+        },
+        (error) => {
+          console.error('Error en el registre', error);
+        }
+      );
+      this.clearInputs();
+    }
   }
 
   clearInputs() {
@@ -76,14 +115,36 @@ export class LoginRegisterComponent implements AfterViewInit {
     this.confirmPassword = '';
   }
 
+  passwordMatchValidator() {
+    return this.password === this.confirmPassword;
+  }
+
+  passwordValidator() {
+    const minLength = 6;
+    const symbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
+    return this.password.length >= minLength && symbolRegex.test(this.password);
+  }
+
   handleSignIn() {
-    if (this.email && this.password) {
-      this.registreService.validateUser(this.email, this.password).subscribe(response => {
+    if (!this.email || !this.password) {
+      console.error('Email i contrasenya requerits');
+      return;
+    }
+
+    this.registreService.validateUser(this.email, this.password).subscribe(
+      (response) => {
         if (response && response.token) {
+          console.log('Login correcte:', response);
           this.registreService.saveToken(response.token);
           this.router.navigate(['/app']);
+        } else {
+          console.error('Credencials incorrectes o falta el token a la resposta');
         }
-      });
-    }
-  }  
+      },
+      (error) => {
+        console.error('Error al verificar l\'usuari:', error);
+      }
+    );
+  }
 }
