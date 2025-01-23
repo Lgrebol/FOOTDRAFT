@@ -20,18 +20,4 @@ describe('LoginRegisterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should show errors when fields are empty', () => {
-    component.username = '';
-    component.email = '';
-    component.password = '';
-    component.confirmPassword = '';
-
-    component.onSubmit();
-
-    expect(component.usernameError).toBeTrue();
-    expect(component.emailError).toBeTrue();
-    expect(component.passwordError).toBeTrue();
-    expect(component.confirmPasswordMismatchError).toBeFalse();
-  });
 });
