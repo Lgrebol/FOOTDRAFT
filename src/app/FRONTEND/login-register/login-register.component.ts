@@ -53,6 +53,10 @@ export class LoginRegisterComponent implements AfterViewInit {
       });
     }
   }
-
+  
+  passwordMatchValidator() {
+    return this.password === this.confirmPassword;
+  }
+  
 
 }
