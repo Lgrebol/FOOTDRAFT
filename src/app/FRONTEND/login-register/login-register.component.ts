@@ -51,6 +51,14 @@ export class LoginRegisterComponent implements AfterViewInit {
     }
   }
 
+  onSubmit() {
+    if (this.username && this.email && this.password && this.passwordMatchValidator() && this.passwordValidator()) {
+      this.registreService.register(this.username, this.email, this.password).subscribe(response => {
+        console.log('Registre correcte', response);
+      });
+    }
+  }
+
   passwordMatchValidator() {
     return this.password === this.confirmPassword;
   }
@@ -61,12 +69,5 @@ export class LoginRegisterComponent implements AfterViewInit {
     return this.password.length >= minLength && symbolRegex.test(this.password);
   }
 
-  onSubmit() {
-    if (this.username && this.email && this.password && this.passwordMatchValidator() && this.passwordValidator()) {
-      this.registreService.register(this.username, this.email, this.password).subscribe(response => {
-        console.log('Registre correcte', response);
-      });
-    }
-  }
   
 }

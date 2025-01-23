@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { RegistreService } from '../services/registre.service';
 import { LoginRegisterComponent } from './login-register.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('LoginRegisterComponent', () => {
   let component: LoginRegisterComponent;
@@ -16,8 +17,7 @@ describe('LoginRegisterComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      declarations: [LoginRegisterComponent],
-      imports: [FormsModule],
+      imports: [LoginRegisterComponent, FormsModule, HttpClientTestingModule], // ✅ Canviat de 'declarations' a 'imports'
       providers: [
         { provide: RegistreService, useValue: registreServiceSpy },
         { provide: Router, useValue: routerSpy }
@@ -47,7 +47,6 @@ describe('LoginRegisterComponent', () => {
     
     expect(registreService.register).toHaveBeenCalledWith('TestUser', 'test@example.com', 'Password123!');
   });
-  
 
   it('should return true if passwords match', () => {
     component.password = 'Password123!';
