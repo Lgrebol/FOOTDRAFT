@@ -55,4 +55,9 @@ describe('RegistreService', () => {
     req.flush(mockResponse);
   });
   
+  it('should save token to localStorage', () => {
+    service.saveToken('testToken123');
+    expect(localStorage.getItem('authToken')).toBe('testToken123');
+  });
+  
 });
