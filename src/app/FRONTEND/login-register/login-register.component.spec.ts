@@ -74,4 +74,18 @@ describe('LoginRegisterComponent', () => {
     component.password = 'Password123';
     expect(component.passwordValidator()).toBeFalse();
   });
+
+  it('should clear input fields', () => {
+    component.username = 'TestUser';
+    component.email = 'test@example.com';
+    component.password = 'Password123!';
+    component.confirmPassword = 'Password123!';
+  
+    component.clearInputs();
+  
+    expect(component.username).toBe('');
+    expect(component.email).toBe('');
+    expect(component.password).toBe('');
+    expect(component.confirmPassword).toBe('');
+  });  
 });
