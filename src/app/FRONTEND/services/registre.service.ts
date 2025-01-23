@@ -23,4 +23,12 @@ export class RegistreService {
     return this.http.post<any>(this.apiURLValidate, body);
   }
   
+  saveToken(token: string): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('authToken', token);
+    } else {
+      this.storage['authToken'] = token;
+    }
+  }
+  
 }
