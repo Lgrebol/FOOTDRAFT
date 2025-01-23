@@ -75,5 +75,15 @@ export class LoginRegisterComponent implements AfterViewInit {
     this.password = '';
     this.confirmPassword = '';
   }
-  
+
+  handleSignIn() {
+    if (this.email && this.password) {
+      this.registreService.validateUser(this.email, this.password).subscribe(response => {
+        if (response && response.token) {
+          this.registreService.saveToken(response.token);
+          this.router.navigate(['/app']);
+        }
+      });
+    }
+  }  
 }
