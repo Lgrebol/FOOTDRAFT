@@ -1,6 +1,3 @@
-
-
-
 import { CommonModule, NgIf } from '@angular/common';
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -53,10 +50,15 @@ export class LoginRegisterComponent implements AfterViewInit {
       });
     }
   }
-  
+
   passwordMatchValidator() {
     return this.password === this.confirmPassword;
   }
   
+  passwordValidator() {
+    const minLength = 6;
+    const symbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    return this.password.length >= minLength && symbolRegex.test(this.password);
+  }
 
 }
