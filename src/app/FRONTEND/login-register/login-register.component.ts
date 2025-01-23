@@ -69,5 +69,11 @@ export class LoginRegisterComponent implements AfterViewInit {
     return this.password.length >= minLength && symbolRegex.test(this.password);
   }
 
+  clearInputs() {
+    this.username = '';
+    this.email = '';
+    this.password = '';
+    this.confirmPassword = '';
+  }
   
 }
