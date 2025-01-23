@@ -36,5 +36,13 @@ export class RegistreService {
       return localStorage.getItem('authToken');
     }
     return this.storage['authToken'] || null;
+  }
+  
+  setToken(token: string): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('authToken', token);
+    } else {
+      this.storage['authToken'] = token;
+    }
   }  
 }
