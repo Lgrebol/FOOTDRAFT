@@ -40,4 +40,19 @@ describe('RegistreService', () => {
     req.flush(mockResponse);
   });
 
+  it('should send a POST request to validate a user', () => {
+    const mockResponse = { token: 'testToken123' };
+    const loginData = { email: 'test@example.com', password: 'Password123!' };
+  
+    service.validateUser(loginData.email, loginData.password).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+  
+    const req = httpMock.expectOne('http://localhost:3000/api/v1/login');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(loginData);
+  
+    req.flush(mockResponse);
+  });
+  
 });
