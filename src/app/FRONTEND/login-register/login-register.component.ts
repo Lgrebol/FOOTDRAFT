@@ -61,17 +61,12 @@ export class LoginRegisterComponent implements AfterViewInit {
     return this.password.length >= minLength && symbolRegex.test(this.password);
   }
 
-  it('should call register when form is valid', () => {
-    component.username = 'TestUser';
-    component.email = 'test@example.com';
-    component.password = 'Password123!';
-    component.confirmPassword = 'Password123!';
-    
-    registreService.register.and.returnValue(of({ success: true }));
-    
-    component.onSubmit();
-    
-    expect(registreService.register).toHaveBeenCalledWith('TestUser', 'test@example.com', 'Password123!');
-  });
+  onSubmit() {
+    if (this.username && this.email && this.password && this.passwordMatchValidator() && this.passwordValidator()) {
+      this.registreService.register(this.username, this.email, this.password).subscribe(response => {
+        console.log('Registre correcte', response);
+      });
+    }
+  }
   
 }
