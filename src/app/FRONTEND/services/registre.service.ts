@@ -6,5 +6,15 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class RegistreService {
+  private apiURLRegister = 'http://localhost:3000/api/v1/register';
+  private apiURLValidate = 'http://localhost:3000/api/v1/login';
+  private storage: Record<string, string> = {};
 
+  constructor(private http: HttpClient) {}
+
+  register(username: string, email: string, password: string): Observable<any> {
+    const body = { name: username, email, password };
+    console.log(body);
+    return this.http.post(this.apiURLRegister, body);
+  }
 }
