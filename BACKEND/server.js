@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDb from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
+import playerRoutes from "./routes/playerRoutes.js";
 
 dotenv.config();
 
@@ -12,7 +13,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use("/api/v1", userRoutes);
+app.use("/api/v1/", userRoutes);
+app.use("/api/v1/", playerRoutes);
 
 // Database connection
 connectDb().catch((err) => {
