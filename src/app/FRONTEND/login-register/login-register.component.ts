@@ -60,4 +60,18 @@ export class LoginRegisterComponent implements AfterViewInit {
     const symbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
     return this.password.length >= minLength && symbolRegex.test(this.password);
   }
+
+  it('should call register when form is valid', () => {
+    component.username = 'TestUser';
+    component.email = 'test@example.com';
+    component.password = 'Password123!';
+    component.confirmPassword = 'Password123!';
+    
+    registreService.register.and.returnValue(of({ success: true }));
+    
+    component.onSubmit();
+    
+    expect(registreService.register).toHaveBeenCalledWith('TestUser', 'test@example.com', 'Password123!');
+  });
+  
 }

@@ -35,6 +35,20 @@ describe('LoginRegisterComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should call register when form is valid', () => {
+    component.username = 'TestUser';
+    component.email = 'test@example.com';
+    component.password = 'Password123!';
+    component.confirmPassword = 'Password123!';
+    
+    registreService.register.and.returnValue(of({ success: true }));
+    
+    component.onSubmit();
+    
+    expect(registreService.register).toHaveBeenCalledWith('TestUser', 'test@example.com', 'Password123!');
+  });
+  
+
   it('should return true if passwords match', () => {
     component.password = 'Password123!';
     component.confirmPassword = 'Password123!';
