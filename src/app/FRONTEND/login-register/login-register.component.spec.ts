@@ -51,4 +51,9 @@ describe('LoginRegisterComponent', () => {
     component.password = 'Password123!';
     expect(component.passwordValidator()).toBeTrue();
   });
+
+  it('should return false for short passwords', () => {
+    component.password = 'Pass!';
+    expect(component.passwordValidator()).toBeFalse();
+  });
 });

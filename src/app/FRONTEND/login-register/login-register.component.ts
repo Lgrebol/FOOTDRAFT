@@ -60,5 +60,4 @@ export class LoginRegisterComponent implements AfterViewInit {
     const symbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
     return this.password.length >= minLength && symbolRegex.test(this.password);
   }
-
 }
