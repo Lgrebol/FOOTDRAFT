@@ -46,4 +46,9 @@ describe('LoginRegisterComponent', () => {
     component.confirmPassword = 'WrongPassword!';
     expect(component.passwordMatchValidator()).toBeFalse();
   });
+
+  it('should return true for valid passwords', () => {
+    component.password = 'Password123!';
+    expect(component.passwordValidator()).toBeTrue();
+  });
 });
