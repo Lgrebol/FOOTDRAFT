@@ -40,4 +40,10 @@ describe('LoginRegisterComponent', () => {
     component.confirmPassword = 'Password123!';
     expect(component.passwordMatchValidator()).toBeTrue();
   });
+
+  it('should return false if passwords do not match', () => {
+    component.password = 'Password123!';
+    component.confirmPassword = 'WrongPassword!';
+    expect(component.passwordMatchValidator()).toBeFalse();
+  });
 });
