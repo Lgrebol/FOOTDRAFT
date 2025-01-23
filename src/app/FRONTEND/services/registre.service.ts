@@ -17,4 +17,10 @@ export class RegistreService {
     console.log(body);
     return this.http.post(this.apiURLRegister, body);
   }
+
+  validateUser(email: string, password: string): Observable<any> {
+    const body = { email, password };
+    return this.http.post<any>(this.apiURLValidate, body);
+  }
+  
 }
