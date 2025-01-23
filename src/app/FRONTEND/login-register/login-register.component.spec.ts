@@ -88,4 +88,18 @@ describe('LoginRegisterComponent', () => {
     expect(component.password).toBe('');
     expect(component.confirmPassword).toBe('');
   });  
+
+  it('should call validateUser and saveToken on successful login', () => {
+    component.email = 'test@example.com';
+    component.password = 'Password123!';
+    
+    registreService.validateUser.and.returnValue(of({ token: 'testToken123' }));
+    
+    component.handleSignIn();
+    
+    expect(registreService.validateUser).toHaveBeenCalledWith('test@example.com', 'Password123!');
+    expect(registreService.saveToken).toHaveBeenCalledWith('testToken123');
+    expect(router.navigate).toHaveBeenCalledWith(['/app']);
+  });
+  
 });
