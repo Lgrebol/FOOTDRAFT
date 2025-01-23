@@ -45,3 +45,5 @@ export const deletePlayer = async (req, res) => {
     res.status(500).json({ error: "Error eliminant el jugador" });
   }
 };
+
+//accept the commit 
