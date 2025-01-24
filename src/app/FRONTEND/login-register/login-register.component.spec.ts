@@ -99,7 +99,7 @@ describe('LoginRegisterComponent', () => {
     
     expect(registreService.validateUser).toHaveBeenCalledWith('test@example.com', 'Password123!');
     expect(registreService.saveToken).toHaveBeenCalledWith('testToken123');
-    expect(router.navigate).toHaveBeenCalledWith(['/app']);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
   
 });
