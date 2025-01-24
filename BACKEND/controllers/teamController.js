@@ -1,35 +1,43 @@
-import { createTeam, getAllTeams, getTeamById, deleteTeam } from "../models/teamModel.js";
+import sql from "mssql";
+import connectDb from "../config/db.js";
 
-export const addTeam = async (req, res) => {
-  const { name } = req.body;
+// Crear un equip
+export const createTeam = async (req, res) => {
+  const { teamName, shirtColor, userID } = req.body;
+
+  if (!teamName || !shirtColor || !userID) {
+    return res.status(400).send({ error: "Falten camps obligatoris." });
+  }
 
   try {
-    await createTeam(name);
-    res.status(201).json({ message: "Team created successfully" });
-  } catch (error) {
-    console.error("Error creating team:", error);
-    res.status(500).json({ error: "Error creating team" });
+    const pool = await connectDb();
+    const query = `
+      INSERT INTO Teams (TeamName, ShirtColor, UserID)
+      VALUES (@teamName, @shirtColor, @userID)
+    `;
+    await pool.request()
+      .input("teamName", sql.VarChar, teamName)
+      .input("shirtColor", sql.VarChar, shirtColor)
+      .input("userID", sql.Int, userID)
+      .query(query);
+
+    res.status(201).send({ message: "Equip creat correctament." });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
   }
 };
 
-export const listTeams = async (req, res) => {
+// Obtenir tots els equips
+export const getTeams = async (req, res) => {
   try {
-    const teams = await getAllTeams();
-    res.status(200).json(teams);
-  } catch (error) {
-    console.error("Error fetching teams:", error);
-    res.status(500).json({ error: "Error fetching teams" });
-  }
-};
-
-export const removeTeam = async (req, res) => {
-  const { teamId } = req.params;
-
-  try {
-    await deleteTeam(teamId);
-    res.status(200).json({ message: "Team deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting team:", error);
-    res.status(500).json({ error: "Error deleting team" });
+    const pool = await connectDb();
+    const query = `
+      SELECT TeamID, TeamName, TeamLogo, ShirtColor, UserID, IsActive
+      FROM Teams
+    `;
+    const result = await pool.request().query(query);
+    res.status(200).send(result.recordset);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
   }
 };

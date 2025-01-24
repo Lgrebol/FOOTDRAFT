@@ -1,53 +1,39 @@
-import { createPlayer, getAllPlayers, getPlayersByTeam, deletePlayer } from "../models/playerModel.js";
-import { getTeamById } from "../models/teamModel.js";
+import sql from "mssql";
+import connectDb from "../config/db.js";
 
-export const addPlayer = async (req, res) => {
-  const { name, position, teamId } = req.body;
+// Crear un jugador
+export const createPlayer = async (req, res) => {
+  const { playerName, position, teamID } = req.body;
+
+  if (!playerName || !position || !teamID) {
+    return res.status(400).send({ error: "Falten camps obligatoris." });
+  }
 
   try {
-    const team = await getTeamById(teamId);
-    if (!team) {
-      return res.status(400).json({ error: "Team does not exist" });
-    }
+    const pool = await connectDb();
+    const query = `
+      INSERT INTO Players (PlayerName, Position, TeamID)
+      VALUES (@playerName, @position, @teamID)
+    `;
+    await pool.request()
+      .input("playerName", sql.VarChar, playerName)
+      .input("position", sql.VarChar, position)
+      .input("teamID", sql.Int, teamID)
+      .query(query);
 
-    await createPlayer(name, position, teamId);
-    res.status(201).json({ message: "Player created successfully" });
-  } catch (error) {
-    console.error("Error creating player:", error);
-    res.status(500).json({ error: "Error creating player" });
+    res.status(201).send({ message: "Jugador creat correctament." });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
   }
 };
 
-export const listPlayers = async (req, res) => {
+// Obtenir tots els jugadors
+export const getPlayers = async (req, res) => {
   try {
-    const players = await getAllPlayers();
-    res.status(200).json(players);
-  } catch (error) {
-    console.error("Error fetching players:", error);
-    res.status(500).json({ error: "Error fetching players" });
-  }
-};
-
-export const listPlayersByTeam = async (req, res) => {
-  const { teamId } = req.params;
-
-  try {
-    const players = await getPlayersByTeam(teamId);
-    res.status(200).json(players);
-  } catch (error) {
-    console.error("Error fetching players by team:", error);
-    res.status(500).json({ error: "Error fetching players by team" });
-  }
-};
-
-export const removePlayer = async (req, res) => {
-  const { playerId } = req.params;
-
-  try {
-    await deletePlayer(playerId);
-    res.status(200).json({ message: "Player deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting player:", error);
-    res.status(500).json({ error: "Error deleting player" });
+    const pool = await connectDb();
+    const result = await pool.request().query("SELECT * FROM Players");
+    res.status(200).json(result.recordset);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
   }
 };

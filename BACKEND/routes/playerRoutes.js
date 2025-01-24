@@ -1,16 +1,12 @@
 import express from "express";
-import {
-  addPlayer,
-  listPlayers,
-  listPlayersByTeam,
-  removePlayer,
-} from "../controllers/playerController.js";
+import { createPlayer, getPlayers } from "../controllers/playerController.js";
 
 const router = express.Router();
 
-router.post("/", addPlayer);
-router.get("/", listPlayers);
-router.get("/team/:teamId", listPlayersByTeam);
-router.delete("/:playerId", removePlayer);
+// Endpoint per crear un jugador
+router.post("/", createPlayer);
+
+// Endpoint per obtenir tots els jugadors
+router.get("/", getPlayers);
 
 export default router;
