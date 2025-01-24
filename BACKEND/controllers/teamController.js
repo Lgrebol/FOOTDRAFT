@@ -1,47 +1,35 @@
-import * as TeamModel from "../models/teamModel.js";
+import { createTeam, getAllTeams, getTeamById, deleteTeam } from "../models/teamModel.js";
 
-export const getAllTeams = async (req, res) => {
+export const addTeam = async (req, res) => {
+  const { name } = req.body;
+
   try {
-    const teams = await TeamModel.getAllTeams();
-    res.json(teams);
+    await createTeam(name);
+    res.status(201).json({ message: "Team created successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Error obtenint equips" });
+    console.error("Error creating team:", error);
+    res.status(500).json({ error: "Error creating team" });
   }
 };
 
-export const getTeamById = async (req, res) => {
+export const listTeams = async (req, res) => {
   try {
-    const team = await TeamModel.getTeamById(req.params.id);
-    if (!team) return res.status(404).json({ error: "Equip no trobat" });
-    res.json(team);
+    const teams = await getAllTeams();
+    res.status(200).json(teams);
   } catch (error) {
-    res.status(500).json({ error: "Error obtenint l'equip" });
+    console.error("Error fetching teams:", error);
+    res.status(500).json({ error: "Error fetching teams" });
   }
 };
 
-export const createTeam = async (req, res) => {
-  try {
-    const newTeam = await TeamModel.createTeam(req.body);
-    res.status(201).json(newTeam);
-  } catch (error) {
-    res.status(500).json({ error: "Error creant l'equip" });
-  }
-};
+export const removeTeam = async (req, res) => {
+  const { teamId } = req.params;
 
-export const updateTeam = async (req, res) => {
   try {
-    await TeamModel.updateTeam(req.params.id, req.body);
-    res.json({ message: "Equip actualitzat correctament" });
+    await deleteTeam(teamId);
+    res.status(200).json({ message: "Team deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Error actualitzant l'equip" });
-  }
-};
-
-export const deleteTeam = async (req, res) => {
-  try {
-    await TeamModel.deleteTeam(req.params.id);
-    res.json({ message: "Equip eliminat correctament" });
-  } catch (error) {
-    res.status(500).json({ error: "Error eliminant l'equip" });
+    console.error("Error deleting team:", error);
+    res.status(500).json({ error: "Error deleting team" });
   }
 };

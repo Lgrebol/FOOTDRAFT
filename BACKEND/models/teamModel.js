@@ -1,5 +1,13 @@
-import sql from "mssql";
 import connectDb from "../config/db.js";
+import sql from "mssql";
+
+export const createTeam = async (name) => {
+  const pool = await connectDb();
+  await pool
+    .request()
+    .input("name", sql.VarChar, name)
+    .query("INSERT INTO Teams (Name) VALUES (@name)");
+};
 
 export const getAllTeams = async () => {
   const pool = await connectDb();
@@ -7,24 +15,19 @@ export const getAllTeams = async () => {
   return result.recordset;
 };
 
-export const getTeamById = async (id) => {
+export const getTeamById = async (teamId) => {
   const pool = await connectDb();
   const result = await pool
     .request()
-    .input("TeamID", sql.Int, id)
-    .query("SELECT * FROM Teams WHERE TeamID = @TeamID");
+    .input("teamId", sql.Int, teamId)
+    .query("SELECT * FROM Teams WHERE TeamID = @teamId");
   return result.recordset[0];
 };
 
-export const createTeam = async (team) => {
-  const { TeamName, League } = team;
+export const deleteTeam = async (teamId) => {
   const pool = await connectDb();
-  const result = await pool
+  await pool
     .request()
-    .input("TeamName", sql.VarChar, TeamName)
-    .input("League", sql.VarChar, League)
-    .query("INSERT INTO Teams (TeamName, League) VALUES (@TeamName, @League); SELECT SCOPE_IDENTITY() AS TeamID;");
-  return result.recordset[0];
+    .input("teamId", sql.Int, teamId)
+    .query("DELETE FROM Teams WHERE TeamID = @teamId");
 };
-
-// Update and delete models would follow the same pattern as above.
