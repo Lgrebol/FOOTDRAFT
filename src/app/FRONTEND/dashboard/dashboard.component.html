@@ -1,1 +1,67 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+    <aside class="sidebar">
+      <h1 class="logo">FootDraft</h1>
+      <nav>
+        <ul>
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/search">Cerca</a></li>
+          <li><a href="/teams">Equips</a></li>
+          <li><a href="/tournaments">Torneigs</a></li>
+          <li><a href="/statistics">Estadístiques</a></li>
+        </ul>
+      </nav>
+    </aside>
+  
+    <main class="main-content">
+      <header class="top-bar">
+        <button class="menu-toggle">☰</button>
+        <h2>Dashboard</h2>
+        <div class="user-menu">
+          <span>Usuari</span>
+          <button class="logout-button">Tancar sessió</button>
+        </div>
+      </header>
+  
+      <section class="dashboard-content">
+        <div class="stats-overview">
+          <div class="stat-card">
+            <h3>Total Jugadors</h3>
+            <p class="stat-value">120</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Equips</h3>
+            <p class="stat-value">24</p>
+          </div>
+          <div class="stat-card">
+            <h3>Torneigs Actius</h3>
+            <p class="stat-value">3</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Gols</h3>
+            <p class="stat-value">89</p>
+          </div>
+        </div>
+  
+        <div class="recent-activity">
+          <h3>Activitat Recent</h3>
+          <ul>
+            <li>
+              <span class="activity-user">John Doe</span>
+              <span class="activity-action">va crear un nou equip</span>
+              <span class="activity-time">fa 2 hores</span>
+            </li>
+            <li>
+              <span class="activity-user">Jane Smith</span>
+              <span class="activity-action">va afegir un nou jugador</span>
+              <span class="activity-time">fa 4 hores</span>
+            </li>
+            <li>
+              <span class="activity-user">Mike Johnson</span>
+              <span class="activity-action">va iniciar un nou torneig</span>
+              <span class="activity-time">fa 6 hores</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>

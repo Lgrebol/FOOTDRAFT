@@ -131,12 +131,13 @@ export class LoginRegisterComponent implements AfterViewInit {
       console.error('Email i contrasenya requerits');
       return;
     }
+  
     this.registreService.validateUser(this.email, this.password).subscribe(
       (response) => {
         if (response && response.token) {
           console.log('Login correcte:', response);
           this.registreService.saveToken(response.token);
-          this.router.navigate(['/dashboard']); // Canviat a dashboard
+          this.router.navigate(['/dashboard']);
         } else {
           console.error('Credencials incorrectes o falta el token a la resposta');
         }
@@ -145,5 +146,5 @@ export class LoginRegisterComponent implements AfterViewInit {
         console.error("Error al verificar l'usuari:", error);
       }
     );
-  }  
+  }    
 }
