@@ -19,7 +19,7 @@ input {
 .container {
   position: relative;
   width: 100%;
-  background-color: #fff;
+  background-color: #008000; 
   min-height: 100vh;
   overflow: hidden;
 }
@@ -98,7 +98,7 @@ form.sign-in-form {
 .title {
   font-family: 'Montserrat', sans-serif;
   font-size: 2.2rem;
-  color: #444;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
@@ -106,11 +106,12 @@ form.sign-in-form {
 .input-field-2 {
   max-width: 350px;
   width: 100%;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
   margin: 10px 0;
   height: 55px;
   border-radius: 5px;
   display: grid;
+  color: #000000;
   grid-template-columns: 15% 85%;
   padding: 0 0.4rem;
   position: relative;
@@ -153,7 +154,8 @@ form.sign-in-form {
   justify-content: center;
   align-items: center;
   margin: 0 0.45rem;
-  color: #333;
+  color: #ffffff; /* Blanc */
+  border-color: #ffffff; /* Blanc */
   border-radius: 5px;
   border: 1px solid grey;
   text-decoration: none;
@@ -162,18 +164,18 @@ form.sign-in-form {
 }
 
 .social-icon:hover {
-  color: #2563EB;
-  border-color: #2563EB;
+  color: #004d00; /* Verd fosc */
+  border-color: #004d00;
 }
 
 .btn {
   width: 350px;
-  background-color: #2563EB;
+  background-color: #006400; /* Verd més fosc */
+  color: #ffffff; /* Blanc per llegibilitat */
   border: none;
   outline: none;
   height: 49px;
   border-radius: 5px;
-  color: #fff;
   text-transform: uppercase;
   font-weight: 600;
   margin: 10px 0;
@@ -187,7 +189,8 @@ form.sign-in-form {
   outline: none;
   height: 49px;
   border-radius: 5px;
-  color: #444;
+  border-color: #006400; /* Verd fosc */
+  color: #006400;
   text-transform: uppercase;
   font-weight: 600;
   margin: 10px 0;
@@ -195,11 +198,11 @@ form.sign-in-form {
   transition: 0.5s;
 }
 .solid-admin:hover{
-  color: #2563EB;
-  border-color: #2563EB;
+  color: #ffffff; /* Blanc per contrast */
+  border-color: #004d00; /* Verd encara més fosc */
 }
 .btn:hover {
-  background-color: #4d84e2;
+  background-color: #004d00;
 }
 .panels-container {
   position: absolute;
@@ -219,13 +222,13 @@ form.sign-in-form {
   top: -10%;
   right: 48%;
   transform: translateY(-50%);
-  background-color: #2563EB;
+  background-color: #004d00;
   transition: 1.8s ease-in-out;
   z-index: 6;
 }
 
 .image {
-  width: 100%;
+  width: 400px;
   transition: transform 1.1s ease-in-out;
   transition-delay: 0.4s;
 }
@@ -250,7 +253,7 @@ form.sign-in-form {
 }
 
 .panel .content {
-  color: #fff;
+  color: #ffffff;
   transition: transform 0.9s ease-in-out;
   transition-delay: 0.6s;
 }
@@ -394,6 +397,7 @@ form.sign-in-form {
     right: initial;
     top: initial;
     transition: 2s ease-in-out;
+    background-color: #004d00;
   }
 
   .container.sign-up-mode:before {
