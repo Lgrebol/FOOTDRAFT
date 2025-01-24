@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
-import { LoginRegisterComponent } from './FRONTEND/login-register/login-register.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [LoginRegisterComponent],
+  imports: [RouterModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   title = 'FOOTDRAFT';
 }
+
