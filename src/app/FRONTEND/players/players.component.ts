@@ -40,4 +40,23 @@ export class PlayersComponent implements OnInit {
     );
   }
 
+  // Afegir un nou jugador
+  addPlayer() {
+    if (this.newPlayer.name && this.newPlayer.position && this.newPlayer.team) {
+      this.http.post('http://localhost:3000/api/v1/players', {
+        playerName: this.newPlayer.name,
+        position: this.newPlayer.position,
+        teamID: this.newPlayer.team
+      }).subscribe(
+        () => {
+          this.fetchPlayers(); // Actualitza la llista
+          this.newPlayer = { name: '', position: '', team: '' }; // Reseteja el formulari
+        },
+        (error) => {
+          console.error('Error afegint el jugador:', error);
+        }
+      );
+    }
+  }
+
 }

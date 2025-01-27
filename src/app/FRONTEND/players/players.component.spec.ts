@@ -75,5 +75,5 @@ describe('PlayersComponent', () => {
 
       expect(component.newPlayer).toEqual({ name: '', position: '', team: '' });
     });
-
+  });
 });
