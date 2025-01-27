@@ -35,4 +35,16 @@ describe('PlayersComponent', () => {
       expect(component.players).toEqual(mockPlayers);
     });
   });
+
+  it('hauria de mostrar un error si fetchPlayers falla', () => {
+    spyOn(console, 'error');
+    component.fetchPlayers();
+
+
+    const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
+    req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+
+
+    expect(console.error).toHaveBeenCalledWith('Error carregant els jugadors:', jasmine.anything());
+  });
 });
