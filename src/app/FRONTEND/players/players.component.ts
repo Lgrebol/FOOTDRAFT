@@ -35,5 +35,5 @@ export class PlayersComponent implements OnInit {
         console.error('Error carregant els jugadors:', error);
       }
     );
-  }  
+  }
 }
