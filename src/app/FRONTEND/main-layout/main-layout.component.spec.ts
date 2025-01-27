@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';  // Import `of` to mock the ActivatedRoute observable
 
 import { MainLayoutComponent } from './main-layout.component';
 
@@ -8,7 +10,13 @@ describe('MainLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MainLayoutComponent]
+      imports: [MainLayoutComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { paramMap: of({}) } }
+        }
+      ]
     })
     .compileComponents();
 

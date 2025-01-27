@@ -99,53 +99,57 @@ describe('PlayersComponent', () => {
       expect(console.error).toHaveBeenCalledWith('Error afegint el jugador:', jasmine.anything());
     });
   });
-
-  describe('deletePlayer', () => {
-    it('hauria d’eliminar un jugador correctament', () => {
-      const mockPlayers = [
-        { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
-        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
-      ];
-   
-      component.fetchPlayers(); // Carregar jugadors inicialment
-      const fetchReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
-      fetchReq.flush(mockPlayers); // Simulant resposta dels jugadors
-   
-      const playerId = 1;
-      component.deletePlayer(playerId); // Eliminar un jugador
-   
-      // Comprova la crida DELETE
-      const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
-      expect(deleteReq.request.method).toBe('DELETE');
-      deleteReq.flush({}); // Simula una resposta exitosa de l'eliminació
-   
-      // Comprova la llista de jugadors després de l'eliminació
-      expect(component.players).toEqual([
-        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' }
-      ]);
-   
-      // Comprova que no hi ha més peticions pendents després de l'eliminació
-      httpMock.verify();
-    });  
-
-    it('hauria de mostrar un error si deletePlayer falla', () => {
-      spyOn(console, 'error');
-      const playerId = 1;
-
-
-      component.deletePlayer(playerId);
-
-
-      const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
-      req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
-
-
-      expect(console.error).toHaveBeenCalledWith('Error eliminant el jugador:', jasmine.anything());
+  
+  it('hauria d’eliminar un jugador correctament', () => {
+    const mockPlayers = [
+      { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
+      { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
+    ];
+  
+    // Mock the fetchPlayers method to return the initial players
+    spyOn(component, 'fetchPlayers').and.callFake(() => {
+      component.players = mockPlayers; // Initialize with mock players
     });
+  
+    // Trigger ngOnInit to initialize players
+    component.ngOnInit();
+    
+    // Simulate fetchPlayers call
+    component.fetchPlayers(); 
+    const fetchReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
+    fetchReq.flush(mockPlayers); // Simulate successful fetch response
+  
+    const playerId = 1;
+    component.deletePlayer(playerId); // Call the deletePlayer method
+  
+    // Expect the DELETE request to be triggered
+    const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
+    expect(deleteReq.request.method).toBe('DELETE');
+    deleteReq.flush({}); // Simulate successful deletion response
+  
+    // Verify the player list after deletion
+    expect(component.players).toEqual([
+      { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' }
+    ]);
+  
+    httpMock.verify(); // Verify there are no pending HTTP requests
   });
-
-
+  
+  it('hauria de mostrar un error si deletePlayer falla', () => {
+    spyOn(console, 'error'); // Spy on the console.error to catch any errors
+  
+    const playerId = 1;
+    component.deletePlayer(playerId); // Try deleting a player
+  
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
+    req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+  
+    // Ensure that the error was logged to the console
+    expect(console.error).toHaveBeenCalledWith('Error eliminant el jugador:', jasmine.anything());
+  });
+  
   afterEach(() => {
-    httpMock.verify(); // Verifiquem que no quedin peticions pendents
+    httpMock.verify(); // Ensure that there are no outstanding HTTP requests after each test
   });
+  
 });
