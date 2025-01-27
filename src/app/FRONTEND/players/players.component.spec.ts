@@ -35,4 +35,24 @@ describe('PlayersComponent', () => {
 
     expect(component.players).toEqual(mockPlayers);
   });
+
+  it('should add a new player and reset the form', () => {
+    const newPlayer = { name: 'Player 3', position: 'Midfielder', team: 'Team C' };
+    component.newPlayer = newPlayer;
+  
+    const mockResponse = { id: 3, ...newPlayer };
+  
+    const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      playerName: newPlayer.name,
+      position: newPlayer.position,
+      teamID: newPlayer.team
+    });
+    req.flush(mockResponse);
+  
+    expect(component.players).toContain(mockResponse);
+    expect(component.newPlayer).toEqual({ name: '', position: '', team: '' });
+  });
+  
 });
