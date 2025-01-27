@@ -151,5 +151,4 @@ describe('PlayersComponent', () => {
   afterEach(() => {
     httpMock.verify(); // Ensure that there are no outstanding HTTP requests after each test
   });
-  
 });
