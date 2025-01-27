@@ -1,1 +1,14 @@
-<p>players works!</p>
+<table>
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Equip</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let player of players">
+      <td>{{ player.name }}</td>
+      <td>{{ player.team }}</td>
+    </tr>
+  </tbody>
+</table>

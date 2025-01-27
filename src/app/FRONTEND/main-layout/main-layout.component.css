@@ -1,0 +1,86 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  background-color: #004d00;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu button {
+  background-color: #008800;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.user-menu button:hover {
+  background-color: #016f01;
+  border-radius: 5px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-menu a {
+  color: #016f01;
+  padding: 10px;
+  text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+  background-color: #ddd;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+}
+
+aside {
+  width: 200px;
+  background-color: #f4f4f4;
+  padding: 15px;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+nav a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  padding: 10px;
+  margin: 5px 0;
+}
+
+nav a:hover {
+  background-color: #ddd;
+}

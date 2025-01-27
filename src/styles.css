@@ -1,4 +1,70 @@
-/* You can add global styles to this file, and also import other style files */
-
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    width: 240px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+  }
+  
+  .sidebar .logo {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar nav ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar nav ul li {
+    margin-bottom: 15px;
+  }
+  
+  .sidebar nav ul li a {
+    color: #ecf0f1;
+    text-decoration: none;
+  }
+  
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .top-bar {
+    background-color: #34495e;
+    color: #ecf0f1;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .players-content table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .players-content th, .players-content td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .login-container {
+    max-width: 400px;
+    margin: 100px auto; /* Centrat vertical i horitzontal */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    text-align: center;
+  }
+  

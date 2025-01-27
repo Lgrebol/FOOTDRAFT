@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginRegisterComponent } from './FRONTEND/login-register/login-register.component';
 import { DashboardComponent } from './FRONTEND/dashboard/dashboard.component';
+import { PlayersComponent } from './FRONTEND/players/players.component';
+import { TeamsComponent } from './FRONTEND/teams/teams.component';
 
 @NgModule({
   imports: [
@@ -15,7 +17,9 @@ import { DashboardComponent } from './FRONTEND/dashboard/dashboard.component';
     HttpClientModule,
     RouterModule.forRoot(appRoutes),
     LoginRegisterComponent,
-    DashboardComponent 
+    DashboardComponent,
+    PlayersComponent,
+    TeamsComponent 
   ],  
   bootstrap: [AppComponent]
 })
