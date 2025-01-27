@@ -127,4 +127,25 @@ describe('PlayersComponent', () => {
       // Comprova que no hi ha més peticions pendents després de l'eliminació
       httpMock.verify();
     });  
+
+    it('hauria de mostrar un error si deletePlayer falla', () => {
+      spyOn(console, 'error');
+      const playerId = 1;
+
+
+      component.deletePlayer(playerId);
+
+
+      const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
+      req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+
+
+      expect(console.error).toHaveBeenCalledWith('Error eliminant el jugador:', jasmine.anything());
+    });
+  });
+
+
+  afterEach(() => {
+    httpMock.verify(); // Verifiquem que no quedin peticions pendents
+  });
 });
