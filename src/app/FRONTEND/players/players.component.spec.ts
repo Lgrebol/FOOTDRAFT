@@ -75,5 +75,16 @@ describe('PlayersComponent', () => {
 
       expect(component.newPlayer).toEqual({ name: '', position: '', team: '' });
     });
+
+    it('no hauria d’afegir un jugador si falten dades', () => {
+      component.newPlayer = { name: '', position: '', team: '' };
+
+
+      component.addPlayer();
+
+
+      httpMock.expectNone('http://localhost:3000/api/v1/players'); // Assegura que no es faci cap crida
+    });
+
   });
 });
