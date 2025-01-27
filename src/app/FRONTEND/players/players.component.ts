@@ -21,7 +21,6 @@ export class PlayersComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  
 
   
 }
