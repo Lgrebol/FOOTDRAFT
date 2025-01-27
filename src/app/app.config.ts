@@ -9,9 +9,10 @@ import { LoginRegisterComponent } from './FRONTEND/login-register/login-register
 import { DashboardComponent } from './FRONTEND/dashboard/dashboard.component';
 import { PlayersComponent } from './FRONTEND/players/players.component';
 import { TeamsComponent } from './FRONTEND/teams/teams.component';
-
+import { CommonModule } from '@angular/common';
 @NgModule({
   imports: [
+    CommonModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,
