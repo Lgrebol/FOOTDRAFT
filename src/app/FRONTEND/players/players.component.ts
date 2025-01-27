@@ -59,4 +59,15 @@ export class PlayersComponent implements OnInit {
     }
   }
 
+  // Eliminar un jugador
+  deletePlayer(playerId: number) {
+    this.http.delete(`http://localhost:3000/api/v1/players/${playerId}`).subscribe(
+      () => {
+        this.fetchPlayers(); // Actualitza la llista
+      },
+      (error) => {
+        console.error('Error eliminant el jugador:', error);
+      }
+    );
+  }
 }

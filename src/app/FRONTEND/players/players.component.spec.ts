@@ -127,5 +127,4 @@ describe('PlayersComponent', () => {
       // Comprova que no hi ha més peticions pendents després de l'eliminació
       httpMock.verify();
     });  
-  });
 });
