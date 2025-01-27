@@ -20,5 +20,6 @@ export class PlayersComponent implements OnInit {
   };
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
+
   constructor(private http: HttpClient) {}
 }

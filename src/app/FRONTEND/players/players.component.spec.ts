@@ -1,33 +1,38 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { PlayersComponent } from './players.component';
-import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 
 describe('PlayersComponent', () => {
   let component: PlayersComponent;
-  let fixture: ComponentFixture<PlayersComponent>;
   let httpMock: HttpTestingController;
-  
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FormsModule, HttpClientTestingModule],
-      declarations: [PlayersComponent]
+      imports: [
+        PlayersComponent, // Importa el component standalone
+        HttpClientTestingModule, // Importa els mòduls necessaris
+      ]
     }).compileComponents();
-    
-    fixture = TestBed.createComponent(PlayersComponent);
-    component = fixture.componentInstance;
+
     httpMock = TestBed.inject(HttpTestingController);
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(PlayersComponent);
+    component = fixture.componentInstance;
   });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
+  describe('fetchPlayers', () => {
+    it('hauria de carregar els jugadors correctament', () => {
+      const mockPlayers = [
+        { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
+        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
+      ];
 
-  // Test per a inicialització del component
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+      component.fetchPlayers();
 
+      const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
+      expect(req.request.method).toBe('GET');
+      req.flush(mockPlayers);
+
+      expect(component.players).toEqual(mockPlayers);
+    });
+  });
 });
