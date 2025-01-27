@@ -79,12 +79,24 @@ describe('PlayersComponent', () => {
     it('no hauria d’afegir un jugador si falten dades', () => {
       component.newPlayer = { name: '', position: '', team: '' };
 
-
       component.addPlayer();
-
 
       httpMock.expectNone('http://localhost:3000/api/v1/players'); // Assegura que no es faci cap crida
     });
 
+    it('hauria de mostrar un error si addPlayer falla', () => {
+      spyOn(console, 'error');
+      component.newPlayer = { name: 'New Player', position: 'Midfielder', team: 'Team C' };
+
+
+      component.addPlayer();
+
+
+      const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
+      req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+
+
+      expect(console.error).toHaveBeenCalledWith('Error afegint el jugador:', jasmine.anything());
+    });
   });
 });
