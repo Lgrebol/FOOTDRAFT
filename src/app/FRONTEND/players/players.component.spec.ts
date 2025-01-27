@@ -47,4 +47,33 @@ describe('PlayersComponent', () => {
 
     expect(console.error).toHaveBeenCalledWith('Error carregant els jugadors:', jasmine.anything());
   });
+
+  describe('addPlayer', () => {
+    it('hauria d’afegir un jugador correctament', () => {
+      const mockPlayers = [
+        { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
+        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
+      ];
+
+      spyOn(component, 'fetchPlayers').and.callFake(() => {
+        component.players = mockPlayers; // Simulem que els jugadors ja estan carregats
+      });
+
+      component.newPlayer = { name: 'New Player', position: 'Midfielder', team: 'Team C' };
+
+      component.addPlayer();
+
+      const reqPost = httpMock.expectOne('http://localhost:3000/api/v1/players');
+      expect(reqPost.request.method).toBe('POST');
+      expect(reqPost.request.body).toEqual({
+        playerName: 'New Player',
+        position: 'Midfielder',
+        teamID: 'Team C',
+      });
+
+      reqPost.flush({}); // Simula una resposta exitosa
+
+      expect(component.newPlayer).toEqual({ name: '', position: '', team: '' });
+    });
+
 });
