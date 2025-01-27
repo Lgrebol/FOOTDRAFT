@@ -22,4 +22,22 @@ export class PlayersComponent implements OnInit {
 
 
   constructor(private http: HttpClient) {}
+  
+  ngOnInit() {
+    this.fetchPlayers();
+  }
+
+
+  // Obtenir jugadors del backend
+  fetchPlayers() {
+    this.http.get<any[]>('http://localhost:3000/api/v1/players').subscribe(
+      (data) => {
+        this.players = data;
+      },
+      (error) => {
+        console.error('Error carregant els jugadors:', error);
+      }
+    );
+  }
+
 }
