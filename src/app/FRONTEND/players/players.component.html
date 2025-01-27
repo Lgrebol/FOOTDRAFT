@@ -1,14 +1,45 @@
-<table>
-  <thead>
-    <tr>
-      <th>Nom</th>
-      <th>Equip</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let player of players">
-      <td>{{ player.name }}</td>
-      <td>{{ player.team }}</td>
-    </tr>
-  </tbody>
-</table>
+<div class="players-container">
+  <h1>Llista de Jugadors</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Posició</th>
+        <th>Punts</th>
+        <th>Equip</th>
+        <th>Accions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of players">
+        <td>{{ player.PlayerName }}</td>
+        <td>{{ player.Position }}</td>
+        <td>{{ player.Points || 0 }}</td>
+        <td>{{ player.TeamName }}</td>
+        <td>
+          <button (click)="deletePlayer(player.PlayerID)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Afegir Jugador</h2>
+  <form (ngSubmit)="addPlayer()">
+    <div>
+      <label for="name">Nom:</label>
+      <input id="name" type="text" [(ngModel)]="newPlayer.name" name="name" required />
+    </div>
+    <div>
+      <label for="position">Posició:</label>
+      <select id="position" [(ngModel)]="newPlayer.position" name="position" required>
+        <option value="" disabled selected>Selecciona una posició</option>
+        <option *ngFor="let position of positions" [value]="position">{{ position }}</option>
+      </select>
+    </div>
+    <div>
+      <label for="team">Equip:</label>
+      <input id="team" type="text" [(ngModel)]="newPlayer.team" name="team" required />
+    </div>
+    <button type="submit">Afegir Jugador</button>
+  </form>
+</div>

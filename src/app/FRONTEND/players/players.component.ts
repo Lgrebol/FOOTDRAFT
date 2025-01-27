@@ -1,17 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-players',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './players.component.html',
   styleUrls: ['./players.component.css']
 })
-export class PlayersComponent {
-  players = [
-    { name: 'Player 1', team: 'Team A' },
-    { name: 'Player 2', team: 'Team B' },
-    { name: 'Player 3', team: 'Team C' }
-  ];
+export class PlayersComponent implements OnInit {
+  players: any[] = []; // Llista de jugadors
+  newPlayer = {
+    name: '',
+    position: '',
+    team: ''
+  };
+  positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward']; 
+
+  constructor(private http: HttpClient) {}
+
+  
+
+  
 }
