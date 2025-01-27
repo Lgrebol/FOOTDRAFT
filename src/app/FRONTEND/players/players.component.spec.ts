@@ -99,4 +99,33 @@ describe('PlayersComponent', () => {
       expect(console.error).toHaveBeenCalledWith('Error afegint el jugador:', jasmine.anything());
     });
   });
+
+  describe('deletePlayer', () => {
+    it('hauria d’eliminar un jugador correctament', () => {
+      const mockPlayers = [
+        { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
+        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
+      ];
+   
+      component.fetchPlayers(); // Carregar jugadors inicialment
+      const fetchReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
+      fetchReq.flush(mockPlayers); // Simulant resposta dels jugadors
+   
+      const playerId = 1;
+      component.deletePlayer(playerId); // Eliminar un jugador
+   
+      // Comprova la crida DELETE
+      const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
+      expect(deleteReq.request.method).toBe('DELETE');
+      deleteReq.flush({}); // Simula una resposta exitosa de l'eliminació
+   
+      // Comprova la llista de jugadors després de l'eliminació
+      expect(component.players).toEqual([
+        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' }
+      ]);
+   
+      // Comprova que no hi ha més peticions pendents després de l'eliminació
+      httpMock.verify();
+    });  
+  });
 });
