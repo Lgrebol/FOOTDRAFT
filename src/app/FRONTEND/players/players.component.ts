@@ -20,10 +20,11 @@ export class PlayersComponent implements OnInit {
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward']; 
 
   constructor(private http: HttpClient) {}
+  
+  
   ngOnInit() {
     this.fetchPlayers();
   }
-
 
   // Obtenir jugadors del backend
   fetchPlayers() {
@@ -36,4 +37,7 @@ export class PlayersComponent implements OnInit {
       }
     );
   }
+
+
+
 }
