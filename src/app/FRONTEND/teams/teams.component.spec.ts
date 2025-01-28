@@ -24,8 +24,8 @@ describe('TeamsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should hauria de carregar els equips correctament', () => {
+ 
+  it('should load the teams correctly', () => {
     const mockTeams = [
       { id: 1, name: 'Team A', shirtColor: 'Red', userId: 1 },
       { id: 2, name: 'Team B', shirtColor: 'Blue', userId: 2 },

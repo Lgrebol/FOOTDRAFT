@@ -1,0 +1,62 @@
+<div class="teams-container">
+  <h1>Llista d'Equips</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Color Samarreta</th>
+        <th>Usuari</th>
+        <th>Accions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let team of teams">
+        <td>{{ team.TeamName }}</td>
+        <td>{{ team.ShirtColor }}</td>
+        <td>{{ team.UserName }}</td>
+        <td>
+          <button (click)="deleteTeam(team.TeamID)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Afegir Equip</h2>
+  <form (ngSubmit)="addTeam()">
+    <div>
+      <label for="name">Nom de l'Equip:</label>
+      <input
+        id="name"
+        type="text"
+        [(ngModel)]="newTeam.name"
+        name="name"
+        required
+      />
+    </div>
+    <div>
+      <label for="shirtColor">Color de la Samarreta:</label>
+      <input
+        id="shirtColor"
+        type="text"
+        [(ngModel)]="newTeam.shirtColor"
+        name="shirtColor"
+        required
+      />
+    </div>
+    <div>
+      <label for="user">Usuari:</label>
+      <select
+        id="user"
+        [(ngModel)]="newTeam.userId"
+        name="userId"
+        required
+      >
+        <option value="" disabled selected>Selecciona un usuari</option>
+        <option *ngFor="let user of users" [value]="user.UserID">
+          {{ user.UserName }}
+        </option>
+      </select>
+    </div>
+    <button type="submit">Afegir Equip</button>
+  </form>
+</div>
