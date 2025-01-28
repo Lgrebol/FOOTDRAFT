@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
-
 @Component({
   selector: 'app-players',
   standalone: true,
@@ -13,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class PlayersComponent implements OnInit {
   players: any[] = []; // Llista de jugadors
+  teams: any[] = []; // Llista d'equips
   newPlayer = {
     name: '',
     position: '',
@@ -20,13 +20,12 @@ export class PlayersComponent implements OnInit {
   };
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
-
   constructor(private http: HttpClient) {}
   
   ngOnInit() {
     this.fetchPlayers();
+    this.fetchTeams(); // Obtenir els equips per al dropdown
   }
-
 
   // Obtenir jugadors del backend
   fetchPlayers() {
@@ -36,6 +35,18 @@ export class PlayersComponent implements OnInit {
       },
       (error) => {
         console.error('Error carregant els jugadors:', error);
+      }
+    );
+  }
+
+  // Obtenir equips del backend
+  fetchTeams() {
+    this.http.get<any[]>('http://localhost:3000/api/v1/teams').subscribe(
+      (data) => {
+        this.teams = data;
+      },
+      (error) => {
+        console.error('Error carregant els equips:', error);
       }
     );
   }

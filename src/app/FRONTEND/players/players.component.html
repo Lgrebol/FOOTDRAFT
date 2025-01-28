@@ -38,7 +38,12 @@
     </div>
     <div>
       <label for="team">Equip:</label>
-      <input id="team" type="text" [(ngModel)]="newPlayer.team" name="team" required />
+      <select id="team" [(ngModel)]="newPlayer.team" name="team" required>
+        <option value="" disabled selected>Selecciona un equip</option>
+        <option *ngFor="let team of teams" [value]="team.TeamID">
+          {{ team.TeamName }}
+        </option>
+      </select>
     </div>
     <button type="submit">Afegir Jugador</button>
   </form>
