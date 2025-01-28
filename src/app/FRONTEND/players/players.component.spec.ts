@@ -152,6 +152,17 @@ describe('PlayersComponent', () => {
 
       expect(component.teams).toEqual(mockTeams);
     });
+
+    it('should show an error if fetchTeams bug', () => {
+      spyOn(console, 'error');
+  
+      component.fetchTeams();
+  
+      const req = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+      req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+  
+      expect(console.error).toHaveBeenCalledWith('Error carregant els equips:', jasmine.anything());
+    });
   }); 
 
   afterEach(() => {
