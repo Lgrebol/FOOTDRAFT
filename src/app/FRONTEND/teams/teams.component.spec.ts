@@ -143,7 +143,7 @@ describe('TeamsComponent', () => {
     expect(console.error).toHaveBeenCalledWith('Error afegint l\'equip:', jasmine.anything());
   });
 
-  it('hauria de mostrar un error si addTeam falla', () => {
+  it('should show an error if addTeam dosen\'t work', () => {
     spyOn(console, 'error');
   
     // Primer gestionem la petició GET inicial que es fa en ngOnInit
@@ -163,5 +163,19 @@ describe('TeamsComponent', () => {
     // Verificar que es mostra l'error
     expect(console.error).toHaveBeenCalledWith('Error afegint l\'equip:', jasmine.anything());
   }); 
+  
+  it('it should delete teams correclty', () => {
+    const teamId = 1;
+    spyOn(component, 'fetchTeams'); // Espiem la crida a fetchTeams
+  
+    component.deleteTeam(teamId);
+  
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/teams/${teamId}`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush({}); // Simulem una resposta exitosa
+  
+    // Comprovem que fetchTeams ha estat cridat per actualitzar la llista
+    expect(component.fetchTeams).toHaveBeenCalled();
+  });
   
 });
