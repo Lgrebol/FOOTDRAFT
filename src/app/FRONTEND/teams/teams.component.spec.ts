@@ -121,5 +121,25 @@ describe('TeamsComponent', () => {
     // Ensure fetchTeams wasn't called
     expect(component.fetchTeams).not.toHaveBeenCalled();
   });
+
+  it('should show an error if addTeam doesn\'t work', () => {
+    spyOn(console, 'error'); // Spy on console.error
   
+    // Handle the initial GET request (if component fetches data on init)
+    const initialGetReq = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+    initialGetReq.flush([]); // Flush with empty array or mock data
+  
+    // Set up the new team data
+    (component.newTeam as any) = { name: 'New Team', shirtColor: 'Green', userId: 1 };
+  
+    // Trigger the addTeam method
+    component.addTeam();
+  
+    // Expect and handle the POST request
+    const postReq = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+    postReq.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+  
+    // Verify console.error was called
+    expect(console.error).toHaveBeenCalledWith('Error afegint l\'equip:', jasmine.anything());
+  });
 });
