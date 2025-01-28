@@ -99,4 +99,27 @@ describe('TeamsComponent', () => {
     expect(component.fetchTeams).toHaveBeenCalled();
   });
   
+  it('should not add a team if data is missing ', () => {
+    // Handle initial GET requests from ngOnInit
+    const getTeamsReq = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+    getTeamsReq.flush([]); // Mock empty response
+    const getUsersReq = httpMock.expectOne('http://localhost:3000/api/v1/users');
+    getUsersReq.flush([]);
+  
+    // Set invalid team data
+    component.newTeam = { name: '', shirtColor: '', userId: null };
+    spyOn(component, 'fetchTeams');
+  
+    component.addTeam();
+  
+    // Verify no POST request is made
+    httpMock.expectNone({
+      url: 'http://localhost:3000/api/v1/teams',
+      method: 'POST'
+    });
+  
+    // Ensure fetchTeams wasn't called
+    expect(component.fetchTeams).not.toHaveBeenCalled();
+  });
+  
 });
