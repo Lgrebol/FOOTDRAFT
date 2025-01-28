@@ -178,4 +178,15 @@ describe('TeamsComponent', () => {
     expect(component.fetchTeams).toHaveBeenCalled();
   });
   
+  it('should show an error if deleteTeam dosen\'t work', () => {
+    spyOn(console, 'error'); // Espiem els errors a la consola
+  
+    const teamId = 1;
+    component.deleteTeam(teamId);
+  
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/teams/${teamId}`);
+    req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+  
+    expect(console.error).toHaveBeenCalledWith('Error eliminant l\'equip:', jasmine.anything());
+  });  
 });
