@@ -65,5 +65,38 @@ describe('TeamsComponent', () => {
     expect(component.users).toEqual(mockUsers);
   });
   
+  it('should add a new team when the data is valid', () => {
+    // Trigger component initialization (if not already done in beforeEach)
+    fixture.detectChanges();
+  
+    // Handle the initial GET request from ngOnInit (if applicable)
+    const getReq = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+    expect(getReq.request.method).toBe('GET');
+    getReq.flush([]); // Flush mock response for GET
+  
+    // Set up test data
+    (component.newTeam as any) = { name: 'New Team', shirtColor: 'Green', userId: 1 };
+    spyOn(component, 'fetchTeams');
+  
+    // Trigger addTeam
+    component.addTeam();
+  
+    // Expect a POST request with specific URL and method
+    const postReq = httpMock.expectOne({
+      url: 'http://localhost:3000/api/v1/teams',
+      method: 'POST'
+    });
+    
+    // Verify POST request details
+    expect(postReq.request.body).toEqual({
+      teamName: 'New Team',
+      shirtColor: 'Green',
+      userID: 1
+    });
+    postReq.flush({}); // Simulate successful response
+  
+    // Verify fetchTeams is called to refresh the list
+    expect(component.fetchTeams).toHaveBeenCalled();
+  });
   
 });

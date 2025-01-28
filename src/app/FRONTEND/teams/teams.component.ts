@@ -38,15 +38,15 @@ export class TeamsComponent implements OnInit {
     );
   }
 
-    // Obtenir usuaris
-    fetchUsers() {
-      this.http.get<any[]>('http://localhost:3000/api/v1/users').subscribe(
-        (data) => {
-          this.users = data;
-        },
-        (error) => {
-          console.error('Error carregant els usuaris:', error);
-        }
-      );
-    }
+  // Obtenir usuaris
+  fetchUsers() {
+    this.http.get<any[]>('http://localhost:3000/api/v1/users').subscribe(
+      (data) => {
+        this.users = data;
+      },
+      (error) => {
+        console.error('Error carregant els usuaris:', error);
+      }
+    );
+  }
 }
