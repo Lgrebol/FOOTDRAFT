@@ -173,6 +173,19 @@ describe('PlayersComponent', () => {
       expect(component.fetchPlayers).toHaveBeenCalled();
       expect(component.fetchTeams).toHaveBeenCalled();
     });
+
+    it('shouldnt add new player if no teams are aviable', () => {
+      component.teams = []; // Simulem que no hi ha equips disponibles
+      component.newPlayer = {
+        name: 'New Player',
+        position: 'Midfielder',
+        team: '1',
+      };
+    
+      component.addPlayer();
+    
+      httpMock.expectNone('http://localhost:3000/api/v1/players'); // Verifica que no es fa cap crida HTTP
+    });    
   }); 
 
   afterEach(() => {
