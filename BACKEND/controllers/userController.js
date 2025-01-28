@@ -70,3 +70,19 @@ export const loginUsers = async (req, res) => {
     res.status(500).json({ error: "Error logging in" });
   }
 };
+
+// Get all users logic
+export const getUsers = async (req, res) => {
+  try {
+    const pool = await connectDb();
+    const result = await pool
+      .request()
+      .query("SELECT UserID, Name AS UserName FROM Users");
+
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Error fetching users" });
+  }
+};
+

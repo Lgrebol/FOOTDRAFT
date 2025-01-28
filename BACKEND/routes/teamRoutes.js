@@ -1,12 +1,10 @@
-import express from "express";
-import { createTeam, getTeams } from "../controllers/teamController.js";
+import express from 'express';
+import { createTeam, getTeams, deleteTeam } from '../controllers/teamController.js';
 
 const router = express.Router();
 
-// Endpoint per crear un equip
-router.post("/", createTeam);
-
-// Endpoint per obtenir tots els equips
-router.get("/", getTeams);
+router.post('/', createTeam);
+router.get('/', getTeams);
+router.delete('/:id', deleteTeam);
 
 export default router;

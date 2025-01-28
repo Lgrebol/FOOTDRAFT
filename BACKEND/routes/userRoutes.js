@@ -1,14 +1,15 @@
 import express from "express";
-import { registerUsers, loginUsers } from "../controllers/userController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { registerUsers, loginUsers, getUsers } from "../controllers/userController.js";
 
 const router = express.Router();
 
-// Les rutes de registre i login per als usuaris
+// Ruta per registrar un usuari
 router.post("/register", registerUsers);
+
+// Ruta per iniciar sessió
 router.post("/login", loginUsers);
 
-// Afegeix el middleware d'autenticació per a altres rutes si s'escau
-//router.use(authMiddleware);
+// Ruta per obtenir tots els usuaris
+router.get("/", getUsers);
 
 export default router;

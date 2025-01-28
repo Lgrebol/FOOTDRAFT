@@ -11,16 +11,12 @@ export const createTeam = async (req, res) => {
 
   try {
     const pool = await connectDb();
-    const query = `
-      INSERT INTO Teams (TeamName, ShirtColor, UserID)
-      VALUES (@teamName, @shirtColor, @userID)
-    `;
-    await pool.request()
+    await pool
+      .request()
       .input("teamName", sql.VarChar, teamName)
       .input("shirtColor", sql.VarChar, shirtColor)
       .input("userID", sql.Int, userID)
-      .query(query);
-
+      .query("INSERT INTO Teams (TeamName, ShirtColor, UserID) VALUES (@teamName, @shirtColor, @userID)");
     res.status(201).send({ message: "Equip creat correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -31,12 +27,21 @@ export const createTeam = async (req, res) => {
 export const getTeams = async (req, res) => {
   try {
     const pool = await connectDb();
-    const query = `
-      SELECT TeamID, TeamName, TeamLogo, ShirtColor, UserID, IsActive
-      FROM Teams
-    `;
-    const result = await pool.request().query(query);
+    const result = await pool.request().query("SELECT * FROM Teams");
     res.status(200).send(result.recordset);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+};
+
+// Eliminar un equip
+export const deleteTeam = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pool = await connectDb();
+    await pool.request().input("id", sql.Int, id).query("DELETE FROM Teams WHERE TeamID = @id");
+    res.status(200).send({ message: "Equip eliminat correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
