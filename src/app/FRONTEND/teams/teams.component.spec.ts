@@ -142,4 +142,26 @@ describe('TeamsComponent', () => {
     // Verify console.error was called
     expect(console.error).toHaveBeenCalledWith('Error afegint l\'equip:', jasmine.anything());
   });
+
+  it('hauria de mostrar un error si addTeam falla', () => {
+    spyOn(console, 'error');
+  
+    // Primer gestionem la petició GET inicial que es fa en ngOnInit
+    const initialGetReq = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+    initialGetReq.flush([]); // Flush de la resposta buida o dades mock
+  
+    // Configurar newTeam
+    (component.newTeam as any) = { name: 'New Team', shirtColor: 'Green', userId: 1 };
+  
+    // Executar addTeam
+    component.addTeam();
+  
+    // Capturar la petició POST
+    const postReq = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+    postReq.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+  
+    // Verificar que es mostra l'error
+    expect(console.error).toHaveBeenCalledWith('Error afegint l\'equip:', jasmine.anything());
+  }); 
+  
 });
