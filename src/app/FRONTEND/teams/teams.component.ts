@@ -49,4 +49,25 @@ export class TeamsComponent implements OnInit {
       }
     );
   }
+
+  // Afegir un nou equip
+  addTeam() {
+    if (this.newTeam.name && this.newTeam.shirtColor && this.newTeam.userId) {
+      this.http
+        .post('http://localhost:3000/api/v1/teams', {
+          teamName: this.newTeam.name,
+          shirtColor: this.newTeam.shirtColor,
+          userID: this.newTeam.userId,
+        })
+        .subscribe(
+          () => {
+            this.fetchTeams(); // Actualitza la llista
+            this.newTeam = { name: '', shirtColor: '', userId: null }; // Reseteja el formulari
+          },
+          (error) => {
+            console.error('Error afegint l\'equip:', error);
+          }
+        );
+    }
+  }
 }
