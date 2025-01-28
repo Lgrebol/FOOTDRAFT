@@ -70,4 +70,15 @@ export class TeamsComponent implements OnInit {
         );
     }
   }
+  // Eliminar un equip
+  deleteTeam(teamId: number) {
+    this.http.delete(`http://localhost:3000/api/v1/teams/${teamId}`).subscribe(
+      () => {
+        this.fetchTeams(); // Actualitza la llista
+      },
+      (error) => {
+        console.error('Error eliminant l\'equip:', error);
+      }
+    );
+  }
 }
