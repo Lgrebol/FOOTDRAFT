@@ -163,6 +163,16 @@ describe('PlayersComponent', () => {
   
       expect(console.error).toHaveBeenCalledWith('Error carregant els equips:', jasmine.anything());
     });
+
+    it('should load the players during ngOnInit', () => {
+      spyOn(component, 'fetchPlayers');
+      spyOn(component, 'fetchTeams');
+    
+      component.ngOnInit();
+    
+      expect(component.fetchPlayers).toHaveBeenCalled();
+      expect(component.fetchTeams).toHaveBeenCalled();
+    });
   }); 
 
   afterEach(() => {
