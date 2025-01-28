@@ -9,8 +9,8 @@ describe('PlayersComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        PlayersComponent, // Importa el component standalone
-        HttpClientTestingModule, // Importa els mòduls necessaris
+        PlayersComponent, // Component standalone
+        HttpClientTestingModule, // Per mocking de HTTP
       ]
     }).compileComponents();
 
@@ -34,18 +34,16 @@ describe('PlayersComponent', () => {
 
       expect(component.players).toEqual(mockPlayers);
     });
-  });
 
-  it('hauria de mostrar un error si fetchPlayers falla', () => {
-    spyOn(console, 'error');
-    component.fetchPlayers();
+    it('hauria de mostrar un error si fetchPlayers falla', () => {
+      spyOn(console, 'error');
+      component.fetchPlayers();
 
+      const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
+      req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
 
-    const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
-    req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
-
-
-    expect(console.error).toHaveBeenCalledWith('Error carregant els jugadors:', jasmine.anything());
+      expect(console.error).toHaveBeenCalledWith('Error carregant els jugadors:', jasmine.anything());
+    });
   });
 
   describe('addPlayer', () => {
@@ -56,7 +54,7 @@ describe('PlayersComponent', () => {
       ];
 
       spyOn(component, 'fetchPlayers').and.callFake(() => {
-        component.players = mockPlayers; // Simulem que els jugadors ja estan carregats
+        component.players = mockPlayers;
       });
 
       component.newPlayer = { name: 'New Player', position: 'Midfielder', team: 'Team C' };
@@ -71,8 +69,7 @@ describe('PlayersComponent', () => {
         teamID: 'Team C',
       });
 
-      reqPost.flush({}); // Simula una resposta exitosa
-
+      reqPost.flush({});
       expect(component.newPlayer).toEqual({ name: '', position: '', team: '' });
     });
 
@@ -81,74 +78,83 @@ describe('PlayersComponent', () => {
 
       component.addPlayer();
 
-      httpMock.expectNone('http://localhost:3000/api/v1/players'); // Assegura que no es faci cap crida
+      httpMock.expectNone('http://localhost:3000/api/v1/players');
     });
 
     it('hauria de mostrar un error si addPlayer falla', () => {
       spyOn(console, 'error');
       component.newPlayer = { name: 'New Player', position: 'Midfielder', team: 'Team C' };
 
-
       component.addPlayer();
-
 
       const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
       req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
 
-
       expect(console.error).toHaveBeenCalledWith('Error afegint el jugador:', jasmine.anything());
     });
   });
-  
-  it('hauria d’eliminar un jugador correctament', () => {
-    const mockPlayers = [
-      { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
-      { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
-    ];
-  
-    // Mock the fetchPlayers method to return the initial players
-    spyOn(component, 'fetchPlayers').and.callFake(() => {
-      component.players = mockPlayers; // Initialize with mock players
+
+  describe('deletePlayer', () => {
+    it('hauria d’eliminar un jugador correctament', () => {
+      const mockPlayers = [
+        { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
+        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
+      ];
+
+      spyOn(component, 'fetchPlayers').and.callFake(() => {
+        component.players = mockPlayers;
+      });
+
+      component.ngOnInit();
+      component.fetchPlayers();
+      const fetchReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
+      fetchReq.flush(mockPlayers);
+
+      const playerId = 1;
+      component.deletePlayer(playerId);
+
+      const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
+      expect(deleteReq.request.method).toBe('DELETE');
+      deleteReq.flush({});
+
+      expect(component.players).toEqual([
+        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' }
+      ]);
+
+      httpMock.verify();
     });
-  
-    // Trigger ngOnInit to initialize players
-    component.ngOnInit();
-    
-    // Simulate fetchPlayers call
-    component.fetchPlayers(); 
-    const fetchReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
-    fetchReq.flush(mockPlayers); // Simulate successful fetch response
-  
-    const playerId = 1;
-    component.deletePlayer(playerId); // Call the deletePlayer method
-  
-    // Expect the DELETE request to be triggered
-    const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
-    expect(deleteReq.request.method).toBe('DELETE');
-    deleteReq.flush({}); // Simulate successful deletion response
-  
-    // Verify the player list after deletion
-    expect(component.players).toEqual([
-      { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' }
-    ]);
-  
-    httpMock.verify(); // Verify there are no pending HTTP requests
+
+    it('hauria de mostrar un error si deletePlayer falla', () => {
+      spyOn(console, 'error');
+
+      const playerId = 1;
+      component.deletePlayer(playerId);
+
+      const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
+      req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(console.error).toHaveBeenCalledWith('Error eliminant el jugador:', jasmine.anything());
+    });
   });
-  
-  it('hauria de mostrar un error si deletePlayer falla', () => {
-    spyOn(console, 'error'); // Spy on the console.error to catch any errors
-  
-    const playerId = 1;
-    component.deletePlayer(playerId); // Try deleting a player
-  
-    const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
-    req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
-  
-    // Ensure that the error was logged to the console
-    expect(console.error).toHaveBeenCalledWith('Error eliminant el jugador:', jasmine.anything());
-  });
-  
+
+  describe('fetchTeams', () => {
+    it('should load the teams correclty with fetchTeams', () => {
+      const mockTeams = [
+        { TeamID: 1, TeamName: 'Team A' },
+        { TeamID: 2, TeamName: 'Team B' },
+      ];
+
+      component.fetchTeams();
+      const req = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+      expect(req.request.method).toBe('GET');
+
+      req.flush(mockTeams);
+
+      expect(component.teams).toEqual(mockTeams);
+    });
+  }); 
+
   afterEach(() => {
-    httpMock.verify(); // Ensure that there are no outstanding HTTP requests after each test
+    httpMock.verify();
   });
 });
