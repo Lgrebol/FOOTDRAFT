@@ -46,5 +46,24 @@ describe('TeamsComponent', () => {
     // Verify the component's teams are set correctly
     expect(component.teams).toEqual(mockTeams);
   });
+
+  it('should load the users correctly', () => {
+    const mockUsers = [
+      { id: 1, name: 'User 1' },
+      { id: 2, name: 'User 2' },
+    ];
+  
+    // Component initialization (ngOnInit) triggers fetchUsers()
+    fixture.detectChanges(); // Ensure ngOnInit is called if not already
+  
+    // Verify the API request
+    const req = httpMock.expectOne('http://localhost:3000/api/v1/users');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockUsers); // Simulate response
+  
+    // Check users assignment
+    expect(component.users).toEqual(mockUsers);
+  });
+  
   
 });
