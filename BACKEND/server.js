@@ -5,6 +5,7 @@ import connectDb from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import playerRoutes from "./routes/playerRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
+import tournamentRoutes from "./routes/tournamentRoutes.js";
 
 dotenv.config();
 
@@ -23,6 +24,9 @@ app.use("/api/v1/players", playerRoutes);
 
 // Rutes per a equips
 app.use("/api/v1/teams", teamRoutes);
+
+// Rutes per a tornejos
+app.use("/api/v1/tournaments", tournamentRoutes);
 
 // Connexió a la base de dades
 connectDb().catch((err) => {
