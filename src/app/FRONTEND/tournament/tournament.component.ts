@@ -24,7 +24,7 @@ export class TournamentComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    console.log("En este instante el componente ha cargado");
+    this.loadTournaments();
   }
 
   loadTournaments() {
@@ -44,11 +44,11 @@ export class TournamentComponent implements OnInit {
         this.loadTournaments();
         this.newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
       }, error => {
-        console.error("Error en afegir torneig:", error);
+        console.error("❌ Error en afegir torneig:", error);
       });
     }
   }  
-  
+
   deleteTournament(id: number) {
     this.http.delete(`${this.API_URL}/tournaments/${id}`).subscribe(() => {
       this.loadTournaments();

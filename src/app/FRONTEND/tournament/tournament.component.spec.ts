@@ -79,4 +79,11 @@ describe('TournamentComponent', () => {
     const getReq = httpTestingController.expectOne(`${component.API_URL}/tournaments`);
     getReq.flush([]);
   });
+
+  it('should not add a tournament if the name is missing', () => {
+    component.newTournament = { name: '', type: 'Knockout', startDate: '2024-08-01', endDate: '2024-08-10' };
+    component.addTournament();
+
+    httpTestingController.expectNone(`${component.API_URL}/tournaments`);
+  });
 });
