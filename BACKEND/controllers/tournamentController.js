@@ -2,9 +2,12 @@ import { createTournament, getAllTournaments, getTournamentById, deleteTournamen
 
 // Crear un torneig
 export const createTournamentController = async (req, res) => {
+    console.log("Dades rebudes per crear torneig:", req.body); // 🔍 Veure què arriba a la petició
+
     const { tournamentName, tournamentType, startDate, endDate } = req.body;
 
     if (!tournamentName || !tournamentType || !startDate) {
+        console.error("❌ Error: Falten camps obligatoris:", req.body);
         return res.status(400).send({ error: "Falten camps obligatoris." });
     }
 
@@ -12,9 +15,11 @@ export const createTournamentController = async (req, res) => {
         await createTournament(tournamentName, tournamentType, startDate, endDate);
         res.status(201).send({ message: "Torneig creat correctament." });
     } catch (err) {
+        console.error("❌ Error en crear torneig:", err);
         res.status(500).send({ error: err.message });
     }
 };
+
 
 // Obtenir tots els torneigs
 export const getTournamentsController = async (req, res) => {
@@ -55,9 +60,12 @@ export const deleteTournamentController = async (req, res) => {
 
 // Inscriure un equip a un torneig
 export const registerTeamToTournamentController = async (req, res) => {
+    console.log("Dades rebudes:", req.body); // Debug per veure què arriba
+
     const { teamId, tournamentId } = req.body;
 
     if (!teamId || !tournamentId) {
+        console.error("Falten camps obligatoris:", { teamId, tournamentId });
         return res.status(400).send({ error: "Falten camps obligatoris." });
     }
 
@@ -65,6 +73,7 @@ export const registerTeamToTournamentController = async (req, res) => {
         await registerTeamToTournament(teamId, tournamentId);
         res.status(201).send({ message: "Equip inscrit al torneig correctament." });
     } catch (err) {
+        console.error("Error al registrar l'equip:", err); // Debug per errors al servidor
         res.status(500).send({ error: err.message });
     }
 };
