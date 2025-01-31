@@ -30,4 +30,20 @@ describe('TournamentComponent', () => {
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should load tournaments', () => {
+    const mockTournaments = [
+      { TournamentID: 1, TournamentName: 'Test1', TournamentType: 'Knockout', StartDate: '2024-06-01', EndDate: '2024-06-10' },
+      { TournamentID: 2, TournamentName: 'Test2', TournamentType: 'League', StartDate: '2024-07-01', EndDate: '2024-07-15' }
+    ];
+
+    component.loadTournaments();
+
+    // Handle the GET request triggered by loadTournaments()
+    const req = httpTestingController.expectOne(`${component.API_URL}/tournaments`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockTournaments);
+
+    expect(component.tournaments).toEqual(mockTournaments);
+  });
 });
