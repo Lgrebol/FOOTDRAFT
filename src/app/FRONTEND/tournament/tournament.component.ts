@@ -16,11 +16,19 @@ import { FormsModule } from '@angular/forms';
   ]
 })
 export class TournamentComponent implements OnInit {
+  tournaments: any[] = [];
+  
   public API_URL = 'http://localhost:3000/api/v1';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     console.log("En este instante el componente ha cargado");
+  }
+
+  loadTournaments() {
+    this.http.get<any[]>(`${this.API_URL}/tournaments`).subscribe((data) => {
+      this.tournaments = data;
+    });
   }
 }
