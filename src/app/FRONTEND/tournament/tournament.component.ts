@@ -16,4 +16,11 @@ import { FormsModule } from '@angular/forms';
   ]
 })
 export class TournamentComponent implements OnInit {
+  public API_URL = 'http://localhost:3000/api/v1';
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    console.log("En este instante el componente ha cargado");
+  }
 }
