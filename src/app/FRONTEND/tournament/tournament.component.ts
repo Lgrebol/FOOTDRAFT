@@ -1,11 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-tournament',
-  imports: [],
   templateUrl: './tournament.component.html',
-  styleUrl: './tournament.component.css'
+  styleUrls: ['./tournament.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule
+  ]
 })
-export class TournamentComponent {
-
+export class TournamentComponent implements OnInit {
 }

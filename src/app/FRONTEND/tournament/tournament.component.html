@@ -1,1 +1,47 @@
-<p>tournament works!</p>
+<div class="container mt-4">
+  <h1 class="mb-3">Torneigs</h1>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Tipus</th>
+        <th>Data Inici</th>
+        <th>Data Fi</th>
+        <th>Accions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tournament of tournaments">
+        <td>{{ tournament.TournamentName }}</td>
+        <td>{{ tournament.TournamentType }}</td>
+        <td>{{ tournament.StartDate }}</td>
+        <td>{{ tournament.EndDate }}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" (click)="deleteTournament(tournament.TournamentID)">
+            Esborrar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Afegir Torneig</h2>
+  <form (ngSubmit)="addTournament()">
+    <div class="mb-2">
+      <input type="text" class="form-control" placeholder="Nom del torneig" [(ngModel)]="newTournament.name" name="name" required />
+    </div>
+    <div class="mb-2">
+      <select class="form-control" [(ngModel)]="newTournament.type" name="type">
+        <option value="Knockout">Knockout</option>
+        <option value="League">Lliga</option>
+      </select>
+    </div>
+    <div class="mb-2">
+      <input type="date" class="form-control" [(ngModel)]="newTournament.startDate" name="startDate" required />
+    </div>
+    <div class="mb-2">
+      <input type="date" class="form-control" [(ngModel)]="newTournament.endDate" name="endDate" />
+    </div>
+    <button type="submit" class="btn btn-success">Afegir Torneig</button>
+  </form>
+</div>
