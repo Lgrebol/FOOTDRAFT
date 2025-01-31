@@ -64,4 +64,19 @@ describe('TournamentComponent', () => {
 
     expect(component.newTournament).toEqual({ name: '', type: 'Knockout', startDate: '', endDate: '' });
   });
+
+  it('should delete a tournament', () => {
+    const tournamentId = 1;
+
+    component.deleteTournament(tournamentId);
+
+    // Handle DELETE request
+    const deleteReq = httpTestingController.expectOne(`${component.API_URL}/tournaments/${tournamentId}`);
+    expect(deleteReq.request.method).toBe('DELETE');
+    deleteReq.flush({});
+
+    // Handle subsequent GET request from loadTournaments()
+    const getReq = httpTestingController.expectOne(`${component.API_URL}/tournaments`);
+    getReq.flush([]);
+  });
 });
