@@ -1,0 +1,59 @@
+/* match.component.css */
+
+/* Estils generals per a la pàgina de partit */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+  }
+  
+  /* Estil per als formularis */
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  /* Estils per als camps de selecció i input */
+  select, input[type="datetime-local"] {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Estil per als botons */
+  button {
+    padding: 10px 15px;
+    margin: 10px 0;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Estils per a mostrar el resultat del partit */
+  .match-result {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .match-progress {
+    color: #ff9800;
+  }
+  
+  .match-complete {
+    color: #4caf50;
+  }
+  
