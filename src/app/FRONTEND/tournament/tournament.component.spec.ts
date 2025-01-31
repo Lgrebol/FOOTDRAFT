@@ -46,4 +46,22 @@ describe('TournamentComponent', () => {
 
     expect(component.tournaments).toEqual(mockTournaments);
   });
+
+  it('should add a tournament and reset the form', () => {
+    const newTournament = { name: 'New Tournament', type: 'Knockout', startDate: '2024-08-01', endDate: '2024-08-10' };
+    component.newTournament = newTournament;
+
+    component.addTournament();
+
+    // Handle POST request
+    const postReq = httpTestingController.expectOne(`${component.API_URL}/tournaments`);
+    expect(postReq.request.method).toBe('POST');
+    postReq.flush({});
+
+    // Handle subsequent GET request from loadTournaments()
+    const getReq = httpTestingController.expectOne(`${component.API_URL}/tournaments`);
+    getReq.flush([]);
+
+    expect(component.newTournament).toEqual({ name: '', type: 'Knockout', startDate: '', endDate: '' });
+  });
 });
