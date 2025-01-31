@@ -17,7 +17,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class TournamentComponent implements OnInit {
   tournaments: any[] = [];
-  
+  newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
+
   public API_URL = 'http://localhost:3000/api/v1';
 
   constructor(private http: HttpClient) {}
@@ -31,4 +32,20 @@ export class TournamentComponent implements OnInit {
       this.tournaments = data;
     });
   }
+
+  addTournament() {
+    if (this.newTournament.name) {
+      this.http.post(`${this.API_URL}/tournaments`, {
+        tournamentName: this.newTournament.name,
+        tournamentType: this.newTournament.type,
+        startDate: this.newTournament.startDate,
+        endDate: this.newTournament.endDate 
+      }).subscribe(() => {
+        this.loadTournaments();
+        this.newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
+      }, error => {
+        console.error("Error en afegir torneig:", error);
+      });
+    }
+  }  
 }
