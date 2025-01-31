@@ -48,4 +48,10 @@ export class TournamentComponent implements OnInit {
       });
     }
   }  
+  
+  deleteTournament(id: number) {
+    this.http.delete(`${this.API_URL}/tournaments/${id}`).subscribe(() => {
+      this.loadTournaments();
+    });
+  }
 }
