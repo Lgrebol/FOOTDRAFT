@@ -100,4 +100,21 @@ describe('MatchComponent', () => {
     expect(component.matchSummary).toEqual({ summary: 'done' });
   }));
   
+  it('resetMatch() should reset state and stop polling', () => {
+    component.matchStarted = true;
+    component.match = { MatchID: 123 };
+    component.pollingSubscription = interval(1000).subscribe();
+  
+    spyOn(component.pollingSubscription, 'unsubscribe');
+    component.resetMatch();
+  
+    const resetReq = httpTestingController.expectOne(`${baseUrl}/matches/reset`);
+    resetReq.flush({});
+  
+    expect(component.match).toBeNull();
+    expect(component.matchSummary).toBeNull();
+    expect(component.matchStarted).toBeFalse();
+    expect(component.pollingSubscription.unsubscribe).toHaveBeenCalled();
+  });
+  
 });
