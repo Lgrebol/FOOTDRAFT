@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./match.component.css']
 })
 export class MatchComponent implements OnInit, OnDestroy {
+  teams: any[] = [];
   // URL base (ajusta si és necessari)
   baseUrl = 'http://localhost:3000/api/v1';
 
@@ -21,4 +22,12 @@ export class MatchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log("It works");
   }
+
+  loadTeams(): void {
+    this.http.get<any[]>(`${this.baseUrl}/teams`).subscribe(
+      data => this.teams = data,
+      error => console.error('Error carregant equips:', error)
+    );
+  }
+  
 }
