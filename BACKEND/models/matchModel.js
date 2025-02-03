@@ -77,3 +77,15 @@ export const updatePlayerStatistics = async (playerID, goals, assists, yellowCar
                 RedCards = RedCards + @redCards 
             WHERE PlayerID = @playerID`);
 };
+
+export const resetMatchData = async (matchID) => {
+  const pool = await connectDb();
+  // Esborrem tots els esdeveniments associats al match
+  await pool.request()
+    .input("matchID", sql.Int, matchID)
+    .query("DELETE FROM MatchEvents WHERE MatchID = @matchID");
+  // Reiniciem el marcador a 0
+  await pool.request()
+    .input("matchID", sql.Int, matchID)
+    .query("UPDATE Matches SET HomeGoals = 0, AwayGoals = 0 WHERE MatchID = @matchID");
+};
