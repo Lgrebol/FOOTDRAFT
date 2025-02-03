@@ -46,3 +46,19 @@ export const deleteTeam = async (req, res) => {
     res.status(500).send({ error: err.message });
   }
 };
+
+// Obtenir jugadors d'un equip
+export const getTeamPlayers = async (req, res) => {
+  const { teamId } = req.params;
+
+  try {
+    const pool = await connectDb();
+    const result = await pool
+      .request()
+      .input("teamId", sql.Int, teamId)
+      .query("SELECT * FROM Players WHERE TeamID = @teamId");
+    res.status(200).send(result.recordset);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+};
