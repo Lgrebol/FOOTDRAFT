@@ -117,4 +117,21 @@ describe('MatchComponent', () => {
     expect(component.pollingSubscription.unsubscribe).toHaveBeenCalled();
   });
   
+  it('should disable start button when teams are the same', () => {
+    fixture.detectChanges();
+    const teamsReq = httpTestingController.expectOne(`${baseUrl}/teams`);
+    teamsReq.flush([{ TeamID: 1 }, { TeamID: 2 }]);
+    
+    fixture.detectChanges();
+  
+    // Seleccionem els mateixos equips per a casa i fora.
+    component.selectedHomeTeam = 1;
+    component.selectedAwayTeam = 1;
+    fixture.detectChanges();
+    
+    // Comprovem que el botó estigui deshabilitat, ja que [disabled]="!canStartMatch()".
+    const button = fixture.nativeElement.querySelector('button');
+    expect(button.disabled).toBeTrue();
+  });
+  
 });
