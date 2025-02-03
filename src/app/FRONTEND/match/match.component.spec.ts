@@ -60,4 +60,11 @@ describe('MatchComponent', () => {
     expect(component.canStartMatch()).toBeFalse();
   }); 
   
+  it('canStartMatch() should return false when match already started', () => {
+    component.selectedHomeTeam = 1;
+    component.selectedAwayTeam = 2;
+    component.matchStarted = true;
+    expect(component.canStartMatch()).toBeFalse();
+  });
+  
 });
