@@ -47,5 +47,11 @@ describe('MatchComponent', () => {
     expect(component.canStartMatch()).toBeTrue();
   });
   
+  it('canStartMatch() should return false when teams are the same', () => {
+    component.selectedHomeTeam = 1;
+    component.selectedAwayTeam = 1;
+    component.matchStarted = false;
+    expect(component.canStartMatch()).toBeFalse();
+  });
   
 });
