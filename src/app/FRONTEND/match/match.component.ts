@@ -78,4 +78,21 @@ export class MatchComponent implements OnInit, OnDestroy {
       error => console.error('Error creant partida:', error)
     );
   }  
+
+  resetMatch(): void {
+    if (!this.match) return;
+    // Crida l'endpoint per reiniciar la partida
+    this.http.post<any>(`${this.baseUrl}/matches/reset`, { matchID: this.match.MatchID }).subscribe(
+      res => {
+        this.match = null;
+        this.matchSummary = null;
+        this.matchStarted = false;
+        if (this.pollingSubscription) {
+          this.pollingSubscription.unsubscribe();
+        }
+      },
+      error => console.error('Error reiniciant partida:', error)
+    );
+  }
+  
 }
