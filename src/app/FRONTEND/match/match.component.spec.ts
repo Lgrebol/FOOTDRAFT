@@ -53,5 +53,11 @@ describe('MatchComponent', () => {
     component.matchStarted = false;
     expect(component.canStartMatch()).toBeFalse();
   });
+
+  it('canStartMatch() should return false with no teams selected', () => {
+    component.selectedHomeTeam = null;
+    component.selectedAwayTeam = null;
+    expect(component.canStartMatch()).toBeFalse();
+  }); 
   
 });
