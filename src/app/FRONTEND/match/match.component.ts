@@ -14,6 +14,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class MatchComponent implements OnInit, OnDestroy {
   teams: any[] = [];
+  matchStarted: boolean = false;
+  selectedHomeTeam: number | null = null;
+  selectedAwayTeam: number | null = null;
   // URL base (ajusta si és necessari)
   baseUrl = 'http://localhost:3000/api/v1';
 
@@ -29,5 +32,11 @@ export class MatchComponent implements OnInit, OnDestroy {
       error => console.error('Error carregant equips:', error)
     );
   }
-  
+
+  canStartMatch(): boolean {
+    return !!(this.selectedHomeTeam &&
+              this.selectedAwayTeam &&
+              this.selectedHomeTeam !== this.selectedAwayTeam &&
+              !this.matchStarted);
+  }
 }
