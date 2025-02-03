@@ -14,11 +14,11 @@ import { FormsModule } from '@angular/forms';
 })
 export class MatchComponent implements OnInit, OnDestroy {
   teams: any[] = [];
-  matchStarted: boolean = false;
   selectedHomeTeam: number | null = null;
   selectedAwayTeam: number | null = null;
   match: any = null;
   matchSummary: any = null;
+  matchStarted: boolean = false;
   pollingSubscription: Subscription | undefined;
   // URL base (ajusta si és necessari)
   baseUrl = 'http://localhost:3000/api/v1';
@@ -26,10 +26,17 @@ export class MatchComponent implements OnInit, OnDestroy {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    console.log("It works");
+    this.loadTeams();
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
   }
 
   loadTeams(): void {
+    // Suposem que tens un endpoint per obtenir els equips
     this.http.get<any[]>(`${this.baseUrl}/teams`).subscribe(
       data => this.teams = data,
       error => console.error('Error carregant equips:', error)
@@ -37,10 +44,39 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   canStartMatch(): boolean {
-    return !!(this.selectedHomeTeam &&
-              this.selectedAwayTeam &&
-              this.selectedHomeTeam !== this.selectedAwayTeam &&
-              !this.matchStarted);
+    return !!(this.selectedHomeTeam && this.selectedAwayTeam && this.selectedHomeTeam !== this.selectedAwayTeam && !this.matchStarted);
+  }
+
+  startMatch(): void {
+    const newMatch = {
+      tournamentID: 8, 
+      homeTeamID: this.selectedHomeTeam,
+      awayTeamID: this.selectedAwayTeam,
+      matchDate: new Date()
+    };
+    
+
+    this.http.post<any>(`${this.baseUrl}/matches`, newMatch).subscribe(
+      res => {
+        const matchID = res.matchID;
+        this.matchStarted = true;
+        // Inicia la simulació
+        this.http.post<any>(`${this.baseUrl}/matches/simulate`, { matchID }).subscribe(
+          summary => {
+            // Quan finalitzi la simulació, guardem el resum per mostrar-lo
+            this.matchSummary = summary;
+            // Aturem el polling (si no ho hem aturat ja)
+            if (this.pollingSubscription) {
+              this.pollingSubscription.unsubscribe();
+            }
+          },
+          error => console.error('Error en simular partida:', error)
+        );
+        // Comença el polling per obtenir actualitzacions cada segon
+        this.pollingSubscription = interval(1000).subscribe(() => this.loadMatchData(matchID));
+      },
+      error => console.error('Error creant partida:', error)
+    );
   }
 
   loadMatchData(matchID: number): void {
@@ -51,33 +87,6 @@ export class MatchComponent implements OnInit, OnDestroy {
       error => console.error('Error carregant dades de partida:', error)
     );
   }
-  
-  startMatch(): void {
-    const newMatch = {
-      tournamentID: 8, 
-      homeTeamID: this.selectedHomeTeam,
-      awayTeamID: this.selectedAwayTeam,
-      matchDate: new Date()
-    };
-  
-    this.http.post<any>(`${this.baseUrl}/matches`, newMatch).subscribe(
-      res => {
-        const matchID = res.matchID;
-        this.matchStarted = true;
-        this.http.post<any>(`${this.baseUrl}/matches/simulate`, { matchID }).subscribe(
-          summary => {
-            this.matchSummary = summary;
-            if (this.pollingSubscription) {
-              this.pollingSubscription.unsubscribe();
-            }
-          },
-          error => console.error('Error en simular partida:', error)
-        );
-        this.pollingSubscription = interval(1000).subscribe(() => this.loadMatchData(matchID));
-      },
-      error => console.error('Error creant partida:', error)
-    );
-  }  
 
   resetMatch(): void {
     if (!this.match) return;
@@ -94,5 +103,4 @@ export class MatchComponent implements OnInit, OnDestroy {
       error => console.error('Error reiniciant partida:', error)
     );
   }
-  
 }

@@ -24,7 +24,6 @@ describe('MatchComponent', () => {
   });
 
   afterEach(() => {
-    // Verifiquem que no hi hagi peticions pendents
     httpTestingController.verify();
   });
 
@@ -46,7 +45,7 @@ describe('MatchComponent', () => {
     component.matchStarted = false;
     expect(component.canStartMatch()).toBeTrue();
   });
-  
+
   it('canStartMatch() should return false when teams are the same', () => {
     component.selectedHomeTeam = 1;
     component.selectedAwayTeam = 1;
@@ -58,38 +57,26 @@ describe('MatchComponent', () => {
     component.selectedHomeTeam = null;
     component.selectedAwayTeam = null;
     expect(component.canStartMatch()).toBeFalse();
-  }); 
-  
+  });
+
   it('canStartMatch() should return false when match already started', () => {
     component.selectedHomeTeam = 1;
     component.selectedAwayTeam = 2;
     component.matchStarted = true;
     expect(component.canStartMatch()).toBeFalse();
   });
-  
-  it('loadMatchData() should fetch match data', () => {
-    const mockMatch = { HomeGoals: 2, AwayGoals: 1 };
-    
-    component.loadMatchData(123);
-    const req = httpTestingController.expectOne(`${baseUrl}/matches/123`);
-    req.flush({ match: mockMatch });
-    
-    expect(component.match).toEqual(mockMatch);
-  });
-  
+
   it('startMatch() should create match and start polling', fakeAsync(() => {
     component.selectedHomeTeam = 1;
     component.selectedAwayTeam = 2;
     
     component.startMatch();
-  
     const createReq = httpTestingController.expectOne(`${baseUrl}/matches`);
     createReq.flush({ matchID: 123 });
-
     const simulateReq = httpTestingController.expectOne(`${baseUrl}/matches/simulate`);
-    
+
     tick(1000);
-  
+
     const matchReq = httpTestingController.expectOne(`${baseUrl}/matches/123`);
     matchReq.flush({ match: { HomeGoals: 0, AwayGoals: 0 } });
     
@@ -99,39 +86,45 @@ describe('MatchComponent', () => {
     expect(component.match).toEqual({ HomeGoals: 0, AwayGoals: 0 });
     expect(component.matchSummary).toEqual({ summary: 'done' });
   }));
-  
+
   it('resetMatch() should reset state and stop polling', () => {
     component.matchStarted = true;
     component.match = { MatchID: 123 };
     component.pollingSubscription = interval(1000).subscribe();
-  
+
     spyOn(component.pollingSubscription, 'unsubscribe');
     component.resetMatch();
-  
+
     const resetReq = httpTestingController.expectOne(`${baseUrl}/matches/reset`);
     resetReq.flush({});
-  
+
     expect(component.match).toBeNull();
     expect(component.matchSummary).toBeNull();
     expect(component.matchStarted).toBeFalse();
     expect(component.pollingSubscription.unsubscribe).toHaveBeenCalled();
   });
-  
+
+  it('loadMatchData() should fetch match data', () => {
+    const mockMatch = { HomeGoals: 2, AwayGoals: 1 };
+    
+    component.loadMatchData(123);
+    const req = httpTestingController.expectOne(`${baseUrl}/matches/123`);
+    req.flush({ match: mockMatch });
+    
+    expect(component.match).toEqual(mockMatch);
+  });
+
   it('should disable start button when teams are the same', () => {
     fixture.detectChanges();
     const teamsReq = httpTestingController.expectOne(`${baseUrl}/teams`);
     teamsReq.flush([{ TeamID: 1 }, { TeamID: 2 }]);
     
     fixture.detectChanges();
-  
-    // Seleccionem els mateixos equips per a casa i fora.
     component.selectedHomeTeam = 1;
     component.selectedAwayTeam = 1;
     fixture.detectChanges();
     
-    // Comprovem que el botó estigui deshabilitat, ja que [disabled]="!canStartMatch()".
     const button = fixture.nativeElement.querySelector('button');
     expect(button.disabled).toBeTrue();
   });
-  
 });
