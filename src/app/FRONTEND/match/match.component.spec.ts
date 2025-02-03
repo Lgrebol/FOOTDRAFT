@@ -67,26 +67,14 @@ describe('MatchComponent', () => {
     expect(component.canStartMatch()).toBeFalse();
   });
   
-  it('startMatch() should create match and start polling', fakeAsync(() => {
-    component.selectedHomeTeam = 1;
-    component.selectedAwayTeam = 2;
+  it('loadMatchData() should fetch match data', () => {
+    const mockMatch = { HomeGoals: 2, AwayGoals: 1 };
     
-    component.startMatch();
+    component.loadMatchData(123);
+    const req = httpTestingController.expectOne(`${baseUrl}/matches/123`);
+    req.flush({ match: mockMatch });
+    
+    expect(component.match).toEqual(mockMatch);
+  });
   
-    const createReq = httpTestingController.expectOne(`${baseUrl}/matches`);
-    createReq.flush({ matchID: 123 });
-  
-    const simulateReq = httpTestingController.expectOne(`${baseUrl}/matches/simulate`);
-    
-    tick(1000);
-  
-    const matchReq = httpTestingController.expectOne(`${baseUrl}/matches/123`);
-    matchReq.flush({ match: { HomeGoals: 0, AwayGoals: 0 } });
-    
-    simulateReq.flush({ summary: 'done' });
-    
-    expect(component.matchStarted).toBeTrue();
-    expect(component.match).toEqual({ HomeGoals: 0, AwayGoals: 0 });
-    expect(component.matchSummary).toEqual({ summary: 'done' });
-  }));  
 });

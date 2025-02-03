@@ -39,4 +39,6 @@ export class MatchComponent implements OnInit, OnDestroy {
               this.selectedHomeTeam !== this.selectedAwayTeam &&
               !this.matchStarted);
   }
+  
+  
 }
