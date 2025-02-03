@@ -9,10 +9,10 @@ import { LoginRegisterComponent } from './FRONTEND/login-register/login-register
 import { DashboardComponent } from './FRONTEND/dashboard/dashboard.component';
 import { PlayersComponent } from './FRONTEND/players/players.component';
 import { TeamsComponent } from './FRONTEND/teams/teams.component';
-import { CommonModule } from '@angular/common';
+import { TournamentComponent } from './FRONTEND/tournament/tournament.component';
+import { MatchComponent } from './FRONTEND/match/match.component';
 @NgModule({
   imports: [
-    CommonModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,
@@ -20,8 +20,10 @@ import { CommonModule } from '@angular/common';
     LoginRegisterComponent,
     DashboardComponent,
     PlayersComponent,
-    TeamsComponent 
-  ],  
+    TeamsComponent,
+    TournamentComponent,
+    MatchComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppConfig {}

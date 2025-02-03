@@ -4,7 +4,8 @@ import { MainLayoutComponent } from './FRONTEND/main-layout/main-layout.componen
 import { DashboardComponent } from './FRONTEND/dashboard/dashboard.component';
 import { PlayersComponent } from './FRONTEND/players/players.component';
 import { TeamsComponent } from './FRONTEND/teams/teams.component';
-
+import { TournamentComponent } from './FRONTEND/tournament/tournament.component';
+import { MatchComponent } from './FRONTEND/match/match.component';
 export const appRoutes: Routes = [
   { path: '', component: LoginRegisterComponent },
   {
@@ -13,7 +14,9 @@ export const appRoutes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'players', component: PlayersComponent },
-      { path: 'teams', component: TeamsComponent }
+      { path: 'teams', component: TeamsComponent },
+      { path: 'tournaments', component: TournamentComponent },
+      { path: 'match', component: MatchComponent }
     ]
   }
 ];
