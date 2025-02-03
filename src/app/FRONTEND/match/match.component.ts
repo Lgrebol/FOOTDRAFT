@@ -18,6 +18,8 @@ export class MatchComponent implements OnInit, OnDestroy {
   selectedHomeTeam: number | null = null;
   selectedAwayTeam: number | null = null;
   match: any = null;
+  matchSummary: any = null;
+  pollingSubscription: Subscription | undefined;
   // URL base (ajusta si és necessari)
   baseUrl = 'http://localhost:3000/api/v1';
 
@@ -50,5 +52,30 @@ export class MatchComponent implements OnInit, OnDestroy {
     );
   }
   
+  startMatch(): void {
+    const newMatch = {
+      tournamentID: 8, 
+      homeTeamID: this.selectedHomeTeam,
+      awayTeamID: this.selectedAwayTeam,
+      matchDate: new Date()
+    };
   
+    this.http.post<any>(`${this.baseUrl}/matches`, newMatch).subscribe(
+      res => {
+        const matchID = res.matchID;
+        this.matchStarted = true;
+        this.http.post<any>(`${this.baseUrl}/matches/simulate`, { matchID }).subscribe(
+          summary => {
+            this.matchSummary = summary;
+            if (this.pollingSubscription) {
+              this.pollingSubscription.unsubscribe();
+            }
+          },
+          error => console.error('Error en simular partida:', error)
+        );
+        this.pollingSubscription = interval(1000).subscribe(() => this.loadMatchData(matchID));
+      },
+      error => console.error('Error creant partida:', error)
+    );
+  }  
 }
