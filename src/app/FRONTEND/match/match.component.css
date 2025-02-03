@@ -1,0 +1,118 @@
+.match-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  background: #f9f9f9;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.team-selectors {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+}
+
+.team-selector {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 45%;
+  text-align: center;
+}
+
+.team-selector h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.team-selector select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.controls button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 0 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.controls button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.controls button:not(:disabled) {
+  background: #007bff;
+  color: #fff;
+}
+
+.controls button:not(:disabled):hover {
+  background: #0056b3;
+}
+
+.match-display {
+  width: 100%;
+  max-width: 800px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.scoreboard .team {
+  text-align: center;
+}
+
+.scoreboard .team h3 {
+  margin: 0;
+  color: #444;
+}
+
+.scoreboard .team p {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 5px 0 0;
+  color: #007bff;
+}
+
+.events {
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.events h4 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.events div {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #555;
+}
