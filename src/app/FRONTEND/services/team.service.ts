@@ -6,13 +6,17 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TeamService {
-
-  private apiUrl = 'http://localhost:3000/api/teams';  // Ruta de l'API
+  private apiUrl = 'http://localhost:3000/api/v1/teams'; // ✅ Corregeix la ruta
 
   constructor(private http: HttpClient) { }
 
   // Obtenir tots els equips
   getTeams(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  // Obtenir equips d'un torneig (necessita implementació al backend)
+  getTeamsByTournament(tournamentId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/tournament/${tournamentId}`);
   }
 }

@@ -10,7 +10,7 @@ describe('PlayersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         PlayersComponent, // Component standalone
-        HttpClientTestingModule, // Per mocking de HTTP
+        HttpClientTestingModule, // For mocking HTTP
       ]
     }).compileComponents();
 
@@ -92,38 +92,70 @@ describe('PlayersComponent', () => {
 
       expect(console.error).toHaveBeenCalledWith('Error afegint el jugador:', jasmine.anything());
     });
+
+    it('shouldn’t add new player if no teams are available', () => {
+      component.teams = []; // Simulate that no teams are available
+      component.newPlayer = {
+        name: 'New Player',
+        position: 'Midfielder',
+        team: '1',
+      };
+
+      // Spy on HTTP calls to ensure no request is made
+      const httpSpy = spyOn(component['http'], 'post').and.callThrough();
+
+      component.addPlayer();
+
+      // Verify that no HTTP request was made to add the player
+      expect(httpSpy).not.toHaveBeenCalled();
+
+      // Ensure no request to the players' endpoint was made
+      httpMock.expectNone('http://localhost:3000/api/v1/players');
+    });
   });
 
   describe('deletePlayer', () => {
     it('hauria d’eliminar un jugador correctament', () => {
-      const mockPlayers = [
-        { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
-        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
-      ];
+  const mockPlayers = [
+    { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
+    { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
+  ];
+  const mockTeams = [
+    { TeamID: 1, TeamName: 'Team A' },
+    { TeamID: 2, TeamName: 'Team B' },
+  ];
 
-      spyOn(component, 'fetchPlayers').and.callFake(() => {
-        component.players = mockPlayers;
-      });
+  // Trigger ngOnInit to call fetchPlayers and fetchTeams
+  component.ngOnInit();
 
-      component.ngOnInit();
-      component.fetchPlayers();
-      const fetchReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
-      fetchReq.flush(mockPlayers);
+  // Mock initial GET requests for players and teams
+  const playersReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
+  playersReq.flush(mockPlayers);
+  const teamsReq = httpMock.expectOne('http://localhost:3000/api/v1/teams');
+  teamsReq.flush(mockTeams);
 
-      const playerId = 1;
-      component.deletePlayer(playerId);
+  // Verify initial data setup
+  expect(component.players).toEqual(mockPlayers);
+  expect(component.teams).toEqual(mockTeams);
 
-      const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
-      expect(deleteReq.request.method).toBe('DELETE');
-      deleteReq.flush({});
+  // Call deletePlayer
+  const playerId = 1;
+  component.deletePlayer(playerId);
 
-      expect(component.players).toEqual([
-        { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' }
-      ]);
+  // Expect DELETE request and flush it
+  const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
+  expect(deleteReq.request.method).toBe('DELETE');
+  deleteReq.flush({});
 
-      httpMock.verify();
-    });
+  // Mock the subsequent GET request from fetchPlayers called after deletion
+  const fetchAfterDeleteReq = httpMock.expectOne('http://localhost:3000/api/v1/players');
+  fetchAfterDeleteReq.flush(mockPlayers.filter(p => p.id !== playerId));
 
+  // Verify the players list is updated
+  expect(component.players).toEqual([{ id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' }]);
+
+  httpMock.verify();
+});
     it('hauria de mostrar un error si deletePlayer falla', () => {
       spyOn(console, 'error');
 
@@ -138,7 +170,7 @@ describe('PlayersComponent', () => {
   });
 
   describe('fetchTeams', () => {
-    it('should load the teams correclty with fetchTeams', () => {
+    it('should load the teams correctly with fetchTeams', () => {
       const mockTeams = [
         { TeamID: 1, TeamName: 'Team A' },
         { TeamID: 2, TeamName: 'Team B' },
@@ -173,20 +205,7 @@ describe('PlayersComponent', () => {
       expect(component.fetchPlayers).toHaveBeenCalled();
       expect(component.fetchTeams).toHaveBeenCalled();
     });
-
-    it('shouldnt add new player if no teams are aviable', () => {
-      component.teams = []; // Simulem que no hi ha equips disponibles
-      component.newPlayer = {
-        name: 'New Player',
-        position: 'Midfielder',
-        team: '1',
-      };
-    
-      component.addPlayer();
-    
-      httpMock.expectNone('http://localhost:3000/api/v1/players'); // Verifica que no es fa cap crida HTTP
-    });    
-  }); 
+  });
 
   afterEach(() => {
     httpMock.verify();

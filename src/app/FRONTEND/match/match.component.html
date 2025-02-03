@@ -1,1 +1,52 @@
-<p>match works!</p>
+<div class="match-page">
+    <div class="team-selectors">
+      <!-- Selector per a l'equip local -->
+      <div class="team-selector">
+        <h3>Equip Local</h3>
+        <select [(ngModel)]="selectedHomeTeam">
+          <option value="" disabled selected>Selecciona un equip</option>
+          <option *ngFor="let team of teams" [value]="team.TeamID">
+            {{ team.TeamName }}
+          </option>
+        </select>
+      </div>
+  
+      <!-- Selector per a l'equip visitant -->
+      <div class="team-selector">
+        <h3>Equip Visitant</h3>
+        <select [(ngModel)]="selectedAwayTeam">
+          <option value="" disabled selected>Selecciona un equip</option>
+          <option *ngFor="let team of teams" [value]="team.TeamID">
+            {{ team.TeamName }}
+          </option>
+        </select>
+      </div>
+    </div>
+  
+    <!-- Botons per iniciar/reiniciar partida -->
+    <div class="controls">
+      <button (click)="startMatch()" [disabled]="!canStartMatch()">Iniciar Partida</button>
+      <button (click)="resetMatch()" [disabled]="!matchStarted">Reiniciar Partida</button>
+    </div>
+  
+    <!-- Vista del marcador i els esdeveniments -->
+    <div class="match-display" *ngIf="matchStarted">
+      <div class="scoreboard">
+        <div class="team">
+          <h3>{{ matchSummary?.homeTeam || 'Equip Local' }}</h3>
+          <p>{{ match?.HomeGoals || 0 }}</p>
+        </div>
+        <div class="team">
+          <h3>{{ matchSummary?.awayTeam || 'Equip Visitant' }}</h3>
+          <p>{{ match?.AwayGoals || 0 }}</p>
+        </div>
+      </div>
+      <div class="events">
+        <h4>Esdeveniments</h4>
+        <div *ngFor="let event of match?.events">
+          {{ event.Minute }}': {{ event.Description }}
+        </div>
+      </div>
+    </div>
+  </div>
+      
