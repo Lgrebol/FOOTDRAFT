@@ -6,8 +6,7 @@ CREATE TABLE Users (
     Name VARCHAR(50) NOT NULL,
     Email VARCHAR(100) NOT NULL UNIQUE,
     PasswordHash VARCHAR(255) NOT NULL,
-    RegistrationDate DATETIME DEFAULT GETDATE(),
-    Role VARCHAR(20) CHECK (Role IN ('Admin', 'Player')) DEFAULT 'Player'
+    RegistrationDate DATETIME DEFAULT GETDATE()
 );
 
 CREATE TABLE Teams (
@@ -17,7 +16,6 @@ CREATE TABLE Teams (
     ShirtColor VARCHAR(20) NOT NULL,
     UserID INT NOT NULL,
     IsActive BIT DEFAULT 1,
-    IsProtected BIT DEFAULT 0, -- Bloqueja l'eliminació de l'equip per a usuaris normals
     CONSTRAINT FK_Teams_Users FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
@@ -28,7 +26,6 @@ CREATE TABLE Players (
     Points INT DEFAULT 0,
     TeamID INT NOT NULL,
     IsActive BIT DEFAULT 1,
-    IsProtected BIT DEFAULT 0, -- Bloqueja l'eliminació del jugador per a usuaris normals
     CONSTRAINT FK_Players_Teams FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
 );
 
@@ -56,7 +53,6 @@ CREATE TABLE Matches (
     HomeGoals INT DEFAULT 0,
     AwayGoals INT DEFAULT 0,
     MatchDate DATETIME NOT NULL,
-    IsSimulated BIT DEFAULT 0,
     CONSTRAINT FK_Matches_Tournaments FOREIGN KEY (TournamentID) REFERENCES Tournaments(TournamentID) ON DELETE NO ACTION,
     CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION,
     CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION
@@ -69,18 +65,13 @@ CREATE TABLE Player_Statistics (
     Assists INT DEFAULT 0,
     YellowCards INT DEFAULT 0,
     RedCards INT DEFAULT 0,
-    Fouls INT DEFAULT 0,
-    MinutesPlayed INT DEFAULT 0,
     CONSTRAINT FK_Player_Statistics FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID) ON DELETE CASCADE
 );
 
-CREATE TABLE Simulated_Matches (
-    SimulatedMatchID INT PRIMARY KEY IDENTITY(1,1),
-    HomeTeamID INT NOT NULL,
-    AwayTeamID INT NOT NULL,
-    HomeGoals INT DEFAULT 0,
-    AwayGoals INT DEFAULT 0,
-    MatchDate DATETIME NOT NULL,
-    CONSTRAINT FK_Simulated_Matches_HomeTeam FOREIGN KEY (HomeTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION,
-    CONSTRAINT FK_Simulated_Matches_AwayTeam FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION
+CREATE TABLE MatchEvents (
+  EventID INT PRIMARY KEY IDENTITY(1,1),
+  MatchID INT NOT NULL,
+  EventTime INT NOT NULL, -- minut de la partida
+  Description VARCHAR(255) NOT NULL,
+  CONSTRAINT FK_MatchEvents_Matches FOREIGN KEY (MatchID) REFERENCES Matches(MatchID) ON DELETE CASCADE
 );
