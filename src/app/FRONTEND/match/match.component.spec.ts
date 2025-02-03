@@ -39,5 +39,13 @@ describe('MatchComponent', () => {
     req.flush(mockTeams);
     expect(component.teams).toEqual(mockTeams);
   });
+
+  it('canStartMatch() should return true with valid different teams and match not started', () => {
+    component.selectedHomeTeam = 1;
+    component.selectedAwayTeam = 2;
+    component.matchStarted = false;
+    expect(component.canStartMatch()).toBeTrue();
+  });
+  
   
 });
