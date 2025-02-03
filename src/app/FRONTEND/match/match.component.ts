@@ -17,6 +17,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   matchStarted: boolean = false;
   selectedHomeTeam: number | null = null;
   selectedAwayTeam: number | null = null;
+  match: any = null;
   // URL base (ajusta si és necessari)
   baseUrl = 'http://localhost:3000/api/v1';
 
@@ -38,6 +39,15 @@ export class MatchComponent implements OnInit, OnDestroy {
               this.selectedAwayTeam &&
               this.selectedHomeTeam !== this.selectedAwayTeam &&
               !this.matchStarted);
+  }
+
+  loadMatchData(matchID: number): void {
+    this.http.get<any>(`${this.baseUrl}/matches/${matchID}`).subscribe(
+      data => {
+        this.match = data.match;
+      },
+      error => console.error('Error carregant dades de partida:', error)
+    );
   }
   
   
