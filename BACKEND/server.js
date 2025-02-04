@@ -7,7 +7,7 @@ import playerRoutes from "./routes/playerRoutes.js";  // Rutes per a jugadors
 import teamRoutes from "./routes/teamRoutes.js";  // Rutes per a equips
 import tournamentRoutes from "./routes/tournamentRoutes.js";  // Rutes per a tornejos
 import matchRoutes from "./routes/matchRoutes.js";
-
+import reserveRoutes from "./routes/reserveRoutes.js";
 dotenv.config();  // Carregar variables d'entorn des del fitxer .env
 
 const app = express();
@@ -34,6 +34,8 @@ app.use("/api/v1/tournaments", tournamentRoutes);
 //Rutes per agafar el match
 app.use("/api/v1/matches", matchRoutes);
 
+//Rutes per reservar jugadors
+app.use("/api/v1/reserve", reserveRoutes);
 // Connexió a la base de dades
 connectDb().catch((err) => {
   console.error("Error connectant a la base de dades:", err);  // Si hi ha un error a la connexió de la base de dades

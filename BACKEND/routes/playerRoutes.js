@@ -1,15 +1,27 @@
 import express from "express";
-import { createPlayer, getPlayers, deletePlayer } from "../controllers/playerController.js";
+import {
+  createPlayer,
+  getPlayers,
+  deletePlayer,
+  getPlayersForSale,
+  buyPlayer,
+} from "../controllers/playerController.js";
 
 const router = express.Router();
 
-// Endpoint per crear un jugador
+// Crear un jugador
 router.post("/", createPlayer);
 
-// Endpoint per obtenir tots els jugadors
+// Obtenir tots els jugadors
 router.get("/", getPlayers);
 
-// Endpoint per eliminar un jugador
+// Obtenir els jugadors disponibles a la tenda
+router.get("/store", getPlayersForSale);
+
+// Eliminar un jugador
 router.delete("/:id", deletePlayer);
+
+// Comprar un jugador (passa el playerID per la URL i el userID al cos)
+router.post("/buy/:id", buyPlayer);
 
 export default router;
