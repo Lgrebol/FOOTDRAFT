@@ -212,4 +212,21 @@ describe('TeamsComponent', () => {
   
     expect(component.reservedPlayers).toEqual(mockReservedPlayers);
   });
+
+  it('should show an error if fetchReservedPlayers fails', () => {
+    spyOn(console, 'error');
+  
+    // Handle the initial reserved players request from ngOnInit
+    const initialReq = httpMock.expectOne(`http://localhost:3000/api/v1/reserve/${component.currentUserID}`);
+    initialReq.flush([]);
+  
+    // Trigger fetchReservedPlayers again
+    component.fetchReservedPlayers();
+  
+    // Handle the second request and simulate an error
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/reserve/${component.currentUserID}`);
+    req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+  
+    expect(console.error).toHaveBeenCalledWith('Error carregant les reserves:', jasmine.anything());
+  });
 });
