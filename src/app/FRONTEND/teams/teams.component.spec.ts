@@ -289,4 +289,29 @@ describe('TeamsComponent', () => {
     );
   });  
   
+  it('should show an error if assignPlayerToTeam fails', () => {
+    // Espiem l'alerta i console.error
+    spyOn(window, 'alert');
+    spyOn(console, 'error');
+  
+    // Configurem dades vàlides per a l'assignació
+    component.selectedTeamId = 5;
+    component.selectedPlayerId = 10;
+  
+    // Cridem el mètode d'assignació
+    component.assignPlayerToTeam();
+  
+    // Esperem la petició POST
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/teams/5/add-player-from-reserve`);
+    expect(req.request.method).toBe('POST');
+  
+    // Simulem un error al servidor amb un missatge d'error personalitzat
+    req.flush({ error: 'Error assignant jugador' }, { status: 500, statusText: 'Internal Server Error' });
+  
+    // Verifiquem que s'ha mostrat l'error a la consola
+    expect(console.error).toHaveBeenCalledWith('Error assignant el jugador a l\'equip:', jasmine.anything());
+  
+    // Verifiquem que alert mostra el missatge d'error rebut
+    expect(window.alert).toHaveBeenCalledWith('Error assignant jugador');
+  });
 });
