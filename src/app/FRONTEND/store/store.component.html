@@ -1,0 +1,24 @@
+<div class="store-container">
+    <h1>Tenda de Jugadors</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom del Jugador</th>
+          <th>Posició</th>
+          <th>Preu</th>
+          <th>Accions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of storePlayers">
+          <td>{{ player.PlayerName }}</td>
+          <td>{{ player.Position }}</td>
+          <td>{{ player.Price | currency:'EUR' }}</td>
+          <td>
+            <button (click)="buyPlayer(player.PlayerID)">Comprar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
