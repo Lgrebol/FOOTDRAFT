@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class StoreComponent implements OnInit {
   storePlayers: any[] = [];
+  currentUserID: number = 1; // Simulem l'usuari actual
 
   constructor(private http: HttpClient) {}
 
@@ -23,6 +24,20 @@ export class StoreComponent implements OnInit {
       .subscribe(
         data => this.storePlayers = data,
         error => console.error('Error carregant els jugadors de la tenda:', error)
+      );
+  }
+
+  buyPlayer(playerId: number): void {
+    this.http.post(`http://localhost:3000/api/v1/players/buy/${playerId}`, { userID: this.currentUserID })
+      .subscribe(
+        (res: any) => {
+          alert(res.message);
+          this.fetchStorePlayers(); // Actualitza la llista de la tenda
+        },
+        error => {
+          console.error('Error comprant el jugador:', error);
+          alert(error.error?.error || 'Error comprant el jugador');
+        }
       );
   }
 }
