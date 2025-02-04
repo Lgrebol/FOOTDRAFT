@@ -21,6 +21,8 @@ export class TeamsComponent implements OnInit {
 
   // Variables per assignar jugadors reservats a un equip
   reservedPlayers: any[] = []; // Jugadors reservats de l'usuari actual
+  selectedTeamId: number | null = null; // Equip on s'assignarà el jugador
+  selectedPlayerId: number | null = null; // Jugador reservat a assignar
 
   currentUserID: number = 1;
   constructor(private http: HttpClient) {}
@@ -98,6 +100,32 @@ export class TeamsComponent implements OnInit {
         },
         (error) => {
           console.error('Error carregant les reserves:', error);
+        }
+      );
+  }
+
+  assignPlayerToTeam() {
+    if (!this.selectedTeamId || !this.selectedPlayerId) {
+      alert('Has de seleccionar un equip i un jugador reservat.');
+      return;
+    }
+    this.http
+      .post(
+        `http://localhost:3000/api/v1/teams/${this.selectedTeamId}/add-player-from-reserve`,
+        { playerId: this.selectedPlayerId, userID: this.currentUserID }
+      )
+      .subscribe(
+        (res: any) => {
+          alert(res.message);
+          // Actualitza la llista de jugadors reservats després de l'assignació
+          this.fetchReservedPlayers();
+          // Reinicia les seleccions
+          this.selectedTeamId = null;
+          this.selectedPlayerId = null;
+        },
+        (error) => {
+          console.error('Error assignant el jugador a l\'equip:', error);
+          alert(error.error?.error || 'Error assignant el jugador a l\'equip');
         }
       );
   }
