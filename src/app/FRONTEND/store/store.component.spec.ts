@@ -41,4 +41,18 @@ describe('StoreComponent', () => {
     expect(component.storePlayers).toEqual(mockPlayers);
   });
 
+  it('should buy a player and update the list', () => {
+    const playerId = 1;
+    const successMessage = { message: 'Jugador comprat amb èxit' };
+    spyOn(component, 'fetchStorePlayers');
+    
+    component.buyPlayer(playerId);
+    
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/buy/${playerId}`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ userID: component.currentUserID });
+    req.flush(successMessage);
+    
+    expect(component.fetchStorePlayers).toHaveBeenCalled();
+  });
 });
