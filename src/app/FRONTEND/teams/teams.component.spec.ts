@@ -268,5 +268,25 @@ describe('TeamsComponent', () => {
     expect(component.selectedTeamId).toBeNull();
     expect(component.selectedPlayerId).toBeNull();
   });
+
+  it('should alert if assignPlayerToTeam is called with missing selection', () => {
+    // Espiem l'alerta
+    spyOn(window, 'alert');
+  
+    // Configurem la selecció invàlida (ambdós valors nuls)
+    component.selectedTeamId = null;
+    component.selectedPlayerId = null;
+  
+    // Cridem el mètode d'assignació
+    component.assignPlayerToTeam();
+  
+    // Comprovem que s'ha mostrat l'alerta d'error
+    expect(window.alert).toHaveBeenCalledWith('Has de seleccionar un equip i un jugador reservat.');
+  
+    // No s'hauria de fer cap petició HTTP. Podem verificar-ho utilitzant expectNone.
+    httpMock.expectNone((req) =>
+      req.url.includes('/add-player-from-reserve') && req.method === 'POST'
+    );
+  });  
   
 });
