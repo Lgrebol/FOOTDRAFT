@@ -11,6 +11,7 @@ import { PlayersComponent } from './FRONTEND/players/players.component';
 import { TeamsComponent } from './FRONTEND/teams/teams.component';
 import { TournamentComponent } from './FRONTEND/tournament/tournament.component';
 import { MatchComponent } from './FRONTEND/match/match.component';
+import { StoreComponent } from './FRONTEND/store/store.component';
 @NgModule({
   imports: [
     BrowserModule,
@@ -22,7 +23,8 @@ import { MatchComponent } from './FRONTEND/match/match.component';
     PlayersComponent,
     TeamsComponent,
     TournamentComponent,
-    MatchComponent
+    MatchComponent,
+    StoreComponent
   ],
   bootstrap: [AppComponent]
 })

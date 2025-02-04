@@ -6,6 +6,7 @@ import { PlayersComponent } from './FRONTEND/players/players.component';
 import { TeamsComponent } from './FRONTEND/teams/teams.component';
 import { TournamentComponent } from './FRONTEND/tournament/tournament.component';
 import { MatchComponent } from './FRONTEND/match/match.component';
+import { StoreComponent } from './FRONTEND/store/store.component';
 export const appRoutes: Routes = [
   { path: '', component: LoginRegisterComponent },
   {
@@ -16,7 +17,8 @@ export const appRoutes: Routes = [
       { path: 'players', component: PlayersComponent },
       { path: 'teams', component: TeamsComponent },
       { path: 'tournaments', component: TournamentComponent },
-      { path: 'match', component: MatchComponent }
+      { path: 'match', component: MatchComponent },
+      { path:'store', component: StoreComponent }
     ]
   }
 ];
