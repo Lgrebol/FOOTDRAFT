@@ -55,4 +55,18 @@ describe('StoreComponent', () => {
     
     expect(component.fetchStorePlayers).toHaveBeenCalled();
   });
+
+  it('should show an error if the buy fails', () => {
+    const playerId = 1;
+    const errorMessage = { error: 'No tens prou diners' };
+    spyOn(window, 'alert');
+    
+    component.buyPlayer(playerId);
+    
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/buy/${playerId}`);
+    expect(req.request.method).toBe('POST');
+    req.flush(errorMessage, { status: 400, statusText: 'Bad Request' });
+    
+    expect(window.alert).toHaveBeenCalledWith('No tens prou diners');
+  });
 });
