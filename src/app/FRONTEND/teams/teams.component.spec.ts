@@ -229,4 +229,44 @@ describe('TeamsComponent', () => {
   
     expect(console.error).toHaveBeenCalledWith('Error carregant les reserves:', jasmine.anything());
   });
+
+  it('should assign a reserved player to a team correctly', () => {
+    // Configurem un espia per a l'alerta i per a fetchReservedPlayers (ja que s'ha de cridar després de l'assignació)
+    spyOn(window, 'alert');
+    spyOn(component, 'fetchReservedPlayers');
+  
+    // Configurar dades vàlides per a l'assignació
+    component.selectedTeamId = 5;
+    component.selectedPlayerId = 10;
+  
+    // Cridem el mètode d'assignació
+    component.assignPlayerToTeam();
+  
+    // Esperem la petició POST a la URL amb l'id de l'equip seleccionat
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/teams/5/add-player-from-reserve`);
+    expect(req.request.method).toBe('POST');
+  
+    // Comprovem que el body de la petició conté les dades correctes
+    expect(req.request.body).toEqual({
+      playerId: 10,
+      userID: component.currentUserID,
+    });
+  
+    // Simulem una resposta satisfactòria amb un missatge
+    req.flush({ message: 'Jugador assignat correctament' });
+  
+    // Opcional: forcem la detecció de canvis
+    fixture.detectChanges();
+  
+    // Verifiquem que s'ha mostrat l'alerta amb el missatge
+    expect(window.alert).toHaveBeenCalledWith('Jugador assignat correctament');
+  
+    // Verifiquem que es crida a fetchReservedPlayers per actualitzar la llista
+    expect(component.fetchReservedPlayers).toHaveBeenCalled();
+  
+    // Verifiquem que les seleccions es reinicien
+    expect(component.selectedTeamId).toBeNull();
+    expect(component.selectedPlayerId).toBeNull();
+  });
+  
 });
