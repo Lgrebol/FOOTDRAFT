@@ -59,4 +59,26 @@
     </div>
     <button type="submit">Afegir Equip</button>
   </form>
+
+  <!-- Secció per assignar jugadors reservats a un equip -->
+  <h2>Assignar Jugadors Reservats a un Equip</h2>
+  <div>
+    <label for="selectTeam">Selecciona Equip:</label>
+    <select id="selectTeam" [(ngModel)]="selectedTeamId" name="selectedTeamId">
+      <option value="" disabled selected>Selecciona un equip</option>
+      <option *ngFor="let team of teams" [value]="team.TeamID">
+        {{ team.TeamName }}
+      </option>
+    </select>
+  </div>
+  <div>
+    <label for="selectPlayer">Selecciona Jugador Reservat:</label>
+    <select id="selectPlayer" [(ngModel)]="selectedPlayerId" name="selectedPlayerId">
+      <option value="" disabled selected>Selecciona un jugador reservat</option>
+      <option *ngFor="let player of reservedPlayers" [value]="player.PlayerID">
+        {{ player.PlayerName }} - {{ player.Position }}
+      </option>
+    </select>
+  </div>
+  <button (click)="assignPlayerToTeam()">Assignar Jugador</button>
 </div>

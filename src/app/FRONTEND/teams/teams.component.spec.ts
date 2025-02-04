@@ -189,4 +189,27 @@ describe('TeamsComponent', () => {
   
     expect(console.error).toHaveBeenCalledWith('Error eliminant l\'equip:', jasmine.anything());
   });  
+
+  it('should load reserved players correctly', () => {
+    const mockReservedPlayers = [
+      { id: 1, name: 'Jugador A' },
+      { id: 2, name: 'Jugador B' },
+    ];
+  
+    // Handle the initial reserved players request from ngOnInit
+    const initialReq = httpMock.expectOne(`http://localhost:3000/api/v1/reserve/${component.currentUserID}`);
+    initialReq.flush([]); // Flush initial request (optional mock data)
+  
+    // Trigger fetchReservedPlayers again
+    component.fetchReservedPlayers();
+  
+    // Handle the second request triggered by the test
+    const req = httpMock.expectOne(`http://localhost:3000/api/v1/reserve/${component.currentUserID}`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockReservedPlayers);
+  
+    fixture.detectChanges();
+  
+    expect(component.reservedPlayers).toEqual(mockReservedPlayers);
+  });
 });
