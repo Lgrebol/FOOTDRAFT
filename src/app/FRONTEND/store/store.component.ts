@@ -10,9 +10,19 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./store.component.css']
 })
 export class StoreComponent implements OnInit {
+  storePlayers: any[] = [];
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    console.log('StoreComponent initialized');
+    this.fetchStorePlayers();
+  }
+
+  fetchStorePlayers(): void {
+    this.http.get<any[]>('http://localhost:3000/api/v1/players/store')
+      .subscribe(
+        data => this.storePlayers = data,
+        error => console.error('Error carregant els jugadors de la tenda:', error)
+      );
   }
 }
