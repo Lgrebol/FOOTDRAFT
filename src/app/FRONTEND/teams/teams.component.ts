@@ -19,11 +19,16 @@ export class TeamsComponent implements OnInit {
     userId: null,
   };
 
+  // Variables per assignar jugadors reservats a un equip
+  reservedPlayers: any[] = []; // Jugadors reservats de l'usuari actual
+
+  currentUserID: number = 1;
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.fetchTeams();
     this.fetchUsers();
+    this.fetchReservedPlayers();
   }
 
   // Obtenir equips
@@ -70,6 +75,7 @@ export class TeamsComponent implements OnInit {
         );
     }
   }
+
   // Eliminar un equip
   deleteTeam(teamId: number) {
     this.http.delete(`http://localhost:3000/api/v1/teams/${teamId}`).subscribe(
@@ -80,5 +86,19 @@ export class TeamsComponent implements OnInit {
         console.error('Error eliminant l\'equip:', error);
       }
     );
+  }
+
+  // Obtenir els jugadors reservats per l'usuari actual
+  fetchReservedPlayers() {
+    this.http
+      .get<any[]>(`http://localhost:3000/api/v1/reserve/${this.currentUserID}`)
+      .subscribe(
+        (data) => {
+          this.reservedPlayers = data;
+        },
+        (error) => {
+          console.error('Error carregant les reserves:', error);
+        }
+      );
   }
 }
