@@ -27,6 +27,15 @@ CREATE TABLE Players (
     TeamID INT NOT NULL,
     IsActive BIT DEFAULT 1,
     CONSTRAINT FK_Players_Teams FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
+   
+    ALTER TABLE Players
+    ADD Price DECIMAL(10,2) NOT NULL DEFAULT 0,
+    Height INT NULL,
+    Speed INT NULL,
+    Shooting INT NULL,
+    IsForSale BIT NOT NULL DEFAULT 1;  -- Si el jugador està a la tenda
+    ALTER TABLE Players
+    ADD ReserveUserID INT NULL;
 );
 
 CREATE TABLE Tournaments (
