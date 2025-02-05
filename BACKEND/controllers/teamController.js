@@ -29,12 +29,17 @@ export const createTeam = async (req, res) => {
 export const getTeams = async (req, res) => {
   try {
     const pool = await connectDb();
-    const result = await pool.request().query("SELECT * FROM Teams");
+    const result = await pool.request().query(`
+      SELECT T.TeamID, T.TeamName, T.ShirtColor, U.Name AS UserName
+      FROM Teams T
+      LEFT JOIN Users U ON T.UserID = U.UserID
+    `);
     res.status(200).send(result.recordset);
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
+
 
 // Eliminar un equip
 export const deleteTeam = async (req, res) => {

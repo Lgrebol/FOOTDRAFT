@@ -32,12 +32,17 @@ export const createPlayer = async (req, res) => {
 export const getPlayers = async (req, res) => {
   try {
     const pool = await connectDb();
-    const result = await pool.request().query("SELECT * FROM Players");
+    const result = await pool.request().query(`
+      SELECT p.*, t.TeamName 
+      FROM Players p
+      LEFT JOIN Teams t ON p.TeamID = t.TeamID
+    `);
     res.status(200).json(result.recordset);
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
+
 
 // Eliminar un jugador
 export const deletePlayer = async (req, res) => {
