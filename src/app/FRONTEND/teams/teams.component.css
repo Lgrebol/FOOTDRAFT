@@ -1,98 +1,135 @@
 /* Contenidor principal */
 .teams-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Títols */
-  h1, h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* Taula */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  thead {
-    background-color: #4caf50;
-    color: white;
-  }
-  
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-  
-  tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  /* Botons */
-  button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  button:hover {
-    background-color: #e63939;
-  }
-  
-  /* Formulari */
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  form div {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #555;
-  }
-  
-  input, select {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  input:focus, select:focus {
-    border-color: #4caf50;
-    outline: none;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-  }
-  
-  button[type="submit"] {
-    background-color: #4caf50;
-    font-weight: bold;
-    padding: 10px 15px;
-    font-size: 16px;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #45a049;
-  }
-  
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+  background: #fafafa;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+/* Títols */
+h1, h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Llista d'equips en mode targeta */
+.teams-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;  /* Augmentem l'espai entre targetes */
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+/* Targeta de l'equip */
+.team-card {
+  background: #fff;
+  border-radius: 8px;
+  width: 280px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Capçalera de la targeta amb verds */
+.team-header {
+  background-color: #4caf50;
+  padding: 15px;
+  color: #fff;
+  text-align: center;
+}
+
+.team-header h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+/* Cos de la targeta */
+.team-body {
+  padding: 15px;
+  flex-grow: 1;
+}
+
+.team-body p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #555;
+}
+
+.team-body button {
+  background-color: #388e3c;
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.team-body button:hover {
+  background-color: #2e7d32;
+}
+
+/* Formularis (crear equip i assignar jugador) */
+.team-form, .assign-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+/* Botons del formulari */
+.team-form button,
+.assign-section button {
+  width: 100%;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.team-form button:hover,
+.assign-section button:hover {
+  background-color: #43a047;
+}
