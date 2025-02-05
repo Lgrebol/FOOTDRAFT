@@ -36,6 +36,9 @@ CREATE TABLE Players (
     IsForSale BIT NOT NULL DEFAULT 1;  -- Si el jugador està a la tenda
     ALTER TABLE Players
     ADD ReserveUserID INT NULL;
+
+    ALTER TABLE Players ADD PlayerImage VARCHAR(255) NULL;
+
 );
 
 CREATE TABLE Tournaments (
