@@ -44,6 +44,11 @@ export class StoreComponent implements OnInit {
       );
   }
 
+  // Aquesta funció s'invoca cada vegada que es canvia algun filtre
+  applyFilters(): void {
+    this.fetchStorePlayers();
+  }
+
   buyPlayer(playerId: number): void {
     this.http.post(`http://localhost:3000/api/v1/players/buy/${playerId}`, { userID: this.currentUserID })
       .subscribe(
