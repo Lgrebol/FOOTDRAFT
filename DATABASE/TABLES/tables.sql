@@ -7,6 +7,9 @@ CREATE TABLE Users (
     Email VARCHAR(100) NOT NULL UNIQUE,
     PasswordHash VARCHAR(255) NOT NULL,
     RegistrationDate DATETIME DEFAULT GETDATE()
+    ALTER TABLE Users
+    ADD Footcoins DECIMAL(18,2) NOT NULL CONSTRAINT DF_Users_Footcoins DEFAULT (100000);
+
 );
 
 CREATE TABLE Teams (
