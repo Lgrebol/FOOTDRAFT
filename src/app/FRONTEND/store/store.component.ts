@@ -16,6 +16,7 @@ export class StoreComponent implements OnInit {
   // Variables per als filtres
   searchTerm: string = '';
   minPrice: number | null = null;
+  maxPrice: number | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -31,6 +32,9 @@ export class StoreComponent implements OnInit {
     }
     if (this.minPrice !== null && this.minPrice !== undefined) {
       params = params.set('minPrice', this.minPrice.toString());
+    }
+    if (this.maxPrice !== null && this.maxPrice !== undefined) {
+      params = params.set('maxPrice', this.maxPrice.toString());
     }
 
     this.http.get<any[]>('http://localhost:3000/api/v1/players/store', { params })
