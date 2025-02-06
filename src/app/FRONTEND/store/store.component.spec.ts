@@ -98,4 +98,17 @@ describe('StoreComponent', () => {
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
+
+  it('should include the maxPrice parameter in the GET request when maxPrice is provided', () => {
+    component.maxPrice = 150;
+    component.fetchStorePlayers();
+
+    const req = httpMock.expectOne(request => {
+      return request.url === 'http://localhost:3000/api/v1/players/store' &&
+             request.params.has('maxPrice') &&
+             request.params.get('maxPrice') === '150';
+    });
+    expect(req.request.method).toBe('GET');
+    req.flush([]);
+  });
 });
