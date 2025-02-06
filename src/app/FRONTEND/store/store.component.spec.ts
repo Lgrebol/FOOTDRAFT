@@ -12,7 +12,7 @@ describe('StoreComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, StoreComponent],
     }).compileComponents();
-  
+
     fixture = TestBed.createComponent(StoreComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
@@ -68,5 +68,20 @@ describe('StoreComponent', () => {
     req.flush(errorMessage, { status: 400, statusText: 'Bad Request' });
     
     expect(window.alert).toHaveBeenCalledWith('No tens prou diners');
+  });
+
+  // Proves per als filtres: search, minPrice i maxPrice
+  it('should include the search parameter in the GET request when searchTerm is provided', () => {
+    // Assignem un valor a searchTerm
+    component.searchTerm = 'Messi';
+    component.fetchStorePlayers();
+
+    const req = httpMock.expectOne(request => {
+      return request.url === 'http://localhost:3000/api/v1/players/store' &&
+             request.params.has('search') &&
+             request.params.get('search') === 'Messi';
+    });
+    expect(req.request.method).toBe('GET');
+    req.flush([]); // Simulem una resposta buida
   });
 });

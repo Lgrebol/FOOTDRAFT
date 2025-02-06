@@ -1,5 +1,31 @@
 <div class="store-container">
   <h1 class="store-title">Tenda de Jugadors</h1>
+
+  <!-- Secció de filtres -->
+  <div class="filter-container">
+    <input 
+      type="text" 
+      placeholder="Cerca jugador..." 
+      [(ngModel)]="searchTerm" 
+      (input)="applyFilters()"
+      class="filter-input"
+    >
+    <input 
+      type="number" 
+      placeholder="Preu mínim" 
+      [(ngModel)]="minPrice" 
+      (input)="applyFilters()"
+      class="filter-input"
+    >
+    <input 
+      type="number" 
+      placeholder="Preu màxim" 
+      [(ngModel)]="maxPrice" 
+      (input)="applyFilters()"
+      class="filter-input"
+    >
+  </div>
+
   <div class="players-grid">
     <div class="player-card" *ngFor="let player of storePlayers">
       <img src="soccer-player.png" class="player-image" alt="{{ player.PlayerName }}" width="100" height="100">
