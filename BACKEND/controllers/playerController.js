@@ -3,7 +3,16 @@ import connectDb from "../config/db.js";
 
 // Crear un jugador
 export const createPlayer = async (req, res) => {
+  // Els camps del cos de la petició
   const { playerName, position, teamID } = req.body;
+  
+  // Verifiquem que el fitxer s'ha pujat correctament
+  if (!req.file) {
+    return res.status(400).send({ error: "Cal pujar una imatge." });
+  }
+
+  // Obtenim el buffer del fitxer
+  const imageBuffer = req.file.buffer;
 
   if (!playerName || !position || !teamID) {
     return res.status(400).send({ error: "Falten camps obligatoris." });
@@ -12,14 +21,16 @@ export const createPlayer = async (req, res) => {
   try {
     const pool = await connectDb();
     const query = `
-      INSERT INTO Players (PlayerName, Position, TeamID)
-      VALUES (@playerName, @position, @teamID)
+      INSERT INTO Players (PlayerName, Position, TeamID, PlayerImage)
+      VALUES (@playerName, @position, @teamID, @playerImage)
     `;
     await pool
       .request()
       .input("playerName", sql.VarChar, playerName)
       .input("position", sql.VarChar, position)
       .input("teamID", sql.Int, teamID)
+      // Insertem el buffer de la imatge
+      .input("playerImage", sql.VarBinary(sql.MAX), imageBuffer)
       .query(query);
 
     res.status(201).send({ message: "Jugador creat correctament." });
