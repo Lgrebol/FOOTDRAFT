@@ -14,10 +14,19 @@
     <tbody>
       <tr *ngFor="let player of players">
         <td>
-          <!-- Si existeix la imatge del jugador, es mostra, altrament un placeholder -->
+          <!-- Per mostrar la imatge, necessitaràs un endpoint per recuperar-la o bé fer servir una conversió a Base64 -->
+          <!-- Exemple: si el servidor retorna la imatge en Base64, podries fer: -->
           <img 
-            [src]="player.PlayerImage ? player.PlayerImage : 'soccer-player.png'" 
-            width="50" height="50">
+            *ngIf="player.PlayerImage" 
+            [src]="'data:image/jpeg;base64,' + player.PlayerImage" 
+            alt="{{ player.PlayerName }}" 
+            width="50" 
+            height="50">
+          <img 
+            *ngIf="!player.PlayerImage" 
+            src="soccer-player.png" 
+            width="50" 
+            height="50">
         </td>
         <td>{{ player.PlayerName }}</td>
         <td>{{ player.Position }}</td>
@@ -31,7 +40,7 @@
   </table>
 
   <h2>Afegir Jugador</h2>
-  <form (ngSubmit)="addPlayer()">
+  <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
     <div>
       <label for="name">Nom:</label>
       <input id="name" type="text" [(ngModel)]="newPlayer.name" name="name" required />
@@ -53,8 +62,8 @@
       </select>
     </div>
     <div>
-      <label for="image">URL Imatge:</label>
-      <input id="image" type="text" [(ngModel)]="newPlayer.image" name="image" placeholder="http://..." />
+      <label for="image">Imatge del jugador:</label>
+      <input id="image" type="file" (change)="onFileSelected($event)" />
     </div>
     <button type="submit">Afegir Jugador</button>
   </form>
