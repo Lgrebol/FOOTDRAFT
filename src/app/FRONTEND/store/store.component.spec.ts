@@ -111,4 +111,24 @@ describe('StoreComponent', () => {
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
+
+  
+  it('should include all filter parameters (search, minPrice, maxPrice) in the GET request when provided', () => {
+    component.searchTerm = 'Leo';
+    component.minPrice = 60;
+    component.maxPrice = 200;
+    component.fetchStorePlayers();
+
+    const req = httpMock.expectOne(request => {
+      return request.url === 'http://localhost:3000/api/v1/players/store' &&
+             request.params.has('search') &&
+             request.params.get('search') === 'Leo' &&
+             request.params.has('minPrice') &&
+             request.params.get('minPrice') === '60' &&
+             request.params.has('maxPrice') &&
+             request.params.get('maxPrice') === '200';
+    });
+    expect(req.request.method).toBe('GET');
+    req.flush([]);
+  });
 });
