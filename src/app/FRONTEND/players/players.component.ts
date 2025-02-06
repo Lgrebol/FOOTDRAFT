@@ -11,12 +11,13 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./players.component.css']
 })
 export class PlayersComponent implements OnInit {
-  players: any[] = []; // Llista de jugadors
-  teams: any[] = []; // Llista d'equips
+  players: any[] = [];
+  teams: any[] = [];
   newPlayer = {
     name: '',
     position: '',
-    team: ''
+    team: '',
+    image: ''  // camp per l'URL de la imatge
   };
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
@@ -24,10 +25,9 @@ export class PlayersComponent implements OnInit {
   
   ngOnInit() {
     this.fetchPlayers();
-    this.fetchTeams(); // Obtenir els equips per al dropdown
+    this.fetchTeams();
   }
 
-  // Obtenir jugadors del backend
   fetchPlayers() {
     this.http.get<any[]>('http://localhost:3000/api/v1/players').subscribe(
       (data) => {
@@ -39,7 +39,6 @@ export class PlayersComponent implements OnInit {
     );
   }
 
-  // Obtenir equips del backend
   fetchTeams() {
     this.http.get<any[]>('http://localhost:3000/api/v1/teams').subscribe(
       (data) => {
@@ -51,17 +50,17 @@ export class PlayersComponent implements OnInit {
     );
   }
 
-  // Afegir un nou jugador
   addPlayer() {
     if (this.newPlayer.name && this.newPlayer.position && this.newPlayer.team) {
       this.http.post('http://localhost:3000/api/v1/players', {
         playerName: this.newPlayer.name,
         position: this.newPlayer.position,
-        teamID: this.newPlayer.team
+        teamID: this.newPlayer.team,
+        playerImage: this.newPlayer.image // enviem la imatge
       }).subscribe(
         () => {
-          this.fetchPlayers(); // Actualitza la llista
-          this.newPlayer = { name: '', position: '', team: '' }; // Reseteja el formulari
+          this.fetchPlayers();
+          this.newPlayer = { name: '', position: '', team: '', image: '' };
         },
         (error) => {
           console.error('Error afegint el jugador:', error);
@@ -70,11 +69,10 @@ export class PlayersComponent implements OnInit {
     }
   }
 
-  // Eliminar un jugador
   deletePlayer(playerId: number) {
     this.http.delete(`http://localhost:3000/api/v1/players/${playerId}`).subscribe(
       () => {
-        this.fetchPlayers(); // Actualitza la llista
+        this.fetchPlayers();
       },
       (error) => {
         console.error('Error eliminant el jugador:', error);

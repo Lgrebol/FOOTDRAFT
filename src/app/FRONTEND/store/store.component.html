@@ -1,7 +1,6 @@
 <div class="store-container">
   <h1 class="store-title">Tenda de Jugadors</h1>
 
-  <!-- Secció de filtres -->
   <div class="filter-container">
     <input 
       type="text" 
@@ -28,7 +27,11 @@
 
   <div class="players-grid">
     <div class="player-card" *ngFor="let player of storePlayers">
-      <img src="soccer-player.png" class="player-image" alt="{{ player.PlayerName }}" width="100" height="100">
+      <!-- Mostrem la imatge real si existeix, altrament un placeholder -->
+      <img 
+        [src]="player.PlayerImage ? player.PlayerImage : 'soccer-player.png'" 
+        class="player-image"
+        width="100" height="100">
       <div class="player-name">{{ player.PlayerName }}</div>
       <div class="player-info">Posició: {{ player.Position }}</div>
       <div class="player-info">Preu: {{ player.Price }}€</div>
