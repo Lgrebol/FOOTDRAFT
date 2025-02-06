@@ -84,4 +84,18 @@ describe('StoreComponent', () => {
     expect(req.request.method).toBe('GET');
     req.flush([]); // Simulem una resposta buida
   });
+
+  
+  it('should include the minPrice parameter in the GET request when minPrice is provided', () => {
+    component.minPrice = 50;
+    component.fetchStorePlayers();
+
+    const req = httpMock.expectOne(request => {
+      return request.url === 'http://localhost:3000/api/v1/players/store' &&
+             request.params.has('minPrice') &&
+             request.params.get('minPrice') === '50';
+    });
+    expect(req.request.method).toBe('GET');
+    req.flush([]);
+  });
 });
