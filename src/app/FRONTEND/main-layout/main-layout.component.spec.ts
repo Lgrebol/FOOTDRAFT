@@ -69,4 +69,15 @@ describe('MainLayoutComponent', () => {
     expect(console.error).toHaveBeenCalledWith('Error obtenint footcoins:', testError);
   });  
 
+  it('should log error if refreshUserData fails', () => {
+    const testError = new Error('Refresh error');
+    spyOn(console, 'error');
+  
+    userServiceSpy.getFootcoinsUpdates.and.returnValue(of(0));
+    userServiceSpy.refreshUserData.and.returnValue(throwError(() => testError));
+  
+    component.ngOnInit();
+  
+    expect(console.error).toHaveBeenCalledWith('Error carregant dades inicials:', testError);
+  });
 });
