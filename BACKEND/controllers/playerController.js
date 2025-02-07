@@ -1,5 +1,6 @@
 import sql from "mssql";
 import connectDb from "../config/db.js";
+import { getUserFootcoins, updateUserFootcoins } from "../models/betModel.js"; // o crea un mètode específic en un model d'usuaris
 
 // Crear un jugador
 export const createPlayer = async (req, res) => {
@@ -120,7 +121,7 @@ export const getPlayersForSale = async (req, res) => {
 // Comprar un jugador (passant el userID del comprador al cos de la petició)
 export const buyPlayer = async (req, res) => {
   const playerId = req.params.id;
-  const { userID } = req.body; // En un entorn real, s'obtindria del token d'autenticació
+  const { userID } = req.body; // En un entorn real, s'obtindria del token
 
   if (!userID) {
     return res.status(400).send({ error: "Falta el userID del comprador." });
@@ -142,6 +143,21 @@ export const buyPlayer = async (req, res) => {
         .send({ error: "Aquest jugador no està disponible per a la compra." });
     }
 
+    // Comprovem que l'usuari té diners suficients
+    const coinsResult = await pool
+      .request()
+      .input("userID", sql.Int, userID)
+      .query("SELECT Footcoins FROM Users WHERE UserID = @userID");
+    if (coinsResult.recordset.length === 0) {
+      return res.status(404).send({ error: "Usuari no trobat." });
+    }
+    const currentCoins = coinsResult.recordset[0].Footcoins;
+    // Suposem que el preu del jugador està al camp Price
+    const playerPrice = result.recordset[0].Price;
+    if (currentCoins < playerPrice) {
+      return res.status(400).send({ error: "No tens diners suficients per comprar aquest jugador." });
+    }
+
     // Actualitzar el jugador: assignar ReserveUserID i marcar-lo com no a la venda
     await pool
       .request()
@@ -154,6 +170,13 @@ export const buyPlayer = async (req, res) => {
         WHERE PlayerID = @playerId
       `);
 
+    // Deduir el preu del jugador del saldo de l'usuari
+    await pool
+      .request()
+      .input("userID", sql.Int, userID)
+      .input("amount", sql.Decimal(18,2), -playerPrice)
+      .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserID = @userID");
+
     res
       .status(200)
       .send({ message: "Jugador comprat i afegit a la reserva correctament." });
@@ -161,3 +184,4 @@ export const buyPlayer = async (req, res) => {
     res.status(500).send({ error: err.message });
   }
 };
+

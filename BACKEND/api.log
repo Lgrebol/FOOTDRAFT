@@ -1,2 +1,9 @@
 2025-01-21T16:27:12.173Z - POST /register - Status: 401
 2025-01-21T16:32:16.162Z - POST /register - Status: 401
+2025-02-06T18:06:51.129Z - GET /current-user - Status: 401
+2025-02-06T18:08:22.471Z - GET /current-user - Status: 401
+2025-02-06T18:09:49.478Z - GET /current-user - Status: 401
+2025-02-06T18:10:18.086Z - GET /current-user - Status: 401
+2025-02-06T18:11:47.059Z - GET /current-user - Status: 403
+2025-02-06T18:13:40.145Z - GET /current-user - Status: 403
+2025-02-06T18:14:51.119Z - GET /current-user - Status: 403

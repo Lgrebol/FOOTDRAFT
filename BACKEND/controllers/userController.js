@@ -25,9 +25,11 @@ export const registerUsers = async (req, res) => {
       .input("name", sql.VarChar, name)
       .input("email", sql.VarChar, email)
       .input("password", sql.VarChar, hashedPassword)
+      .input("footcoins", sql.Decimal(18,2), 100000)
       .query(
-        "INSERT INTO Users (Name, Email, PasswordHash) VALUES (@name, @email, @password)"
+        "INSERT INTO Users (Name, Email, PasswordHash, Footcoins) VALUES (@name, @email, @password, @footcoins)"
       );
+
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {

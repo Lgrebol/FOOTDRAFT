@@ -8,6 +8,8 @@ import teamRoutes from "./routes/teamRoutes.js";  // Rutes per a equips
 import tournamentRoutes from "./routes/tournamentRoutes.js";  // Rutes per a tornejos
 import matchRoutes from "./routes/matchRoutes.js";
 import reserveRoutes from "./routes/reserveRoutes.js";
+import betRoutes from "./routes/betRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 dotenv.config();  // Carregar variables d'entorn des del fitxer .env
 
 const app = express();
@@ -36,6 +38,10 @@ app.use("/api/v1/matches", matchRoutes);
 
 //Rutes per reservar jugadors
 app.use("/api/v1/reserve", reserveRoutes);
+
+app.use("/api/v1/bets", betRoutes);
+
+app.use("/api/v1/auth", authRoutes);
 // Connexió a la base de dades
 connectDb().catch((err) => {
   console.error("Error connectant a la base de dades:", err);  // Si hi ha un error a la connexió de la base de dades

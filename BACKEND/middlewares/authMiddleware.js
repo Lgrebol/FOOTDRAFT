@@ -1,105 +1,56 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import fs from "fs";
-import { body, validationResult } from "express-validator";
 
 dotenv.config();
 
-
-const SECRET_KEY = process.env.SECRET_KEY;
-
 export const authMiddleware = async (req, res, next) => {
   try {
-    // Log de la petició
-    const timestamp = new Date().toISOString();
-    const method = req.method || "UNKNOWN";
-    const url = req.url || "UNKNOWN";
+    console.log("🔹 Petició rebuda:", req.method, req.url);
 
-    res.on("finish", () => {
-      const statusCode = res.statusCode;
-      const logEntry = `${timestamp} - ${method} ${url} - Status: ${statusCode}\n`;
-
-      fs.appendFile("api.log", logEntry, (err) => {
-        if (err) {
-          console.error("Error escrivint al fitxer de logs", err);
-        }
-      });
-    });
-
-    // Sanitització de dades
-    Object.keys(req.body).forEach((key) => {
-      body(key).trim().escape();
-    });
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    // Autenticació amb token
+    // 1️⃣ Validar header Authorization
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
-      return res
-        .status(401)
-        .json({ error: "No s'ha proporcionat el header d'autorització" });
+      return res.status(401).json({ error: "Header d'autorització requerit" });
     }
 
+    // 2️⃣ Extraure token
     const token = authHeader.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ error: "No s'ha proporcionat el token" });
+      return res.status(401).json({ error: "Format de token invàlid" });
     }
 
-    jwt.verify(token, SECRET_KEY, (err, user) => {
+    // 3️⃣ Verificar SECRET_KEY
+    if (!process.env.JWT_SECRET) {
+      console.error("🚨 SECRET_KEY no definit!");
+      return res.status(500).json({ error: "Error de configuració del servidor" });
+    }
+
+    // 4️⃣ Verificar i decodificar token
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        if (err.name === "TokenExpiredError") {
-          try {
-            const decodedToken = jwt.decode(token);
-            const newToken = jwt.sign(
-              { userId: decodedToken.userId, email: decodedToken.email },
-              SECRET_KEY,
-              { expiresIn: "1h" }
-            );
-
-            res.setHeader("New-Token", newToken);
-            req.user = decodedToken;
-            return next();
-          } catch (renewError) {
-            console.error("Error al renovar el token:", renewError);
-            return res.status(403).json({
-              error: "Error al renovar el token",
-              details: renewError.message,
-            });
-          }
-        }
-
-        console.error("Error verificació token:", err);
+        console.error("❌ Error de verificació:", err.message);
         return res.status(403).json({
           error: "Token invàlid",
-          details: err.message,
+          details: err.message.replace('jwt', 'JWT') // Neteja missatges d'error
         });
       }
 
-      const tokenExp = new Date(user.exp * 1000);
-      const now = new Date();
-      const fiveMinutes = 5 * 60 * 1000;
-
-      if (tokenExp - now < fiveMinutes) {
-        const newToken = jwt.sign(
-          { userId: user.userId, email: user.email },
-          SECRET_KEY,
-          { expiresIn: "5m" }
-        );
-        res.setHeader("New-Token", newToken);
+      // 5️⃣ Assegurar estructura correcta del payload
+      if (!decoded?.userId) {
+        console.error("⚠️ Token no conté userId:", decoded);
+        return res.status(403).json({ error: "Token mal format" });
       }
 
-      req.user = user;
+      console.log("✅ Accés autoritzat per a userId:", decoded.userId);
+      req.user = { userId: decoded.userId }; // Normalitzem l'objecte usuari
       next();
     });
+
   } catch (error) {
-    console.error("Error en authMiddleware:", error);
-    return res.status(500).json({
-      error: "Error en l'autenticació",
-      details: error.message,
+    console.error("🔥 Error crític en authMiddleware:", error);
+    res.status(500).json({
+      error: "Error d'autenticació",
+      details: error.message
     });
   }
 };
