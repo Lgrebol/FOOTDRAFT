@@ -48,4 +48,14 @@ describe('MainLayoutComponent', () => {
     expect(component.footcoins).toBe(200);
   });
 
+  it('should call refreshUserData on initialization', () => {
+    userServiceSpy.getFootcoinsUpdates.and.returnValue(of(0));
+    userServiceSpy.refreshUserData.and.returnValue(of({}));
+  
+    component.ngOnInit();
+  
+    expect(userServiceSpy.refreshUserData).toHaveBeenCalled();
+  });
+
+
 });
