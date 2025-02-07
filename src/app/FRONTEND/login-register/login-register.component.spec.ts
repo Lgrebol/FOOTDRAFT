@@ -173,4 +173,16 @@ describe('LoginRegisterComponent', () => {
     expect(registreService.validateUser).not.toHaveBeenCalled();
   });
   
+  it('should handle error when validateUser returns no token', () => {
+    spyOn(console, 'error');
+  
+    component.email = 'test@example.com';
+    component.password = 'Password123!';
+  
+    registreService.validateUser.and.returnValue(of({}));
+    component.handleSignIn();
+  
+    expect(console.error).toHaveBeenCalledWith('❌ Resposta invàlida del servidor');
+  });
+  
 });
