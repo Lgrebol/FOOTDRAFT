@@ -185,4 +185,21 @@ describe('LoginRegisterComponent', () => {
     expect(console.error).toHaveBeenCalledWith('❌ Resposta invàlida del servidor');
   });
   
+  it('should handle error from refreshUserData and navigate anyway', () => {
+    spyOn(console, 'error');
+  
+    component.email = 'test@example.com';
+    component.password = 'Password123!';
+  
+    // Simulem que refreshUserData falla
+    userService.refreshUserData.and.returnValue(throwError(() => new Error('Error')));
+    spyOn(localStorage, 'setItem');
+  
+    registreService.validateUser.and.returnValue(of({ token: 'testToken123' }));
+  
+    component.handleSignIn();
+  
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(console.error).toHaveBeenCalled();
+  });  
 });
