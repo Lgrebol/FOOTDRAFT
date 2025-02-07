@@ -10,7 +10,23 @@ import { UserService } from '../services/users.service';
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css']
 })
-export class MainLayoutComponent {
-  constructor(private userService: UserService) {}
-}
+export class MainLayoutComponent implements OnInit {
+  footcoins: number = 0;
 
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
+    // Subscripció als canvis en temps real
+    this.userService.getFootcoinsUpdates().subscribe({
+      next: (coins) => {
+        this.footcoins = coins;
+      },
+      error: (err) => console.error('Error obtenint footcoins:', err)
+    });
+
+    // Càrrega inicial de dades
+    this.userService.refreshUserData().subscribe({
+      error: (err) => console.error('Error carregant dades inicials:', err)
+    });
+  }
+}
