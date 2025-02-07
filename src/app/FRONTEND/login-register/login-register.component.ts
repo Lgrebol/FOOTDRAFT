@@ -3,12 +3,12 @@ import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegistreService } from '../services/registre.service';
+import { UserService } from '../services/users.service'; // Importa el UserService
 
 @Component({
   selector: 'app-login-register',
   standalone: true,
   imports: [FormsModule, NgIf, CommonModule],
-  providers: [],
   templateUrl: './login-register.component.html',
   styleUrls: ['./login-register.component.css']
 })
@@ -33,7 +33,8 @@ export class LoginRegisterComponent implements AfterViewInit {
 
   constructor(
     private router: Router,
-    private registreService: RegistreService
+    private registreService: RegistreService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {}
@@ -132,19 +133,32 @@ export class LoginRegisterComponent implements AfterViewInit {
       return;
     }
   
-    this.registreService.validateUser(this.email, this.password).subscribe(
-      (response) => {
-        if (response && response.token) {
-          console.log('Login correcte:', response);
-          this.registreService.saveToken(response.token);
-          this.router.navigate(['/dashboard']);
+    this.registreService.validateUser(this.email, this.password).subscribe({
+      next: (response) => {
+        if (response?.token) {
+          console.log('✅ Token rebut al login:', response.token);
+          localStorage.setItem('token', response.token);
+          
+          // Actualitza les dades de l'usuari abans de navegar
+          this.userService.refreshUserData().subscribe({
+            next: () => {
+              console.log('Dades de l\'usuari actualitzades');
+              this.router.navigate(['/dashboard']);
+            },
+            error: (err) => {
+              console.error('Error actualitzant dades:', err);
+              this.router.navigate(['/dashboard']);
+            }
+          });
         } else {
-          console.error('Credencials incorrectes o falta el token a la resposta');
+          console.error('❌ Resposta invàlida del servidor');
         }
       },
-      (error) => {
-        console.error("Error al verificar l'usuari:", error);
+      error: (error) => {
+        console.error("❌ Error al verificar l'usuari:", error);
+        alert('Credencials incorrectes!');
       }
-    );
-  }    
+    });
+  }
 }
+
