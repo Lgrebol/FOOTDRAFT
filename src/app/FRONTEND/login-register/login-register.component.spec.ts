@@ -154,5 +154,23 @@ describe('LoginRegisterComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
   
-
+  it('should not call validateUser if email or password is missing in handleSignIn', () => {
+    spyOn(console, 'error');
+  
+    // Test amb email buit
+    component.email = '';
+    component.password = 'Password123!';
+    component.handleSignIn();
+    expect(registreService.validateUser).not.toHaveBeenCalled();
+  
+    // Netejem les crides prèvies
+    registreService.validateUser.calls.reset();
+  
+    // Test amb contrasenya buida
+    component.email = 'test@example.com';
+    component.password = '';
+    component.handleSignIn();
+    expect(registreService.validateUser).not.toHaveBeenCalled();
+  });
+  
 });
