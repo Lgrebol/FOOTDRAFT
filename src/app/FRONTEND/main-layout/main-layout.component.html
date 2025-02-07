@@ -1,11 +1,17 @@
 <div class="main-layout">
   <header>
     <h1>FOOTDRAFT ⚽</h1>
-    <div class="user-menu">
-      <button>User Menu</button>
+    <!-- Visualització dels footcoins al costat del menú d'usuari -->
+    <div class="user-header">
+      <button class="user-menu">User Menu</button>
+      <div class="user-info">
+        <!-- Utilitzem una icona (per exemple, de Material Icons) -->
+        <i class="material-icons">account_balance_wallet</i>
+        <span>{{ footcoins | number }}</span>
+      </div>
     </div>
   </header>
-  
+
   <div class="content">
     <aside>
       <nav>
