@@ -61,7 +61,7 @@ export const updateMatchScore = async (matchID, homeGoals, awayGoals) => {
     .query("UPDATE Matches SET HomeGoals = @homeGoals, AwayGoals = @awayGoals WHERE MatchID = @matchID");
 };
 
-// Actualitzar les estadístiques d'un jugador (incrementar per exemple el nombre de gols)
+// Actualitzar les estadístiques d'un jugador (incrementar per exemple el nombre de gols, targetes, etc.)
 export const updatePlayerStatistics = async (playerID, goals, assists, yellowCards, redCards) => {
   const pool = await connectDb();
   await pool.request()
@@ -78,13 +78,12 @@ export const updatePlayerStatistics = async (playerID, goals, assists, yellowCar
             WHERE PlayerID = @playerID`);
 };
 
+// Reiniciar dades d'una partida: esborra els esdeveniments i reinicia el marcador
 export const resetMatchData = async (matchID) => {
   const pool = await connectDb();
-  // Esborrem tots els esdeveniments associats al match
   await pool.request()
     .input("matchID", sql.Int, matchID)
     .query("DELETE FROM MatchEvents WHERE MatchID = @matchID");
-  // Reiniciem el marcador a 0
   await pool.request()
     .input("matchID", sql.Int, matchID)
     .query("UPDATE Matches SET HomeGoals = 0, AwayGoals = 0 WHERE MatchID = @matchID");

@@ -1,4 +1,3 @@
-// routes/matchRoutes.js
 import express from "express";
 import {
   createMatchController,

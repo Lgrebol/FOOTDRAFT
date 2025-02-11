@@ -85,17 +85,27 @@ export const addPlayerFromReserve = async (req, res) => {
       });
     }
 
+    // Comprovar que l'equip no té ja 5 jugadors actius
+    const countResult = await pool
+      .request()
+      .input("teamId", sql.Int, teamId)
+      .query("SELECT COUNT(*) AS playerCount FROM Players WHERE TeamID = @teamId AND IsActive = 1");
+    const playerCount = countResult.recordset[0].playerCount;
+    if (playerCount >= 5) {
+      return res.status(400).send({ error: "Aquest equip ja té 5 jugadors." });
+    }
+
     // Actualitzar el jugador: assignar-lo a l'equip i buidar la reserva
     await pool
       .request()
       .input("playerId", sql.Int, playerId)
       .input("teamId", sql.Int, teamId)
-      .query(`
-        UPDATE Players 
-        SET TeamID = @teamId,
-            ReserveUserID = NULL
-        WHERE PlayerID = @playerId
-      `);
+      .query(
+        `UPDATE Players 
+         SET TeamID = @teamId,
+             ReserveUserID = NULL
+         WHERE PlayerID = @playerId`
+      );
 
     res.status(200).send({ message: "Jugador traspassat a l'equip correctament." });
   } catch (err) {

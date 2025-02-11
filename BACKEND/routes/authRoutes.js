@@ -1,4 +1,3 @@
-// routes/authRoutes.js
 import express from "express";
 import { getCurrentUser } from "../controllers/authController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js"; // o la ruta correcta al teu middleware
