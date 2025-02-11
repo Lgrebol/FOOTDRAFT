@@ -27,4 +27,11 @@ export class MainLayoutComponent implements OnInit {
       error: (err) => console.error('Error carregant dades inicials:', err)
     });
   }  
+
+  logout(): void {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userID');
+    this.router.navigate(['/login']);
+  }
+  
 }
