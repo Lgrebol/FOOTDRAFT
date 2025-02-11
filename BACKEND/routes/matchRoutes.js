@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.post("/", createMatchController);
-router.get("/:id", getMatchController);
+router.get("/:matchID", getMatchController);
 router.post("/simulate", startMatchSimulationController);
 router.post("/reset", resetMatchController);
 

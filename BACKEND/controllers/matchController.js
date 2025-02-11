@@ -122,7 +122,7 @@ export const createMatchController = async (req, res) => {
 
 export const getMatchController = async (req, res) => {
   try {
-    const { matchID } = req.params;
+    const { matchID } = req.params; // Ara extrau el paràmetre 'matchID'
     const match = await getMatchById(matchID);
     if (!match) return res.status(404).send({ error: "Partida no trobada" });
     res.status(200).json({ match });
