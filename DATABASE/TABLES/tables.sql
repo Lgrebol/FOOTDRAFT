@@ -9,7 +9,6 @@ CREATE TABLE Users (
     RegistrationDate DATETIME DEFAULT GETDATE()
     ALTER TABLE Users
     ADD Footcoins DECIMAL(18,2) NOT NULL CONSTRAINT DF_Users_Footcoins DEFAULT (100000);
-
 );
 
 CREATE TABLE Teams (
@@ -33,7 +32,7 @@ CREATE TABLE Players (
    
     ALTER TABLE Players
     ADD Price DECIMAL(10,2) NOT NULL DEFAULT 0,
-    Height INT NULL,
+    Height INT NULL,w
     Speed INT NULL,
     Shooting INT NULL,
     IsForSale BIT NOT NULL DEFAULT 1;  -- Si el jugador està a la tenda
@@ -86,7 +85,25 @@ CREATE TABLE Player_Statistics (
 CREATE TABLE MatchEvents (
   EventID INT PRIMARY KEY IDENTITY(1,1),
   MatchID INT NOT NULL,
-  EventTime INT NOT NULL, -- minut de la partida
+  PlayerID INT NOT NULL,
+  EventType VARCHAR(50) NOT NULL, -- Per exemple: 'Goal', 'Falta', 'Vermella'
+  Minute INT NOT NULL,
   Description VARCHAR(255) NOT NULL,
   CONSTRAINT FK_MatchEvents_Matches FOREIGN KEY (MatchID) REFERENCES Matches(MatchID) ON DELETE CASCADE
+);
+
+CREATE TABLE Bets (
+    BetID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL,
+    MatchID INT NULL,
+    Amount DECIMAL(18,2) NOT NULL,
+    PredictedWinner VARCHAR(50) NOT NULL,
+    Status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    HomeTeamID INT NOT NULL,
+    AwayTeamID INT NOT NULL,
+    Winnings DECIMAL(18,2) NULL,
+    CONSTRAINT FK_Bets_Users FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    CONSTRAINT FK_Bets_HomeTeam FOREIGN KEY (HomeTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION,
+    CONSTRAINT FK_Bets_AwayTeam FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION,
+    CONSTRAINT FK_Bets_Matches FOREIGN KEY (MatchID) REFERENCES Matches(MatchID) ON DELETE NO ACTION
 );
