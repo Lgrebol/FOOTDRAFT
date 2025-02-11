@@ -80,4 +80,24 @@ describe('MainLayoutComponent', () => {
   
     expect(console.error).toHaveBeenCalledWith('Error carregant dades inicials:', testError);
   });
+
+  it('should remove authToken and userID from localStorage and navigate to /login', () => {
+    // Arrange: posem valors simulats al localStorage
+    localStorage.setItem('authToken', 'dummyToken');
+    localStorage.setItem('userID', 'dummyUser');
+  
+    // Creem espies per verificar les crides
+    const removeItemSpy = spyOn(localStorage, 'removeItem').and.callThrough();
+    const routerNavigateSpy = spyOn(component['router'], 'navigate');
+  
+    // Act: intentem cridar una funció logout que encara no existeix
+    expect(() => component.logout()).not.toThrow(); // Això fallarà perquè la funció no existeix
+  
+    // Assert: verifiquem que s'han eliminat els valors del localStorage
+    expect(removeItemSpy).toHaveBeenCalledWith('authToken');
+    expect(removeItemSpy).toHaveBeenCalledWith('userID');
+  
+    // Assert: verifiquem que s'ha redirigit a '/login'
+    expect(routerNavigateSpy).toHaveBeenCalledWith(['/login']);
+  });
 });

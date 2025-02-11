@@ -73,3 +73,25 @@ nav a {
 nav a:hover {
   background-color: #ddd;
 }
+
+.logout-button {
+  margin-left: 20px;
+  background-color: #cc0000; /* Vermell intens per destacar */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #a30000; /* To més fosc en passar el cursor */
+  transform: scale(1.05); /* Petit efecte de creixement */
+}
+
+.logout-button:active {
+  background-color: #800000; /* Encara més fosc en ser clicat */
+  transform: scale(0.95); /* Lleuger efecte de contracció */
+}
