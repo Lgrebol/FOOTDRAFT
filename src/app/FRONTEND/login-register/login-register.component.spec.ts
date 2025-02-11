@@ -138,10 +138,7 @@ describe('LoginRegisterComponent', () => {
     component.email = 'test@example.com';
     component.password = 'Password123!';
   
-    // Simulem que refreshUserData retorna un Observable que s'executa immediatament
     userService.refreshUserData.and.returnValue(of({}));
-  
-    // Espionem la crida a localStorage.setItem
     spyOn(localStorage, 'setItem');
   
     registreService.validateUser.and.returnValue(of({ token: 'testToken123' }));
@@ -149,7 +146,8 @@ describe('LoginRegisterComponent', () => {
     component.handleSignIn();
   
     expect(registreService.validateUser).toHaveBeenCalledWith('test@example.com', 'Password123!');
-    expect(localStorage.setItem).toHaveBeenCalledWith('token', 'testToken123');
+    // Correct the key from 'token' to 'authToken'
+    expect(localStorage.setItem).toHaveBeenCalledWith('authToken', 'testToken123');
     expect(userService.refreshUserData).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });

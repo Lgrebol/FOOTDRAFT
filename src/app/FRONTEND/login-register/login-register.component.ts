@@ -137,7 +137,8 @@ export class LoginRegisterComponent implements AfterViewInit {
       next: (response) => {
         if (response?.token) {
           console.log('✅ Token rebut al login:', response.token);
-          localStorage.setItem('token', response.token);
+          // Guarda el token amb la clau 'authToken' (no amb 'token')
+          localStorage.setItem('authToken', response.token);
           
           // Actualitza les dades de l'usuari abans de navegar
           this.userService.refreshUserData().subscribe({
@@ -161,4 +162,3 @@ export class LoginRegisterComponent implements AfterViewInit {
     });
   }
 }
-
