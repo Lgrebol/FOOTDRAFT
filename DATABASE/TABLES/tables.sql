@@ -70,6 +70,10 @@ CREATE TABLE Matches (
     CONSTRAINT FK_Matches_Tournaments FOREIGN KEY (TournamentID) REFERENCES Tournaments(TournamentID) ON DELETE NO ACTION,
     CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION,
     CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID) ON DELETE NO ACTION
+
+    ALTER TABLE Matches
+    ADD CurrentMinute INT DEFAULT 0;
+
 );
 
 CREATE TABLE Player_Statistics (
