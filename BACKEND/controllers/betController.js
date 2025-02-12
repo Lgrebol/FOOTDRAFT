@@ -1,5 +1,4 @@
 import { createBet, getUserFootcoins, updateUserFootcoins, getBetsByMatch, updateBetStatus } from "../models/betModel.js";
-
 export const placeBetController = async (req, res) => {
   // Extraiem la resta de camps del body
   const { matchID, homeTeamID, awayTeamID, amount, predictedWinner } = req.body;
@@ -37,34 +36,36 @@ export const placeBetController = async (req, res) => {
   }
 };
 
-// Funció per resoldre totes les apostes d'un partit donat
+// Funció per resoldre les apostes d'un partit
 export const resolveBetsForMatch = async (matchID, winningTeam) => {
   try {
     const bets = await getBetsByMatch(matchID);
+    console.log(`Resolent apostes per al partit: ${matchID} | Equip guanyador: ${winningTeam}`);
+
     for (const bet of bets) {
-      // Només resolem les apostes pendents
       if (bet.Status !== 'pending') continue;
 
-      // En cas d'empate, reemborsar la quantitat apostada
+      console.log(`Processant aposta ${bet.BetID} | Usuari: ${bet.UserID} | Quantitat: ${bet.Amount}`);
+
       if (winningTeam.toLowerCase() === 'draw') {
-        await updateUserFootcoins(bet.UserID, bet.Amount);
-        await updateBetStatus(bet.BetID, 'refunded', bet.Amount);
-      }
-      // Si l'aposta és encertada
-      else if (bet.PredictedWinner.toLowerCase() === winningTeam.toLowerCase()) {
-        // Guany: 4 vegades la quantitat apostada
-        const winnings = bet.Amount * 4;
+        // Empat: l'usuari perd l'aposta
+        console.log(`Empat detectat: Aposta perduda per l'usuari ${bet.UserID}`);
+        await updateBetStatus(bet.BetID, 'lost', 0);
+      } else if (bet.PredictedWinner.toLowerCase() === winningTeam.toLowerCase()) {
+        // Guanya: suma 4x l'aposta
+        const winnings = bet.Amount * 4; // Math.abs no és necessari si Amount és positiu
+        console.log(`APOSTA GUANYADA! Afegint ${winnings} a l'usuari ${bet.UserID}`);
         await updateUserFootcoins(bet.UserID, winnings);
         await updateBetStatus(bet.BetID, 'won', winnings);
-      }
-      // Si l'aposta és errònia, ja s'ha deduït la quantitat
-      else {
+      } else {
+        // Perd: no es fa res
+        console.log(`Aposta perduda per l'usuari ${bet.UserID}`);
         await updateBetStatus(bet.BetID, 'lost', 0);
       }
     }
     return true;
   } catch (error) {
-    console.error("Error en resoldre les apostes:", error);
+    console.error("Error resolent les apostes:", error);
     throw error;
   }
 };

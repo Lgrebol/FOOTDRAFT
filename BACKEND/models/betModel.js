@@ -41,10 +41,14 @@ export const updateBetStatus = async (betID, status, winnings = 0) => {
 // Actualitza el saldo (Footcoins) d'un usuari
 export const updateUserFootcoins = async (userID, amount) => {
   const pool = await connectDb();
-  await pool.request()
+  const result = await pool
+    .request()
     .input("userID", sql.Int, userID)
-    .input("amount", sql.Decimal(18, 2), amount)
+    .input("amount", sql.Int, amount)
     .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserID = @userID");
+  
+  console.log(`Actualitzat saldo usuari ${userID}: +${amount} Footcoins`);
+  return result;
 };
 
 // Obté els Footcoins actuals d'un usuari

@@ -1,4 +1,4 @@
-import {
+import { 
   createMatch,
   getMatchById,
   addMatchEvent,
@@ -23,6 +23,8 @@ export const resetMatchController = async (req, res) => {
     res.status(500).send({ error: err.message });
   }
 };
+
+// Funció per crear un partit
 export const createMatchController = async (req, res) => {
   try {
     const { tournamentID, homeTeamID, awayTeamID, matchDate } = req.body;
@@ -32,6 +34,7 @@ export const createMatchController = async (req, res) => {
     res.status(500).send({ error: err.message });
   }
 };
+
 // Funció per actualitzar el temps actual del partit (la columna CurrentMinute ha d'existir a la taula Matches)
 export const updateMatchTime = async (matchID, currentMinute) => {
   const pool = await connectDb();
@@ -42,7 +45,7 @@ export const updateMatchTime = async (matchID, currentMinute) => {
     .query("UPDATE Matches SET CurrentMinute = @currentMinute WHERE MatchID = @matchID");
 };
 
-// Actualitza el controlador per obtenir la partida amb els esdeveniments
+// Funció per obtenir un partit amb els seus esdeveniments
 export const getMatchController = async (req, res) => {
   try {
     const { matchID } = req.params; // si la ruta és /:matchID
@@ -58,17 +61,18 @@ export const getMatchController = async (req, res) => {
   }
 };
 
+// Funció per simular un partit complet
 export const startMatchSimulationController = async (req, res) => {
   const { matchID } = req.body;
   if (!matchID) return res.status(400).send({ error: "Falta el camp matchID." });
   try {
-    // Obtenim la partida
+    // Obtenir la partida
     const match = await getMatchById(matchID);
     if (!match) return res.status(404).send({ error: "Partida no trobada." });
     
     const pool = await connectDb();
 
-    // Obtenim els jugadors actius dels dos equips
+    // Obtenir els jugadors actius dels dos equips
     const homePlayersResult = await pool
       .request()
       .input("teamID", sql.Int, match.HomeTeamID)
@@ -123,7 +127,7 @@ export const startMatchSimulationController = async (req, res) => {
       // Amb 30% de probabilitat es genera un esdeveniment durant aquest minut
       if (Math.random() < 0.3) {
         // Per mantenir l'equilibri, si la diferència de gols és ≥2, es dóna prioritat a l'equip que va perdent
-        let teamChoice = "home";
+        let teamChoice;
         if (Math.abs(homeGoals - awayGoals) >= 2) {
           teamChoice = homeGoals > awayGoals ? "away" : "home";
         } else {
@@ -131,12 +135,9 @@ export const startMatchSimulationController = async (req, res) => {
         }
         // Amb un 10% de probabilitat, simula una "golejada" (2 gols d'un cop)
         const isGolejada = Math.random() < 0.1;
-        let player;
-        if (teamChoice === "home") {
-          player = homePlayers[Math.floor(Math.random() * homePlayers.length)];
-        } else {
-          player = awayPlayers[Math.floor(Math.random() * awayPlayers.length)];
-        }
+        let player = teamChoice === "home" 
+          ? homePlayers[Math.floor(Math.random() * homePlayers.length)]
+          : awayPlayers[Math.floor(Math.random() * awayPlayers.length)];
         if (player) {
           // Decideix el tipus d'esdeveniment: Goal, Falta o Vermella
           const eventChance = Math.random();
@@ -183,12 +184,7 @@ export const startMatchSimulationController = async (req, res) => {
             description = `${player.PlayerName} ha rebut una targeta vermella per a l'${teamChoice === "home" ? "equip local" : "equip visitant"} al minut ${minute}`;
             await updatePlayerStatistics(player.PlayerID, 0, 0, 0, 1);
           }
-          const eventObj = {
-            minute,
-            eventType,
-            description,
-            team: teamChoice
-          };
+          const eventObj = { minute, eventType, description, team: teamChoice };
           events.push(eventObj);
           await addMatchEvent(matchID, player.PlayerID, eventType, minute, description);
           await updateMatchScore(matchID, homeGoals, awayGoals);
@@ -203,12 +199,9 @@ export const startMatchSimulationController = async (req, res) => {
       // Durant l'afegit, amb menor probabilitat (20%), només es simula un gol
       if (Math.random() < 0.2) {
         let teamChoice = Math.random() < 0.5 ? "home" : "away";
-        let player;
-        if (teamChoice === "home") {
-          player = homePlayers[Math.floor(Math.random() * homePlayers.length)];
-        } else {
-          player = awayPlayers[Math.floor(Math.random() * awayPlayers.length)];
-        }
+        let player = teamChoice === "home" 
+          ? homePlayers[Math.floor(Math.random() * homePlayers.length)]
+          : awayPlayers[Math.floor(Math.random() * awayPlayers.length)];
         if (player) {
           const eventType = "Goal";
           if (teamChoice === "home") {
@@ -225,11 +218,22 @@ export const startMatchSimulationController = async (req, res) => {
       }
     }
 
-    // Recopila les estadístiques finals
+    // Recopilació de les estadístiques finals
     const totalGoals = homeGoals + awayGoals;
     const totalFouls = homeFouls + awayFouls;
     const totalRedCards = homeRedCards + awayRedCards;
 
+    // Determinar l'equip guanyador
+    let winningTeam = "draw";
+    if (homeGoals > awayGoals) {
+      winningTeam = "home";
+    } else if (awayGoals > homeGoals) {
+      winningTeam = "away";
+    }
+    // Resolució de les apostes (la funció actualitzada s'encarrega d'actualitzar els Footcoins dels usuaris que han apostat)
+    await resolveBetsForMatch(matchID, winningTeam);
+
+    // Afegim els camps per indicar que el partit ha finalitzat
     const summary = {
       homeGoals,
       awayGoals,
@@ -242,18 +246,11 @@ export const startMatchSimulationController = async (req, res) => {
       totalRedCards,
       extraMinutes,
       finalMinute: 90 + extraMinutes,
-      events, // tots els esdeveniments simulats
-      currentMinute: 90 + extraMinutes
+      events, // Tots els esdeveniments simulats
+      currentMinute: 90 + extraMinutes,
+      matchEnded: true,
+      message: "El partit ha finalitzat. Mostrant estadístiques finals."
     };
-
-    // Resolució de les apostes
-    let winningTeam = "draw";
-    if (homeGoals > awayGoals) {
-      winningTeam = "home";
-    } else if (awayGoals > homeGoals) {
-      winningTeam = "away";
-    }
-    await resolveBetsForMatch(matchID, winningTeam);
 
     res.status(200).json(summary);
   } catch (err) {
