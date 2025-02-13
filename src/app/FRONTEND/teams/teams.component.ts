@@ -24,7 +24,7 @@ export class TeamsComponent implements OnInit {
   selectedTeamId: number | null = null; // Equip on s'assignarà el jugador
   selectedPlayerId: number | null = null; // Jugador reservat a assignar
 
-  currentUserID: number = 1;
+  currentUserID: number = 6;
   constructor(private http: HttpClient) {}
 
   ngOnInit() {

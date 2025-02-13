@@ -11,15 +11,14 @@ import { FormsModule } from '@angular/forms';
 })
 export class StoreComponent implements OnInit {
   storePlayers: any[] = [];
-  currentUserID: number = 1; // Simulem l'usuari actual
+  currentUserID: number = 6; // Simulem l'usuari actual
 
   // Variables per als filtres
   searchTerm: string = '';
   minPrice: number | null = null;
   maxPrice: number | null = null;
 
-  constructor(private http: HttpClient) {}
-
+  constructor(private http: HttpClient) {} 
   ngOnInit(): void {
     this.fetchStorePlayers();
   }

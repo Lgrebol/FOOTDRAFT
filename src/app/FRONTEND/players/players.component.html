@@ -1,44 +1,33 @@
 <div class="players-container">
   <h1>Llista de Jugadors</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Imatge</th>
-        <th>Nom</th>
-        <th>Posició</th>
-        <th>Punts</th>
-        <th>Equip</th>
-        <th>Accions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let player of players">
-        <td>
-          <!-- Per mostrar la imatge, necessitaràs un endpoint per recuperar-la o bé fer servir una conversió a Base64 -->
-          <!-- Exemple: si el servidor retorna la imatge en Base64, podries fer: -->
-          <img 
-            *ngIf="player.PlayerImage" 
-            [src]="'data:image/jpeg;base64,' + player.PlayerImage" 
-            alt="{{ player.PlayerName }}" 
-            width="50" 
-            height="50">
-          <img 
-            *ngIf="!player.PlayerImage" 
-            src="soccer-player.png" 
-            width="50" 
-            height="50">
-        </td>
-        <td>{{ player.PlayerName }}</td>
-        <td>{{ player.Position }}</td>
-        <td>{{ player.Points || 0 }}</td>
-        <td>{{ player.TeamName }}</td>
-        <td>
-          <button (click)="deletePlayer(player.PlayerID)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 
+  <!-- Llista de jugadors en format "carta" -->
+  <div class="cards">
+    <div class="player-card" *ngFor="let player of players">
+      <div class="card-image">
+        <img 
+          [src]="player.PlayerImage ? player.PlayerImage : 'soccer-player.png'" 
+          class="player-image"
+          alt="{{ player.PlayerName }}">
+      </div>
+      <div class="card-body">
+        <h2>{{ player.PlayerName }}</h2>
+        <p><strong>Posició:</strong> {{ player.Position }}</p>
+        <p><strong>Punts:</strong> {{ player.Points || 0 }}</p>
+        <p><strong>Equip:</strong> {{ player.TeamName }}</p>
+        <!-- Estadístiques extres si estan disponibles -->
+        <p *ngIf="player.Price"><strong>Preu:</strong> {{ player.Price }}€</p>
+        <p *ngIf="player.Height"><strong>Alçada:</strong> {{ player.Height }} cm</p>
+        <p *ngIf="player.Speed"><strong>Velocitat:</strong> {{ player.Speed }}</p>
+        <p *ngIf="player.Shooting"><strong>Dispar:</strong> {{ player.Shooting }}</p>
+      </div>
+      <div class="card-actions">
+        <button (click)="deletePlayer(player.PlayerID)">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulari per afegir un nou jugador -->
   <h2>Afegir Jugador</h2>
   <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
     <div>
@@ -49,7 +38,9 @@
       <label for="position">Posició:</label>
       <select id="position" [(ngModel)]="newPlayer.position" name="position" required>
         <option value="" disabled selected>Selecciona una posició</option>
-        <option *ngFor="let position of positions" [value]="position">{{ position }}</option>
+        <option *ngFor="let position of positions" [value]="position">
+          {{ position }}
+        </option>
       </select>
     </div>
     <div>

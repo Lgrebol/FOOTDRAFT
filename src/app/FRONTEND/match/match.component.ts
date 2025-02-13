@@ -20,10 +20,14 @@ export class MatchComponent implements OnInit, OnDestroy {
   matchSummary: any = null;
   matchStarted: boolean = false;
   pollingSubscription: Subscription | undefined;
-  baseUrl = 'http://localhost:3000/api/v1';
 
+  // Variables per les apostes
   betAmount: number = 0;
   predictedWinner: string = 'home';
+
+  // URL base
+  baseUrl = 'http://localhost:3000/api/v1';
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -32,6 +36,22 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.pollingSubscription?.unsubscribe();
+  }
+
+  loadTeams(): void {
+    this.http.get<any[]>(`${this.baseUrl}/teams`).subscribe(
+      data => this.teams = data,
+      error => console.error('Error carregant equips:', error)
+    );
+  }
+
+  canStartMatch(): boolean {
+    return !!(
+      this.selectedHomeTeam &&
+      this.selectedAwayTeam &&
+      this.selectedHomeTeam !== this.selectedAwayTeam &&
+      !this.matchStarted
+    );
   }
 
   startMatch(): void {
@@ -57,21 +77,6 @@ export class MatchComponent implements OnInit, OnDestroy {
         this.simulateMatch(matchID);
       },
       error => console.error('Error creant partida:', error)
-    );
-  }
-  loadTeams(): void {
-    this.http.get<any[]>(`${this.baseUrl}/teams`).subscribe(
-      data => this.teams = data,
-      error => console.error('Error carregant equips:', error)
-    );
-  }
-
-  canStartMatch(): boolean {
-    return !!(
-      this.selectedHomeTeam &&
-      this.selectedAwayTeam &&
-      this.selectedHomeTeam !== this.selectedAwayTeam &&
-      !this.matchStarted
     );
   }
 
@@ -108,18 +113,18 @@ export class MatchComponent implements OnInit, OnDestroy {
     );
   }
 
-    // Mètode per obtenir els headers d'autenticació
-    private getAuthHeaders(): HttpHeaders {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        console.error("No token found in localStorage");
-        return new HttpHeaders(); // o bé gestionar el cas d'error
-      }
-      return new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      });
+  // Mètode per obtenir els headers d'autenticació
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.error("No token found in localStorage");
+      return new HttpHeaders(); // o bé gestionar el cas d'error
     }
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
 
   placeBet(): void {
     if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
@@ -134,18 +139,18 @@ export class MatchComponent implements OnInit, OnDestroy {
       alert("⚠ L'aposta ha de ser superior a 0.");
       return;
     }
-
+  
     const bet = {
       homeTeamID: Number(this.selectedHomeTeam),
       awayTeamID: Number(this.selectedAwayTeam),
       amount: this.betAmount,
       predictedWinner: this.predictedWinner
     };
-
+  
     console.log("Aposta a enviar:", bet);
-
+  
     const headers = this.getAuthHeaders();
-
+  
     this.http.post<any>(`${this.baseUrl}/bets`, bet, { headers })
       .subscribe(
         () => alert('✅ Aposta registrada correctament!'),
@@ -155,4 +160,4 @@ export class MatchComponent implements OnInit, OnDestroy {
         }
       );
   }
-}
+}  

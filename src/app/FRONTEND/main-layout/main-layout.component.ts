@@ -26,12 +26,11 @@ export class MainLayoutComponent implements OnInit {
     this.userService.refreshUserData().subscribe({
       error: (err) => console.error('Error carregant dades inicials:', err)
     });
-  }  
+  }
 
   logout(): void {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userID');
-    this.router.navigate(['/login']);
-  }
-  
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('userID');
+  this.router.navigate(['/login']);
+}
 }

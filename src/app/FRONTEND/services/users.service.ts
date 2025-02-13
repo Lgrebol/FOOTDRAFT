@@ -13,7 +13,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (!token) {
       console.warn("No token found in localStorage");
       return new HttpHeaders();

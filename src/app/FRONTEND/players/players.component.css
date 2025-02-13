@@ -1,97 +1,115 @@
 /* Contenidor principal */
 .players-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Títols */
-  h1, h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* Taula */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  thead {
-    background-color: #4caf50;
-    color: white;
-  }
-  
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-  
-  tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  /* Botons */
-  button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  button:hover {
-    background-color: #e63939;
-  }
-  
-  /* Formulari */
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  form div {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #555;
-  }
-  
-  input, select {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  input:focus, select:focus {
-    border-color: #4caf50;
-    outline: none;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-  }
-  
-  button[type="submit"] {
-    background-color: #4caf50;
-    font-weight: bold;
-    padding: 10px 15px;
-    font-size: 16px;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #45a049;
-  }
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Contenidor de les cartes */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Estil de cada carta */
+.player-card {
+  background: #e6f2e6;
+  border: 1px solid #004D00;
+  border-radius: 8px;
+  width: 250px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 77, 0, 0.1);
+}
+
+/* Contenidor de la imatge de la carta */
+.card-image {
+  text-align: center;
+  background-color: #cce6cc;
+  padding: 10px;
+}
+
+/* Estils per a la imatge: dimensió fixa i retallada */
+.player-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Cos de la carta */
+.card-body {
+  padding: 15px;
+  flex-grow: 1;
+}
+
+.card-body h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  text-align: center;
+  color: #004D00;
+}
+
+.card-body p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #016F01;
+}
+
+/* Secció d'accions (botons) */
+.card-actions {
+  padding: 10px;
+  border-top: 1px solid #004D00;
+  text-align: center;
+}
+
+.card-actions button {
+  background-color: #016F01;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.card-actions button:hover {
+  background-color: #004D00;
+}
+
+/* Estils per al formulari d'afegir jugador */
+form {
+  margin-top: 30px;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+form label {
+  display: inline-block;
+  width: 100px;
+}
+
+form input,
+form select {
+  padding: 5px;
+  border: 1px solid #004D00;
+  border-radius: 4px;
+}
+
+form button {
+  background-color: #016F01;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #004D00;
+}
