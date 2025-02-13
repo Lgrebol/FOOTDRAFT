@@ -111,6 +111,5 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
       alert("⚠ Selecciona els equips abans d'apostar.");
     }
-  }
-  
+  }  
 }  

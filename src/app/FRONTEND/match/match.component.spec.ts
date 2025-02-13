@@ -137,4 +137,13 @@ describe('MatchComponent', () => {
       component.placeBet();
       expect(window.alert).toHaveBeenCalledWith("⚠ Selecciona els equips abans d'apostar.");
     });
+
+    it('should alert if the same team is selected for both home and away', () => {
+      spyOn(window, 'alert');
+      component.selectedHomeTeam = 1;
+      component.selectedAwayTeam = 1;
+      component.betAmount = 10;
+      component.placeBet();
+      expect(window.alert).toHaveBeenCalledWith("⚠ No pots apostar en un partit amb dos equips iguals.");
+    });
 });
