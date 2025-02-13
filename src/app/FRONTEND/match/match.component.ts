@@ -107,6 +107,19 @@ export class MatchComponent implements OnInit, OnDestroy {
     );
   }
 
+    // Mètode per obtenir els headers d'autenticació
+    private getAuthHeaders(): HttpHeaders {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error("No token found in localStorage");
+        return new HttpHeaders(); // o bé gestionar el cas d'error
+      }
+      return new HttpHeaders({
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      });
+    }
+
   placeBet(): void {
     if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
       alert("⚠ Selecciona els equips abans d'apostar.");
