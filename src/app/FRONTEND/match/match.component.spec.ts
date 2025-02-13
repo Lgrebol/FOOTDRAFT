@@ -162,4 +162,13 @@ describe('MatchComponent', () => {
       expect(headers.get('Authorization')).toEqual('Bearer test-token');
       expect(headers.get('Content-Type')).toEqual('application/json');
     });
+
+    it('hauria de retornar headers buits i registrar un error si no hi ha authToken', () => {
+      localStorage.removeItem('authToken');
+      spyOn(console, 'error');
+      const headers = component['getAuthHeaders']();
+      expect(console.error).toHaveBeenCalledWith('No token found in localStorage');
+      expect(headers.has('Authorization')).toBeFalse();
+      expect(headers.get('Content-Type')).toBeNull(); // No s'ha definit cap Content-Type
+    });
 });
