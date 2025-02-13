@@ -16,7 +16,7 @@ describe('MatchComponent', () => {
     }).compileComponents();
   });
 
-  // Creem el component però sense cridar detectChanges() (és a dir, sense executar ngOnInit)
+  // Creem el component sense executar ngOnInit encara
   beforeEach(() => {
     fixture = TestBed.createComponent(MatchComponent);
     component = fixture.componentInstance;
@@ -117,14 +117,14 @@ describe('MatchComponent', () => {
   it('should disable start button when teams are the same', () => {
     fixture.detectChanges();
     const teamsReq = httpTestingController.expectOne(`${baseUrl}/teams`);
-    teamsReq.flush([{ TeamID: 1 }, { TeamID: 2 }]);
+    teamsReq.flush([{ TeamID: 1, TeamName: 'Team A' }, { TeamID: 2, TeamName: 'Team B' }]);
     
     fixture.detectChanges();
     component.selectedHomeTeam = 1;
     component.selectedAwayTeam = 1;
     fixture.detectChanges();
     
-    const button = fixture.nativeElement.querySelector('button');
+    const button = fixture.nativeElement.querySelector('#startButton');
     expect(button.disabled).toBeTrue();
   });
 });

@@ -1,52 +1,85 @@
 <div class="match-page">
-    <div class="team-selectors">
-      <!-- Selector per a l'equip local -->
-      <div class="team-selector">
-        <h3>Equip Local</h3>
-        <select [(ngModel)]="selectedHomeTeam">
-          <option value="" disabled selected>Selecciona un equip</option>
-          <option *ngFor="let team of teams" [value]="team.TeamID">
-            {{ team.TeamName }}
-          </option>
+  <!-- Secció de selecció d'equips -->
+  <div class="team-selectors">
+    <!-- Selector per a l'equip local -->
+    <div class="team-selector">
+      <h3>Equip Local</h3>
+      <select [(ngModel)]="selectedHomeTeam">
+        <option value="" disabled>Selecciona un equip</option>
+        <option *ngFor="let team of teams" [value]="team.TeamID">
+          {{ team.TeamName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Selector per a l'equip visitant -->
+    <div class="team-selector">
+      <h3>Equip Visitant</h3>
+      <select [(ngModel)]="selectedAwayTeam">
+        <option value="" disabled>Selecciona un equip</option>
+        <option *ngFor="let team of teams" [value]="team.TeamID">
+          {{ team.TeamName }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Secció d'apostes (abans d'iniciar la partida) -->
+  <div class="betting-section" *ngIf="!matchStarted">
+    <h3>Fes una aposta</h3>
+    <form (ngSubmit)="placeBet()">
+      <label>
+        Quantitat:
+        <input type="number" [(ngModel)]="betAmount" name="betAmount" required>
+      </label>
+      <label>
+        Predicció:
+        <select [(ngModel)]="predictedWinner" name="predictedWinner" required>
+          <option value="home">Equip Local</option>
+          <option value="away">Equip Visitant</option>
         </select>
+      </label>
+      <button type="submit">Apostar</button>
+    </form>
+  </div>
+
+  <!-- Botons per iniciar o reiniciar la partida -->
+  <div class="controls">
+    <button id="startButton" [disabled]="!canStartMatch()" (click)="startMatch()">Iniciar Partida</button>
+    <button (click)="resetMatch()" [disabled]="!matchStarted">Reiniciar Partida</button>
+  </div>
+
+  <!-- Vista del marcador i esdeveniments (mostrada quan la partida està en marxa) -->
+  <!-- Vista del marcador i esdeveniments mentre el partit està en marxa -->
+  <div class="match-display" *ngIf="matchStarted && !matchSummary?.matchEnded">
+    <div class="scoreboard">
+      <div class="team">
+        <h3>{{ matchSummary?.homeTeam || 'Equip Local' }}</h3>
+        <p>{{ match?.HomeGoals || 0 }}</p>
       </div>
-  
-      <!-- Selector per a l'equip visitant -->
-      <div class="team-selector">
-        <h3>Equip Visitant</h3>
-        <select [(ngModel)]="selectedAwayTeam">
-          <option value="" disabled selected>Selecciona un equip</option>
-          <option *ngFor="let team of teams" [value]="team.TeamID">
-            {{ team.TeamName }}
-          </option>
-        </select>
+      <div class="match-time">
+        <p>{{ match?.CurrentMinute || 0 }}'</p>
+      </div>
+      <div class="team">
+        <h3>{{ matchSummary?.awayTeam || 'Equip Visitant' }}</h3>
+        <p>{{ match?.AwayGoals || 0 }}</p>
       </div>
     </div>
-  
-    <!-- Botons per iniciar/reiniciar partida -->
-    <div class="controls">
-      <button (click)="startMatch()" [disabled]="!canStartMatch()">Iniciar Partida</button>
-      <button (click)="resetMatch()" [disabled]="!matchStarted">Reiniciar Partida</button>
-    </div>
-  
-    <!-- Vista del marcador i els esdeveniments -->
-    <div class="match-display" *ngIf="matchStarted">
-      <div class="scoreboard">
-        <div class="team">
-          <h3>{{ matchSummary?.homeTeam || 'Equip Local' }}</h3>
-          <p>{{ match?.HomeGoals || 0 }}</p>
-        </div>
-        <div class="team">
-          <h3>{{ matchSummary?.awayTeam || 'Equip Visitant' }}</h3>
-          <p>{{ match?.AwayGoals || 0 }}</p>
-        </div>
-      </div>
-      <div class="events">
-        <h4>Esdeveniments</h4>
-        <div *ngFor="let event of match?.events">
-          {{ event.Minute }}': {{ event.Description }}
-        </div>
+    <div class="events">
+      <h4>Esdeveniments</h4>
+      <div *ngFor="let event of match?.events">
+        {{ event.Minute }}': {{ event.Description }}
       </div>
     </div>
   </div>
-      
+
+  <!-- Vista final amb les estadístiques i animació quan el partit hagi finalitzat -->
+  <div class="match-summary animated" *ngIf="matchSummary?.matchEnded">
+    <h2>El partit ha finalitzat!</h2>
+    <p>Marc Final: {{ matchSummary.homeGoals }} - {{ matchSummary.awayGoals }}</p>
+    <p>Gols Totals: {{ matchSummary.totalGoals }}</p>
+    <p>Falts Totals: {{ matchSummary.totalFouls }}</p>
+    <p>Targetes Vermelles: {{ matchSummary.totalRedCards }}</p>
+    <p>{{ matchSummary.message }}</p>
+  </div>
+</div>
