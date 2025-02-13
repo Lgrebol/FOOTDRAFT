@@ -184,7 +184,7 @@ describe('MatchComponent', () => {
 
       component.placeBet();
 
-      const req = httpTestingController.expectOne(${baseUrl}/bets);
+      const req = httpTestingController.expectOne(`${baseUrl}/bets`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual({
         homeTeamID: 1,

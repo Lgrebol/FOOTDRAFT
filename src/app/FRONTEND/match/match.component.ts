@@ -23,6 +23,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   baseUrl = 'http://localhost:3000/api/v1';
 
   betAmount: number = 0;
+  predictedWinner: string = 'home';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -120,18 +121,38 @@ export class MatchComponent implements OnInit, OnDestroy {
       });
     }
 
-  placeBet(): void {
-    if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
-      alert("⚠ Selecciona els equips abans d'apostar.");
-      return;
+    placeBet(): void {
+      if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
+        alert("⚠ Selecciona els equips abans d'apostar.");
+        return;
+      }
+      if (this.selectedHomeTeam === this.selectedAwayTeam) {
+        alert("⚠ No pots apostar en un partit amb dos equips iguals.");
+        return;
+      }
+      if (this.betAmount <= 0) {
+        alert("⚠ L'aposta ha de ser superior a 0.");
+        return;
+      }
+    
+      const bet = {
+        homeTeamID: Number(this.selectedHomeTeam),
+        awayTeamID: Number(this.selectedAwayTeam),
+        amount: this.betAmount,
+        predictedWinner: this.predictedWinner
+      };
+    
+      console.log("Aposta a enviar:", bet);
+    
+      const headers = this.getAuthHeaders();
+    
+      this.http.post<any>(`${this.baseUrl}/bets`, bet, { headers })
+        .subscribe(
+          () => alert('✅ Aposta registrada correctament!'),
+          error => {
+            console.error("Error en realitzar l'aposta:", error);
+            alert(error.error?.error || "Error en realitzar l'aposta.");
+          }
+        );
     }
-    if (this.selectedHomeTeam === this.selectedAwayTeam) {
-      alert("⚠ No pots apostar en un partit amb dos equips iguals.");
-      return;
-    }
-    if (this.betAmount <= 0) {
-      alert("⚠ L'aposta ha de ser superior a 0.");
-      return;
-    }
-  }  
-}  
+}
