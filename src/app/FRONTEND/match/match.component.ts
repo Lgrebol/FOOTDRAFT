@@ -32,6 +32,31 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.pollingSubscription?.unsubscribe();
   }
 
+  startMatch(): void {
+    if (!this.canStartMatch()) {
+      alert("⚠ Selecciona equips diferents per iniciar el partit.");
+      return;
+    }
+
+    const newMatch = {
+      tournamentID: 8,
+      homeTeamID: this.selectedHomeTeam,
+      awayTeamID: this.selectedAwayTeam,
+      matchDate: new Date()
+    };
+
+    this.http.post<any>(`${this.baseUrl}/matches`, newMatch).subscribe(
+      res => {
+        const matchID = res.matchID;
+        console.log("✅ Partida creada amb matchID:", matchID);
+
+        this.matchStarted = true;
+        this.pollingSubscription = interval(1000).subscribe(() => this.loadMatchData(matchID));
+        this.simulateMatch(matchID);
+      },
+      error => console.error('Error creant partida:', error)
+    );
+  }
   loadTeams(): void {
     this.http.get<any[]>(`${this.baseUrl}/teams`).subscribe(
       data => this.teams = data,
