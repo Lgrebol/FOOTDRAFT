@@ -110,6 +110,11 @@ export class MatchComponent implements OnInit, OnDestroy {
   placeBet(): void {
     if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
       alert("⚠ Selecciona els equips abans d'apostar.");
+      return;
+    }
+    if (this.selectedHomeTeam === this.selectedAwayTeam) {
+      alert("⚠ No pots apostar en un partit amb dos equips iguals.");
+      return;
     }
   }  
 }  
