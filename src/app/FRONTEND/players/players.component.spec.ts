@@ -47,7 +47,7 @@ describe('PlayersComponent', () => {
   });
 
   describe('addPlayer', () => {
-    it('hauria d’afegir un jugador correctament', () => {
+    it('should add new player correctly', () => {
       const mockPlayers = [
         { id: 1, name: 'Player 1', position: 'Defender', team: 'Team A' },
         { id: 2, name: 'Player 2', position: 'Forward', team: 'Team B' },
@@ -81,18 +81,19 @@ describe('PlayersComponent', () => {
       httpMock.expectNone('http://localhost:3000/api/v1/players');
     });
 
-    it('hauria de mostrar un error si addPlayer falla', () => {
+    it('should show an error if addPlayer fails', () => {
       spyOn(console, 'error');
       component.newPlayer = { name: 'New Player', position: 'Midfielder', team: 'Team C' };
-
+      component.selectedFile = new File(['dummy content'], 'dummy.png', { type: 'image/png' });
+      
       component.addPlayer();
-
+    
       const req = httpMock.expectOne('http://localhost:3000/api/v1/players');
       req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
-
+    
       expect(console.error).toHaveBeenCalledWith('Error afegint el jugador:', jasmine.anything());
     });
-
+    
     it('shouldn’t add new player if no teams are available', () => {
       component.teams = []; // Simulate that no teams are available
       component.newPlayer = {
