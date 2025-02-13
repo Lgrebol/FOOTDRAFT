@@ -40,7 +40,7 @@ export const placeBetController = async (req, res) => {
 export const resolveBetsForMatch = async (matchID, winningTeam) => {
   try {
     const bets = await getBetsByMatch(matchID);
-    console.log(`Resolent apostes per al partit: ${matchID} | Equip guanyador: ${winningTeam}`);
+    console.log(`Resolent apostes per al partit: ${matchID} | Guanyador: ${winningTeam}`);
 
     for (const bet of bets) {
       if (bet.Status !== 'pending') continue;
@@ -48,24 +48,24 @@ export const resolveBetsForMatch = async (matchID, winningTeam) => {
       console.log(`Processant aposta ${bet.BetID} | Usuari: ${bet.UserID} | Quantitat: ${bet.Amount}`);
 
       if (winningTeam.toLowerCase() === 'draw') {
-        // Empat: l'usuari perd l'aposta
-        console.log(`Empat detectat: Aposta perduda per l'usuari ${bet.UserID}`);
+        // EMPAT: L'usuari perd TOTA l'aposta
+        console.log(`EMPAT! L'usuari ${bet.UserID} perd ${bet.Amount} Footcoins.`);
         await updateBetStatus(bet.BetID, 'lost', 0);
       } else if (bet.PredictedWinner.toLowerCase() === winningTeam.toLowerCase()) {
-        // Guanya: suma 4x l'aposta
-        const winnings = bet.Amount * 4; // Math.abs no és necessari si Amount és positiu
-        console.log(`APOSTA GUANYADA! Afegint ${winnings} a l'usuari ${bet.UserID}`);
+        // VICTÒRIA: L'usuari rep 4x l'aposta (guany net)
+        const winnings = bet.Amount * 4;
+        console.log(`VICTÒRIA! +${winnings} Footcoins per a l'usuari ${bet.UserID}`);
         await updateUserFootcoins(bet.UserID, winnings);
         await updateBetStatus(bet.BetID, 'won', winnings);
       } else {
-        // Perd: no es fa res
-        console.log(`Aposta perduda per l'usuari ${bet.UserID}`);
+        // DERROTA: L'usuari perd TOTA l'aposta
+        console.log(`DERROTA. L'usuari ${bet.UserID} perd ${bet.Amount} Footcoins.`);
         await updateBetStatus(bet.BetID, 'lost', 0);
       }
     }
     return true;
   } catch (error) {
-    console.error("Error resolent les apostes:", error);
+    console.error("Error resolent apostes:", error);
     throw error;
   }
 };

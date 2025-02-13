@@ -44,7 +44,7 @@ export const updateUserFootcoins = async (userID, amount) => {
   const result = await pool
     .request()
     .input("userID", sql.Int, userID)
-    .input("amount", sql.Int, amount)
+    .input("amount", sql.Decimal(18, 2), amount) // Canvia sql.Int → sql.Decimal
     .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserID = @userID");
   
   console.log(`Actualitzat saldo usuari ${userID}: +${amount} Footcoins`);

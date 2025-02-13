@@ -8,7 +8,8 @@ import { TournamentComponent } from './FRONTEND/tournament/tournament.component'
 import { MatchComponent } from './FRONTEND/match/match.component';
 import { StoreComponent } from './FRONTEND/store/store.component';
 export const appRoutes: Routes = [
-  { path: '', component: LoginRegisterComponent },
+  { path: '', component: LoginRegisterComponent },  // Aquesta segueix sent la ruta per defecte
+  { path: 'login', component: LoginRegisterComponent }, // Afegim la ruta explícita per login
   {
     path: '',
     component: MainLayoutComponent,
@@ -18,7 +19,9 @@ export const appRoutes: Routes = [
       { path: 'teams', component: TeamsComponent },
       { path: 'tournaments', component: TournamentComponent },
       { path: 'match', component: MatchComponent },
-      { path:'store', component: StoreComponent }
+      { path: 'store', component: StoreComponent }
     ]
-  }
+  },
+  { path: 'login', redirectTo: '/login' }
 ];
+
