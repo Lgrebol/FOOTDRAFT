@@ -116,5 +116,9 @@ export class MatchComponent implements OnInit, OnDestroy {
       alert("⚠ No pots apostar en un partit amb dos equips iguals.");
       return;
     }
+    if (this.betAmount <= 0) {
+      alert("⚠ L'aposta ha de ser superior a 0.");
+      return;
+    }
   }  
 }  
