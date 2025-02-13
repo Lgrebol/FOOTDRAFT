@@ -155,4 +155,33 @@ describe('MatchComponent', () => {
       component.placeBet();
       expect(window.alert).toHaveBeenCalledWith("⚠ L'aposta ha de ser superior a 0.");
     });
+
+    it('should send bet and alert success when bet is valid', fakeAsync(() => {
+      // Afegim un token a localStorage per simular autenticació
+      localStorage.setItem('authToken', 'test-token');
+      spyOn(window, 'alert');
+
+      component.selectedHomeTeam = 1;
+      component.selectedAwayTeam = 2;
+      component.betAmount = 50;
+      component.predictedWinner = 'home';
+
+      component.placeBet();
+
+      const req = httpTestingController.expectOne(`${baseUrl}/bets`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({
+        homeTeamID: 1,
+        awayTeamID: 2,
+        amount: 50,
+        predictedWinner: 'home'
+      });
+      expect(req.request.headers.get('Authorization')).toBe('Bearer test-token');
+
+      req.flush({});
+      tick();
+      expect(window.alert).toHaveBeenCalledWith('✅ Aposta registrada correctament!');
+
+      localStorage.removeItem('authToken');
+    }));
 });
