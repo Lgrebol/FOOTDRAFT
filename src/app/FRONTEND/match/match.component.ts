@@ -154,5 +154,5 @@ export class MatchComponent implements OnInit, OnDestroy {
             alert(error.error?.error || "Error en realitzar l'aposta.");
           }
         );
-    }
+    }    
 }

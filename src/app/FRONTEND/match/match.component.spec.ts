@@ -200,4 +200,26 @@ describe('MatchComponent', () => {
 
       localStorage.removeItem('authToken');
     }));
+
+    it('should send bet without auth header if no token is present', fakeAsync(() => {
+      // Assegurem que no hi ha token a localStorage
+      localStorage.removeItem('authToken');
+      spyOn(window, 'alert');
+
+      component.selectedHomeTeam = 1;
+      component.selectedAwayTeam = 2;
+      component.betAmount = 50;
+      component.predictedWinner = 'home';
+
+      component.placeBet();
+
+      const req = httpTestingController.expectOne(`${baseUrl}/bets`);
+      expect(req.request.method).toBe('POST');
+      // Com que no hi ha token, no s'ha d'enviar l'header 'Authorization'
+      expect(req.request.headers.get('Authorization')).toBeNull();
+
+      req.flush({});
+      tick();
+      expect(window.alert).toHaveBeenCalledWith('✅ Aposta registrada correctament!');
+    }));
 });
