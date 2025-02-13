@@ -222,4 +222,27 @@ describe('MatchComponent', () => {
       tick();
       expect(window.alert).toHaveBeenCalledWith('✅ Aposta registrada correctament!');
     }));
+
+    it('should alert error when bet fails', fakeAsync(() => {
+      localStorage.setItem('authToken', 'test-token');
+      spyOn(window, 'alert');
+
+      component.selectedHomeTeam = 1;
+      component.selectedAwayTeam = 2;
+      component.betAmount = 50;
+      component.predictedWinner = 'home';
+
+      component.placeBet();
+
+      const req = httpTestingController.expectOne(`${baseUrl}/bets`);
+      expect(req.request.method).toBe('POST');
+
+      // Simulem un error de la API
+      const errorResponse = { status: 400, statusText: 'Bad Request' };
+      req.flush({ error: 'Invalid bet' }, errorResponse);
+      tick();
+      expect(window.alert).toHaveBeenCalledWith('Invalid bet');
+
+      localStorage.removeItem('authToken');
+    }));
 });
