@@ -127,4 +127,15 @@ describe('MatchComponent', () => {
     const button = fixture.nativeElement.querySelector('#startButton');
     expect(button.disabled).toBeTrue();
   });
+
+
+    it('should alert if no teams are selected', () => {
+      spyOn(window, 'alert');
+      // No es seleccionen equips
+      component.selectedHomeTeam = null;
+      component.selectedAwayTeam = null;
+      component.betAmount = 10;
+      component.placeBet();
+      expect(window.alert).toHaveBeenCalledWith("⚠ Selecciona els equips abans d'apostar.");
+    });
 });
