@@ -121,38 +121,38 @@ export class MatchComponent implements OnInit, OnDestroy {
       });
     }
 
-    placeBet(): void {
-      if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
-        alert("⚠ Selecciona els equips abans d'apostar.");
-        return;
-      }
-      if (this.selectedHomeTeam === this.selectedAwayTeam) {
-        alert("⚠ No pots apostar en un partit amb dos equips iguals.");
-        return;
-      }
-      if (this.betAmount <= 0) {
-        alert("⚠ L'aposta ha de ser superior a 0.");
-        return;
-      }
-    
-      const bet = {
-        homeTeamID: Number(this.selectedHomeTeam),
-        awayTeamID: Number(this.selectedAwayTeam),
-        amount: this.betAmount,
-        predictedWinner: this.predictedWinner
-      };
-    
-      console.log("Aposta a enviar:", bet);
-    
-      const headers = this.getAuthHeaders();
-    
-      this.http.post<any>(`${this.baseUrl}/bets`, bet, { headers })
-        .subscribe(
-          () => alert('✅ Aposta registrada correctament!'),
-          error => {
-            console.error("Error en realitzar l'aposta:", error);
-            alert(error.error?.error || "Error en realitzar l'aposta.");
-          }
-        );
-    }    
+  placeBet(): void {
+    if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
+      alert("⚠ Selecciona els equips abans d'apostar.");
+      return;
+    }
+    if (this.selectedHomeTeam === this.selectedAwayTeam) {
+      alert("⚠ No pots apostar en un partit amb dos equips iguals.");
+      return;
+    }
+    if (this.betAmount <= 0) {
+      alert("⚠ L'aposta ha de ser superior a 0.");
+      return;
+    }
+
+    const bet = {
+      homeTeamID: Number(this.selectedHomeTeam),
+      awayTeamID: Number(this.selectedAwayTeam),
+      amount: this.betAmount,
+      predictedWinner: this.predictedWinner
+    };
+
+    console.log("Aposta a enviar:", bet);
+
+    const headers = this.getAuthHeaders();
+
+    this.http.post<any>(`${this.baseUrl}/bets`, bet, { headers })
+      .subscribe(
+        () => alert('✅ Aposta registrada correctament!'),
+        error => {
+          console.error("Error en realitzar l'aposta:", error);
+          alert(error.error?.error || "Error en realitzar l'aposta.");
+        }
+      );
+  }
 }
