@@ -22,6 +22,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   pollingSubscription: Subscription | undefined;
   baseUrl = 'http://localhost:3000/api/v1';
 
+  betAmount: number = 0;
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -105,4 +106,11 @@ export class MatchComponent implements OnInit, OnDestroy {
       error => console.error('Error reiniciant partida:', error)
     );
   }
+
+  placeBet(): void {
+    if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
+      alert("⚠ Selecciona els equips abans d'apostar.");
+    }
+  }
+  
 }  

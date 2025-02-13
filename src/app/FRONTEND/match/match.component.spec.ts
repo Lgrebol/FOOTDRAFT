@@ -128,7 +128,6 @@ describe('MatchComponent', () => {
     expect(button.disabled).toBeTrue();
   });
 
-
     it('should alert if no teams are selected', () => {
       spyOn(window, 'alert');
       // No es seleccionen equips
