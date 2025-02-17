@@ -5,17 +5,17 @@
   <div class="cards">
     <div class="player-card" *ngFor="let player of players">
       <div class="card-image">
-        <img 
-          [src]="player.PlayerImage ? player.PlayerImage : 'soccer-player.png'" 
+        <img
+          [src]="player.PlayerImage ? 'data:image/png;base64,' + player.PlayerImage : 'soccer-player.png'"
           class="player-image"
-          alt="{{ player.PlayerName }}">
+          alt="{{ player.PlayerName }}"
+        />
       </div>
       <div class="card-body">
         <h2>{{ player.PlayerName }}</h2>
         <p><strong>Posició:</strong> {{ player.Position }}</p>
         <p><strong>Punts:</strong> {{ player.Points || 0 }}</p>
         <p><strong>Equip:</strong> {{ player.TeamName }}</p>
-        <!-- Estadístiques extres si estan disponibles -->
         <p *ngIf="player.Price"><strong>Preu:</strong> {{ player.Price }}€</p>
         <p *ngIf="player.Height"><strong>Alçada:</strong> {{ player.Height }} cm</p>
         <p *ngIf="player.Speed"><strong>Velocitat:</strong> {{ player.Speed }}</p>
@@ -27,35 +27,143 @@
     </div>
   </div>
 
-  <!-- Formulari per afegir un nou jugador -->
-  <h2>Afegir Jugador</h2>
-  <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
-    <div>
-      <label for="name">Nom:</label>
-      <input id="name" type="text" [(ngModel)]="newPlayer.name" name="name" required />
-    </div>
-    <div>
-      <label for="position">Posició:</label>
-      <select id="position" [(ngModel)]="newPlayer.position" name="position" required>
-        <option value="" disabled selected>Selecciona una posició</option>
-        <option *ngFor="let position of positions" [value]="position">
-          {{ position }}
-        </option>
-      </select>
-    </div>
-    <div>
-      <label for="team">Equip:</label>
-      <select id="team" [(ngModel)]="newPlayer.team" name="team" required>
-        <option value="" disabled selected>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.TeamID">
-          {{ team.TeamName }}
-        </option>
-      </select>
-    </div>
-    <div>
-      <label for="image">Imatge del jugador:</label>
-      <input id="image" type="file" (change)="onFileSelected($event)" />
-    </div>
-    <button type="submit">Afegir Jugador</button>
-  </form>
+  <div class="form-container">
+    <h2>Afegir Jugador</h2>
+    <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Nom:</label>
+        <input
+          id="name"
+          type="text"
+          [(ngModel)]="newPlayer.name"
+          name="name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="position">Posició:</label>
+        <select
+          id="position"
+          [(ngModel)]="newPlayer.position"
+          name="position"
+          required
+        >
+          <option value="" disabled selected>Selecciona una posició</option>
+          <option *ngFor="let position of positions" [value]="position">
+            {{ position }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="team">Equip:</label>
+        <select
+          id="team"
+          [(ngModel)]="newPlayer.team"
+          name="team"
+          required
+        >
+          <option value="" disabled selected>Selecciona un equip</option>
+          <option *ngFor="let team of teams" [value]="team.TeamID">
+            {{ team.TeamName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Preu (€):</label>
+        <input
+          id="price"
+          type="number"
+          [(ngModel)]="newPlayer.price"
+          name="price"
+          required
+        />
+      </div>
+      
+      <div class="form-group">
+        <label for="height">Alçada (cm):</label>
+        <input
+          id="height"
+          type="number"
+          [(ngModel)]="newPlayer.height"
+          name="height"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="speed">Velocitat:</label>
+        <input
+          id="speed"
+          type="number"
+          [(ngModel)]="newPlayer.speed"
+          name="speed"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="shooting">Dispar:</label>
+        <input
+          id="shooting"
+          type="number"
+          [(ngModel)]="newPlayer.shooting"
+          name="shooting"
+          required
+        />
+      </div>
+
+      <!-- Nou camp per a 'isForSale' amb radio buttons -->
+      <div class="form-group">
+        <label>En venda:</label>
+        <div>
+          <input
+            type="radio"
+            id="isForSaleYes"
+            name="isForSale"
+            [(ngModel)]="newPlayer.isForSale"
+            [value]="true"
+          />
+          <label for="isForSaleYes">Sí</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            id="isForSaleNo"
+            name="isForSale"
+            [(ngModel)]="newPlayer.isForSale"
+            [value]="false"
+          />
+          <label for="isForSaleNo">No</label>
+        </div>
+      </div>
+
+      <!-- Nou camp per a 'isActive' -->
+      <div class="form-group">
+        <label for="isActive">Està actiu:</label>
+        <input
+          id="isActive"
+          type="checkbox"
+          [(ngModel)]="newPlayer.isActive"
+          name="isActive"
+          checked
+        />
+      </div>
+
+      <!-- Camp per pujar la imatge -->
+      <div class="form-group">
+        <label for="image">Imatge del jugador:</label>
+        <input
+          id="image"
+          type="file"
+          (change)="onFileSelected($event)"
+          required
+        />
+      </div>
+
+      <button type="submit">Afegir Jugador</button>
+    </form>
+  </div>
 </div>

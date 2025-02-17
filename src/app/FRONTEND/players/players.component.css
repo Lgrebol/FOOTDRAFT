@@ -80,36 +80,132 @@
   background-color: #004D00;
 }
 
-/* Estils per al formulari d'afegir jugador */
-form {
-  margin-top: 30px;
+/* Contenidor principal del formulari */
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-form div {
-  margin-bottom: 10px;
+/* Títol del formulari */
+.form-container h2 {
+  text-align: center;
+  color: #004d00;
+  margin-bottom: 1.5rem;
 }
 
-form label {
-  display: inline-block;
-  width: 100px;
+/* Grup d'elements del formulari */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
 }
 
-form input,
-form select {
-  padding: 5px;
-  border: 1px solid #004D00;
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #004d00;
+}
+
+/* Inputs, selects i camps de fitxer */
+.form-group input[type="text"],
+.form-group select,
+.form-group input[type="number"],
+.form-group input[type="file"] {
+  padding: 0.5rem;
+  border: 1px solid #004d00;
   border-radius: 4px;
+  font-size: 1rem;
 }
 
-form button {
-  background-color: #016F01;
+/* Inputs de radio i checkbox */
+.form-group input[type="radio"],
+.form-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* Estil per als grups en línia (checkbox i radio) */
+.inline-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.inline-group label {
+  font-weight: normal;
+  margin: 0;
+  color: #004d00;
+}
+
+/* Botó d'enviament */
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #016f01;
   border: none;
-  color: white;
-  padding: 10px 15px;
   border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
 }
 
-form button:hover {
-  background-color: #004D00;
+button[type="submit"]:hover {
+  background-color: #004d00;
 }
+
+/* Responsive: en pantalles més grans, posarem el label i l'input en fila */
+@media (min-width: 600px) {
+  .form-group {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .form-group label {
+    width: 150px;
+    margin-bottom: 0;
+  }
+
+  .form-group input[type="text"],
+  .form-group select,
+  .form-group input[type="file"],
+  .form-group input[type="number"] {
+    flex: 1;
+  }
+}
+
+/* Estils per al formulari de 'En venda' */
+.form-group div {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Estils per a l'input de fitxer */
+.form-group input[type="file"] {
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+button[type="submit"] {
+  background-color: #016f01;
+  color: white;
+  font-size: 1.1rem;
+  padding: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #004d00;
+}
+

@@ -13,19 +13,25 @@ import { FormsModule } from '@angular/forms';
 export class PlayersComponent implements OnInit {
   players: any[] = [];
   teams: any[] = [];
-  
+
   // Camps per al nou jugador
   newPlayer = {
     name: '',
     position: '',
-    team: ''
+    team: '',
+    isActive: true,
+    isForSale: false,
+    price: 0,
+    height: 0,
+    speed: 0,
+    shooting: 0
   };
 
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
   selectedFile: File | null = null; // Fitxer seleccionat
 
-  constructor(private http: HttpClient) {}
-  
+  constructor(public http: HttpClient) {}
+
   ngOnInit() {
     this.fetchPlayers();
     this.fetchTeams();
@@ -35,8 +41,6 @@ export class PlayersComponent implements OnInit {
   fetchPlayers() {
     this.http.get<any[]>('http://localhost:3000/api/v1/players').subscribe(
       (data) => {
-        // Si les imatges es retornen com a binari, potser has de convertir-les a Base64.
-        // Aquest exemple assumeix que el servidor ja envia la imatge en format Base64.
         this.players = data;
       },
       (error) => {
@@ -66,20 +70,44 @@ export class PlayersComponent implements OnInit {
 
   // Afegir un nou jugador
   addPlayer() {
-    // Comprovem que hi hagi fitxer seleccionat
-    if (this.newPlayer.name && this.newPlayer.position && this.newPlayer.team && this.selectedFile) {
+    // Si no hi ha equips disponibles, no s'ha de procedir
+    if (!this.teams || this.teams.length === 0) {
+      return;
+    }
+    // Comprovem que tots els camps siguin omplerts
+    if (
+      this.newPlayer.name &&
+      this.newPlayer.position &&
+      this.newPlayer.team &&
+      this.selectedFile
+    ) {
       const formData = new FormData();
       formData.append('playerName', this.newPlayer.name);
       formData.append('position', this.newPlayer.position);
       formData.append('teamID', this.newPlayer.team);
-      // El nom "image" ha de coincidir amb el definit en upload.single("image")
+      formData.append('isActive', this.newPlayer.isActive ? '1' : '0');
+      formData.append('isForSale', this.newPlayer.isForSale ? '1' : '0');
+      formData.append('price', this.newPlayer.price.toString());
+      formData.append('height', this.newPlayer.height.toString());
+      formData.append('speed', this.newPlayer.speed.toString());
+      formData.append('shooting', this.newPlayer.shooting.toString());
       formData.append('image', this.selectedFile, this.selectedFile.name);
 
       this.http.post('http://localhost:3000/api/v1/players', formData).subscribe(
         () => {
-          this.fetchPlayers(); // Actualitza la llista de jugadors
+          this.fetchPlayers(); // Actualitza la llista
           // Reseteja el formulari
-          this.newPlayer = { name: '', position: '', team: '' };
+          this.newPlayer = {
+            name: '',
+            position: '',
+            team: '',
+            isActive: true,
+            isForSale: false,
+            price: 0,
+            height: 0,
+            speed: 0,
+            shooting: 0
+          };
           this.selectedFile = null;
         },
         (error) => {
