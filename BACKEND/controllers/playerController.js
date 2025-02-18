@@ -2,38 +2,42 @@ import sql from "mssql";
 import connectDb from "../config/db.js";
 import { getUserFootcoins, updateUserFootcoins } from "../models/betModel.js"; // o crea un mètode específic en un model d'usuaris
 
-// Crear un jugador
 export const createPlayer = async (req, res) => {
-  // Els camps del cos de la petició
-  const { playerName, position, teamID } = req.body;
+  const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
   
-  // Verifiquem que el fitxer s'ha pujat correctament
+  // Comprovem que s'ha pujat una imatge
   if (!req.file) {
     return res.status(400).send({ error: "Cal pujar una imatge." });
   }
-
-  // Obtenim el buffer del fitxer
-  const imageBuffer = req.file.buffer;
-
+  
+  // Comprovem que els camps obligatoris existeixin
   if (!playerName || !position || !teamID) {
     return res.status(400).send({ error: "Falten camps obligatoris." });
   }
-
+  
+  // Convertim el buffer de la imatge a una cadena Base64
+  const imageBase64 = req.file.buffer.toString('base64');
+  
   try {
     const pool = await connectDb();
     const query = `
-      INSERT INTO Players (PlayerName, Position, TeamID, PlayerImage)
-      VALUES (@playerName, @position, @teamID, @playerImage)
+      INSERT INTO Players (PlayerName, Position, TeamID, IsActive, IsForSale, Price, Height, Speed, Shooting, PlayerImage)
+      VALUES (@playerName, @position, @teamID, @isActive, @isForSale, @price, @height, @speed, @shooting, @playerImage)
     `;
     await pool
       .request()
       .input("playerName", sql.VarChar, playerName)
       .input("position", sql.VarChar, position)
       .input("teamID", sql.Int, teamID)
-      // Insertem el buffer de la imatge
-      .input("playerImage", sql.VarBinary(sql.MAX), imageBuffer)
+      .input("isActive", sql.Bit, isActive)
+      .input("isForSale", sql.Bit, isForSale)
+      .input("price", sql.Decimal(10, 2), price)
+      .input("height", sql.Int, height)
+      .input("speed", sql.Int, speed)
+      .input("shooting", sql.Int, shooting)
+      .input("playerImage", sql.VarChar(sql.MAX), imageBase64)
       .query(query);
-
+      
     res.status(201).send({ message: "Jugador creat correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });

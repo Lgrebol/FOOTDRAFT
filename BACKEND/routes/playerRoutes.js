@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import {
   createPlayer,
   getPlayers,
@@ -9,8 +10,12 @@ import {
 
 const router = express.Router();
 
-// Crear un jugador
-router.post("/", createPlayer);
+// Configuració de multer per guardar el fitxer a memòria
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Crear un jugador amb pujada d'imatge
+router.post("/", upload.single("image"), createPlayer);
 
 // Obtenir tots els jugadors
 router.get("/", getPlayers);
@@ -21,7 +26,7 @@ router.get("/store", getPlayersForSale);
 // Eliminar un jugador
 router.delete("/:id", deletePlayer);
 
-// Comprar un jugador (passa el playerID per la URL i el userID al cos)
+// Comprar un jugador
 router.post("/buy/:id", buyPlayer);
 
 export default router;

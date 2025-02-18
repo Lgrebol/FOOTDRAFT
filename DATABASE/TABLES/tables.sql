@@ -39,7 +39,8 @@ CREATE TABLE Players (
     ALTER TABLE Players
     ADD ReserveUserID INT NULL;
 
-    ALTER TABLE Players ADD PlayerImage VARCHAR(255) NULL;
+    ALTER TABLE Players ALTER COLUMN PlayerImage VARCHAR(MAX) NULL;
+
 
 );
 

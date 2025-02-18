@@ -30,6 +30,8 @@
   <div class="form-container">
     <h2>Afegir Jugador</h2>
     <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
+      
+      <!-- Nom -->
       <div class="form-group">
         <label for="name">Nom:</label>
         <input
@@ -38,9 +40,13 @@
           [(ngModel)]="newPlayer.name"
           name="name"
           required
+          aria-required="true"
+          aria-describedby="name-desc"
         />
+        <small id="name-desc">Introdueix el nom complet del jugador.</small>
       </div>
-
+      
+      <!-- Posició -->
       <div class="form-group">
         <label for="position">Posició:</label>
         <select
@@ -48,6 +54,7 @@
           [(ngModel)]="newPlayer.position"
           name="position"
           required
+          aria-required="true"
         >
           <option value="" disabled selected>Selecciona una posició</option>
           <option *ngFor="let position of positions" [value]="position">
@@ -55,7 +62,8 @@
           </option>
         </select>
       </div>
-
+      
+      <!-- Equip -->
       <div class="form-group">
         <label for="team">Equip:</label>
         <select
@@ -63,6 +71,7 @@
           [(ngModel)]="newPlayer.team"
           name="team"
           required
+          aria-required="true"
         >
           <option value="" disabled selected>Selecciona un equip</option>
           <option *ngFor="let team of teams" [value]="team.TeamID">
@@ -70,7 +79,8 @@
           </option>
         </select>
       </div>
-
+      
+      <!-- Preu -->
       <div class="form-group">
         <label for="price">Preu (€):</label>
         <input
@@ -79,9 +89,11 @@
           [(ngModel)]="newPlayer.price"
           name="price"
           required
+          aria-required="true"
         />
       </div>
       
+      <!-- Alçada -->
       <div class="form-group">
         <label for="height">Alçada (cm):</label>
         <input
@@ -90,9 +102,11 @@
           [(ngModel)]="newPlayer.height"
           name="height"
           required
+          aria-required="true"
         />
       </div>
-
+      
+      <!-- Velocitat -->
       <div class="form-group">
         <label for="speed">Velocitat:</label>
         <input
@@ -101,9 +115,11 @@
           [(ngModel)]="newPlayer.speed"
           name="speed"
           required
+          aria-required="true"
         />
       </div>
-
+      
+      <!-- Dispar -->
       <div class="form-group">
         <label for="shooting">Dispar:</label>
         <input
@@ -112,12 +128,13 @@
           [(ngModel)]="newPlayer.shooting"
           name="shooting"
           required
+          aria-required="true"
         />
       </div>
-
-      <!-- Nou camp per a 'isForSale' amb radio buttons -->
-      <div class="form-group">
-        <label>En venda:</label>
+      
+      <!-- Opcions "En venda" (radio buttons) -->
+      <fieldset class="form-group">
+        <legend>En venda:</legend>
         <div>
           <input
             type="radio"
@@ -138,21 +155,20 @@
           />
           <label for="isForSaleNo">No</label>
         </div>
-      </div>
-
-      <!-- Nou camp per a 'isActive' -->
+      </fieldset>
+      
+      <!-- Està actiu (checkbox) -->
       <div class="form-group">
-        <label for="isActive">Està actiu:</label>
         <input
           id="isActive"
           type="checkbox"
           [(ngModel)]="newPlayer.isActive"
           name="isActive"
-          checked
         />
+        <label for="isActive">Està actiu</label>
       </div>
-
-      <!-- Camp per pujar la imatge -->
+      
+      <!-- Pujar imatge -->
       <div class="form-group">
         <label for="image">Imatge del jugador:</label>
         <input
@@ -160,10 +176,11 @@
           type="file"
           (change)="onFileSelected($event)"
           required
+          aria-required="true"
         />
       </div>
-
+      
       <button type="submit">Afegir Jugador</button>
     </form>
   </div>
-</div>
+  
