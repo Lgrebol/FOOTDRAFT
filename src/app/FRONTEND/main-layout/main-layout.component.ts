@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../services/users.service';
+import { DataService } from '../shared/data.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -13,24 +13,31 @@ import { UserService } from '../services/users.service';
 export class MainLayoutComponent implements OnInit {
   footcoins: number = 0;
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private dataService: DataService, private router: Router) {}
 
   ngOnInit(): void {
-    this.userService.getFootcoinsUpdates().subscribe({
-      next: (coins) => {
-        this.footcoins = coins;
-      },
-      error: (err) => console.error('Error obtenint footcoins:', err)
+    this.loadUserData();
+    // Afegir gestió d'undefined amb operador nullish coalescing (??)
+    this.dataService.getFootcoinsUpdates().subscribe(coins => {
+      this.footcoins = coins ?? 0; // Assigna 0 si és undefined
     });
+  }
 
-    this.userService.refreshUserData().subscribe({
-      error: (err) => console.error('Error carregant dades inicials:', err)
+  private loadUserData(): void {
+    this.dataService.refreshCurrentUserData().subscribe({
+      next: (user) => {
+        // Assegurar que sempre s'envia un número
+        this.dataService.updateFootcoins(user.footcoins ?? 0);
+      },
+      error: (err) => {
+        this.router.navigate(['/login']);
+      }
     });
   }
 
   logout(): void {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('userID');
-  this.router.navigate(['/login']);
-}
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+    this.router.navigate(['/login']);
+  }
 }

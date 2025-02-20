@@ -18,8 +18,13 @@ const PORT = process.env.PORT || 3000;  // Port per a l'aplicació
 
 // Middleware
 app.use(express.json());  // Permet que l'API accepti JSON en el cos de la petició
+
 app.use(cors({
-  origin: 'http://localhost:4200'  // Permet accedir des de l'aplicació Angular
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
+  exposedHeaders: ['x-auth-token'],
+  credentials: true
 }));
 
 // Rutes per a usuaris

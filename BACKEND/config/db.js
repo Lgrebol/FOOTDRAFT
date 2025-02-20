@@ -16,7 +16,7 @@ const dbConfig = {
 
 let pool;
 
-const connectDb = async () => {
+export const connectDb = async () => {
   try {
     if (!pool) {
       pool = await sql.connect(dbConfig);

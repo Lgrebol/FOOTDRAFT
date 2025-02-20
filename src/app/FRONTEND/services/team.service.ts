@@ -1,22 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Team } from '../shared/data.service'; // Adjust the path if needed
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeamService {
-  private apiUrl = 'http://localhost:3000/api/v1/teams'; // ✅ Corregeix la ruta
+  private apiUrl = 'http://localhost:3000/api/v1/teams';
 
   constructor(private http: HttpClient) { }
 
-  // Obtenir tots els equips
-  getTeams(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getTeams(): Observable<Team[]> {
+    return this.http.get<Team[]>(this.apiUrl);
   }
 
-  // Obtenir equips d'un torneig (necessita implementació al backend)
-  getTeamsByTournament(tournamentId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/tournament/${tournamentId}`);
+  getTeamsByTournament(tournamentId: number): Observable<Team[]> {
+    return this.http.get<Team[]>(`${this.apiUrl}/tournament/${tournamentId}`);
   }
 }

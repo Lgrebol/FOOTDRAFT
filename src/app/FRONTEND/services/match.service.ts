@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface Match {
+  id: number;
+  // Add additional properties as needed.
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,22 +15,19 @@ export class MatchService {
 
   constructor(private http: HttpClient) {}
 
-  // Obtenir la partida i els esdeveniments
-  getMatch(matchID: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${matchID}`);
+  getMatch(matchID: number): Observable<Match> {
+    return this.http.get<Match>(`${this.apiUrl}/${matchID}`);
   }
 
-  // Simular un esdeveniment (ex: gol)
   simulateEvent(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/simulate`, data);
   }
 
-  // Obtenir el resum de la partida
   getMatchSummary(matchID: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/summary/${matchID}`);
   }
 
-  createMatch(matchData: any): Observable<any> {
-    return this.http.post(this.apiUrl, matchData);
+  createMatch(matchData: any): Observable<Match> {
+    return this.http.post<Match>(this.apiUrl, matchData);
   }
 }

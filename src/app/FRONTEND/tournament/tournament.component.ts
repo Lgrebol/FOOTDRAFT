@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { DataService, Tournament } from '../shared/data.service';
 
 @Component({
   selector: 'app-tournament',
@@ -16,42 +15,37 @@ import { FormsModule } from '@angular/forms';
   ]
 })
 export class TournamentComponent implements OnInit {
-  tournaments: any[] = [];
+  tournaments: Tournament[] = [];
   newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
 
-  public API_URL = 'http://localhost:3000/api/v1';
+  constructor(private dataService: DataService) {}
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.loadTournaments();
+  ngOnInit(): void {
+    this.dataService.getTournaments().subscribe(
+      (tournaments) => (this.tournaments = tournaments)
+    );
   }
 
-  loadTournaments() {
-    this.http.get<any[]>(`${this.API_URL}/tournaments`).subscribe((data) => {
-      this.tournaments = data;
-    });
-  }
-
-  addTournament() {
+  addTournament(): void {
     if (this.newTournament.name) {
-      this.http.post(`${this.API_URL}/tournaments`, {
+      this.dataService.addTournament({
         tournamentName: this.newTournament.name,
         tournamentType: this.newTournament.type,
         startDate: this.newTournament.startDate,
-        endDate: this.newTournament.endDate 
-      }).subscribe(() => {
-        this.loadTournaments();
-        this.newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
-      }, error => {
-        console.error("❌ Error en afegir torneig:", error);
-      });
+        endDate: this.newTournament.endDate
+      }).subscribe(
+        () => {
+          this.newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
+        },
+        (error) => console.error("Error adding tournament:", error)
+      );
     }
-  }  
+  }
 
-  deleteTournament(id: number) {
-    this.http.delete(`${this.API_URL}/tournaments/${id}`).subscribe(() => {
-      this.loadTournaments();
-    });
+  deleteTournament(id: number): void {
+    this.dataService.deleteTournament(id).subscribe(
+      () => {},
+      (error) => console.error("Error deleting tournament:", error)
+    );
   }
 }

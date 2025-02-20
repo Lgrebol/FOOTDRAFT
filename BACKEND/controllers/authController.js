@@ -35,23 +35,37 @@ export const getCurrentUser = async (req, res) => {
 };
 
 // Exemple de controlador de login (per referència)
-export const loginUser = async (req, res) => {
+export const loginUsers = async (req, res) => {
   try {
-    // ... lògica de autenticació ...
+    const { email, password } = req.body;
+    const pool = await connectDb();
     
+    const result = await pool.request()
+      .input('email', sql.VarChar, email)
+      .query('SELECT * FROM Users WHERE Email = @email');
+
+    if (result.recordset.length === 0) {
+      return res.status(401).json({ error: "Credencials invàlides" });
+    }
+
+    const user = result.recordset[0];
+    // Aquí aniria la verificació real de la contrasenya (hashejada)
+
     const token = jwt.sign(
       {
-        userId: user.UserID, // Assegurar incloure userId
-        email: user.Email
+        userId: user.UserID,
+        email: user.Email,
+        footcoins: user.Footcoins // ← Això és el que mostrarem al front
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '10h' }
     );
-    
-    res.json({ token, Footcoins: user.Footcoins });
-    
+
+    res.status(200).json({ 
+      token, 
+      footcoins: user.Footcoins 
+    });
   } catch (error) {
-    console.error("Error en el login:", error);
-    res.status(500).json({ error: "Error en el login" });
+    res.status(500).json({ error: error.message });
   }
 };

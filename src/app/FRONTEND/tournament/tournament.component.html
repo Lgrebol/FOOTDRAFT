@@ -12,12 +12,12 @@
     </thead>
     <tbody>
       <tr *ngFor="let tournament of tournaments">
-        <td>{{ tournament.TournamentName }}</td>
-        <td>{{ tournament.TournamentType }}</td>
-        <td>{{ tournament.StartDate }}</td>
-        <td>{{ tournament.EndDate }}</td>
+        <td>{{ tournament.tournamentName }}</td>
+        <td>{{ tournament.tournamentType }}</td>
+        <td>{{ tournament.startDate }}</td>
+        <td>{{ tournament.endDate }}</td>
         <td>
-          <button class="btn btn-danger btn-sm" (click)="deleteTournament(tournament.TournamentID)">
+          <button class="btn btn-danger btn-sm" (click)="deleteTournament(tournament.id)">
             Esborrar
           </button>
         </td>

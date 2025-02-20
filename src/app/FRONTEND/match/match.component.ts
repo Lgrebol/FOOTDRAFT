@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { interval, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
+import { Subscription, interval } from 'rxjs';
+import { DataService, Team } from '../shared/data.service';
 
 @Component({
   selector: 'app-match',
@@ -13,22 +12,21 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./match.component.css']
 })
 export class MatchComponent implements OnInit, OnDestroy {
-  teams: any[] = [];
+  teams: Team[] = [];
   selectedHomeTeam: number | null = null;
   selectedAwayTeam: number | null = null;
   match: any = null;
   matchSummary: any = null;
   matchStarted: boolean = false;
   pollingSubscription: Subscription | undefined;
+  homeTeamName: string = '';
+  awayTeamName: string = '';
 
-  // Variables per les apostes
   betAmount: number = 0;
   predictedWinner: string = 'home';
+  currentUserID: number = 6;
 
-  // URL base
-  baseUrl = 'http://localhost:3000/api/v1';
-
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
     this.loadTeams();
@@ -38,11 +36,14 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.pollingSubscription?.unsubscribe();
   }
 
-  loadTeams(): void {
-    this.http.get<any[]>(`${this.baseUrl}/teams`).subscribe(
-      data => this.teams = data,
-      error => console.error('Error carregant equips:', error)
-    );
+  private loadTeams(): void {
+    this.dataService.getTeams().subscribe({
+      next: (teams) => {
+        this.teams = teams;
+        console.log('Equips carregats:', teams);
+      },
+      error: (error) => console.error('Error carregant equips:', error)
+    });
   }
 
   canStartMatch(): boolean {
@@ -56,108 +57,145 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   startMatch(): void {
     if (!this.canStartMatch()) {
-      alert("⚠ Selecciona equips diferents per iniciar el partit.");
+      alert("Selecciona equips diferents per començar el partit");
       return;
     }
 
     const newMatch = {
       tournamentID: 8,
-      homeTeamID: this.selectedHomeTeam,
-      awayTeamID: this.selectedAwayTeam,
+      homeTeamID: this.selectedHomeTeam!,
+      awayTeamID: this.selectedAwayTeam!,
       matchDate: new Date()
     };
 
-    this.http.post<any>(`${this.baseUrl}/matches`, newMatch).subscribe(
-      res => {
+    this.dataService.createMatch(newMatch).subscribe({
+      next: (res: any) => {
         const matchID = res.matchID;
-        console.log("✅ Partida creada amb matchID:", matchID);
-
+        console.log("Partit creat amb ID:", matchID);
+        
         this.matchStarted = true;
-        this.pollingSubscription = interval(1000).subscribe(() => this.loadMatchData(matchID));
+        this.setTeamNames();
+        this.startPolling(matchID);
         this.simulateMatch(matchID);
       },
-      error => console.error('Error creant partida:', error)
-    );
+      error: (error) => console.error('Error creant partit:', error)
+    });
+  }
+
+  // Afegeix aquest mètode al component
+getTeamName(teamId: number): string {
+  const team = this.teams.find(t => t.id === teamId);
+  return team ? team.teamName : 'Equip Desconegut';
+}
+
+  private setTeamNames(): void {
+    if (this.selectedHomeTeam) {
+      this.dataService.getTeamName(this.selectedHomeTeam).subscribe(
+        name => this.homeTeamName = name
+      );
+    }
+    if (this.selectedAwayTeam) {
+      this.dataService.getTeamName(this.selectedAwayTeam).subscribe(
+        name => this.awayTeamName = name
+      );
+    }
+  }
+
+  private startPolling(matchID: number): void {
+    this.pollingSubscription = interval(1000).subscribe(() => {
+      this.loadMatchData(matchID);
+    });
+  }
+
+  loadMatchData(matchID: number): void {
+    this.dataService.getMatch(matchID).subscribe({
+      next: (data: any) => {
+        console.log('Dades actualitzades del partit:', data);
+        this.match = data;
+        
+        if (data?.currentMinute > 90) {
+          this.handleMatchEnd();
+        }
+      },
+      error: (error) => console.error('Error carregant dades:', error)
+    });
+  }
+
+  private handleMatchEnd(): void {
+    this.matchSummary = {
+      homeGoals: this.match.homeGoals,
+      awayGoals: this.match.awayGoals,
+      totalGoals: this.match.homeGoals + this.match.awayGoals,
+      totalFouls: this.match?.events?.filter((e: any) => e.eventType === 'Falta').length || 0,
+      totalRedCards: this.match?.events?.filter((e: any) => e.eventType === 'Vermella').length || 0,
+      matchEnded: true, // <-- Coma afegida aquí
+      message: "El partit ha finalitzat!"
+    };
+    this.pollingSubscription?.unsubscribe();
   }
 
   simulateMatch(matchID: number): void {
-    this.http.post<any>(`${this.baseUrl}/matches/simulate`, { matchID }).subscribe(
-      summary => {
-        this.matchSummary = summary;
-        // Atura el polling perquè ja tenim les dades finals
-        this.pollingSubscription?.unsubscribe();
+    this.dataService.simulateMatch(matchID).subscribe({
+      next: (summary: any) => {
+        console.log('Simulació completada:', summary);
+        this.loadMatchData(matchID);
       },
-      error => console.error('Error en simular partida:', error)
-    );
-  }
-  
-
-  loadMatchData(matchID: number): void {
-    this.http.get<any>(`${this.baseUrl}/matches/${matchID}`).subscribe(
-      data => this.match = data.match,
-      error => console.error('Error carregant dades del partit:', error)
-    );
+      error: (error) => console.error('Error en simulació:', error)
+    });
   }
 
   resetMatch(): void {
     if (!this.match) return;
 
-    this.http.post<any>(`${this.baseUrl}/matches/reset`, { matchID: this.match.MatchID }).subscribe(
-      () => {
-        this.match = null;
-        this.matchSummary = null;
-        this.matchStarted = false;
-        this.pollingSubscription?.unsubscribe();
+    console.log('Reiniciant partit...');
+    this.dataService.resetMatch(this.match.id).subscribe({
+      next: () => {
+        console.log('Partit reiniciat correctament');
+        this.resetComponentState();
+        this.loadTeams();
       },
-      error => console.error('Error reiniciant partida:', error)
-    );
+      error: (error) => console.error('Error en reinici:', error)
+    });
   }
 
-  // Mètode per obtenir els headers d'autenticació
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      console.error("No token found in localStorage");
-      return new HttpHeaders(); // o bé gestionar el cas d'error
-    }
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+  private resetComponentState(): void {
+    this.match = null;
+    this.matchSummary = null;
+    this.matchStarted = false;
+    this.selectedHomeTeam = null;
+    this.selectedAwayTeam = null;
+    this.homeTeamName = '';
+    this.awayTeamName = '';
+    this.pollingSubscription?.unsubscribe();
   }
 
   placeBet(): void {
     if (!this.selectedHomeTeam || !this.selectedAwayTeam) {
-      alert("⚠ Selecciona els equips abans d'apostar.");
+      alert("Selecciona equips abans d'apostar");
       return;
     }
     if (this.selectedHomeTeam === this.selectedAwayTeam) {
-      alert("⚠ No pots apostar en un partit amb dos equips iguals.");
+      alert("No pots apostar per un partit amb el mateix equip");
       return;
     }
     if (this.betAmount <= 0) {
-      alert("⚠ L'aposta ha de ser superior a 0.");
+      alert("L'import de l'aposta ha de ser superior a 0");
       return;
     }
-  
+
     const bet = {
-      homeTeamID: Number(this.selectedHomeTeam),
-      awayTeamID: Number(this.selectedAwayTeam),
+      homeTeamID: this.selectedHomeTeam,
+      awayTeamID: this.selectedAwayTeam,
       amount: this.betAmount,
       predictedWinner: this.predictedWinner
     };
-  
-    console.log("Aposta a enviar:", bet);
-  
-    const headers = this.getAuthHeaders();
-  
-    this.http.post<any>(`${this.baseUrl}/bets`, bet, { headers })
-      .subscribe(
-        () => alert('✅ Aposta registrada correctament!'),
-        error => {
-          console.error("Error en realitzar l'aposta:", error);
-          alert(error.error?.error || "Error en realitzar l'aposta.");
-        }
-      );
+
+    this.dataService.placeBet(bet).subscribe({
+      next: () => alert('Aposta realitzada amb èxit!'),
+      error: (error) => {
+        console.error("Error en l'aposta:", error);
+        alert(error.error?.error || "Error en l'aposta");
+      }
+    });
   }
-}  
+}

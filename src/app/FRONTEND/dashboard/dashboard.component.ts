@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { DataService, DashboardStats } from '../shared/data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,15 +7,14 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  stats: any;
-  private apiUrl = 'http://localhost:3000/api/v1/dashboard';
+  stats: DashboardStats | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.http.get<any>(this.apiUrl).subscribe(
-      data => this.stats = data,
-      error => console.error('Error carregant estadístiques del dashboard:', error)
+    this.dataService.getDashboardStats().subscribe(
+      (data) => this.stats = data,
+      (error) => console.error('Error loading dashboard stats:', error)
     );
   }
 }

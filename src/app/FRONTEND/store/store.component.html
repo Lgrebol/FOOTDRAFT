@@ -29,29 +29,29 @@
     <div class="player-card" *ngFor="let player of storePlayers">
       <!-- Mostrem la imatge real si existeix, altrament un placeholder -->
       <img 
-        [src]="player.PlayerImage ? player.PlayerImage : 'soccer-player.png'" 
+        [src]="player.imageUrl ? player.imageUrl : 'soccer-player.png'" 
         class="player-image"
         width="100" height="100">
-      <div class="player-name">{{ player.PlayerName }}</div>
-      <div class="player-info">Posició: {{ player.Position }}</div>
-      <div class="player-info">Preu: {{ player.Price }}€</div>
+      <div class="player-name">{{ player.playerName }}</div>
+      <div class="player-info">Posició: {{ player.position }}</div>
+      <div class="player-info">Preu: {{ player.price }}€</div>
       
       <div class="stats-container">
         <div class="stat">
-          <div class="stat-value">{{ player.Height }} cm</div>
+          <div class="stat-value">{{ player.height }} cm</div>
           <div>Altura</div>
         </div>
         <div class="stat">
-          <div class="stat-value">{{ player.Shooting }}</div>
+          <div class="stat-value">{{ player.shooting }}</div>
           <div>Xut</div>
         </div>
         <div class="stat">
-          <div class="stat-value">{{ player.Speed }}</div>
+          <div class="stat-value">{{ player.speed }}</div>
           <div>Velocitat</div>
         </div>
       </div>
 
-      <button class="buy-button" (click)="buyPlayer(player.PlayerID)">Comprar</button>
+      <button class="buy-button" (click)="buyPlayer(player.id)">Comprar</button>
     </div>
   </div>
 </div>

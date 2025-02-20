@@ -24,12 +24,9 @@ export class UserService {
     });
   }
 
-  // Refresca les dades de l'usuari des del servidor
   refreshUserData(): Observable<any> {
     console.log("🔍 Enviant petició per obtenir dades d'usuari...");
-    return this.http.get<any>(this.currentUserUrl, { 
-      headers: this.getAuthHeaders() 
-    }).pipe(
+    return this.http.get<any>(this.currentUserUrl, { headers: this.getAuthHeaders() }).pipe(
       tap(user => {
         console.log("✅ Resposta de current-user:", user);
         if (user && user.Footcoins !== undefined) {
@@ -43,13 +40,18 @@ export class UserService {
     );
   }
 
-  // Retorna un observable per subscriure's a les actualitzacions de footcoins
+  // Return an observable to subscribe to footcoins updates.
   getFootcoinsUpdates(): Observable<number> {
     return this.footcoinsSubject.asObservable();
   }
 
-  // Actualitza manualment els footcoins
-  updateFootcoins(newAmount: number) {
+  // Manually update footcoins.
+  updateFootcoins(newAmount: number): void {
     this.footcoinsSubject.next(newAmount);
+  }
+
+  // Optional: a getter for the current footcoins value.
+  get currentFootcoins(): number {
+    return this.footcoinsSubject.value;
   }
 }

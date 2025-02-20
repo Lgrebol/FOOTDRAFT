@@ -5,24 +5,22 @@
   <div class="cards">
     <div class="player-card" *ngFor="let player of players">
       <div class="card-image">
-        <img
-          [src]="player.PlayerImage ? 'data:image/png;base64,' + player.PlayerImage : 'soccer-player.png'"
-          class="player-image"
-          alt="{{ player.PlayerName }}"
-        />
+        <img [src]="player.imageUrl ? 'data:image/png;base64,' + player.imageUrl : 'assets/soccer-player.png'" 
+             class="player-image"
+             alt="{{ player.playerName }}">
       </div>
       <div class="card-body">
-        <h2>{{ player.PlayerName }}</h2>
-        <p><strong>Posició:</strong> {{ player.Position }}</p>
-        <p><strong>Punts:</strong> {{ player.Points || 0 }}</p>
-        <p><strong>Equip:</strong> {{ player.TeamName }}</p>
-        <p *ngIf="player.Price"><strong>Preu:</strong> {{ player.Price }}€</p>
-        <p *ngIf="player.Height"><strong>Alçada:</strong> {{ player.Height }} cm</p>
-        <p *ngIf="player.Speed"><strong>Velocitat:</strong> {{ player.Speed }}</p>
-        <p *ngIf="player.Shooting"><strong>Dispar:</strong> {{ player.Shooting }}</p>
+        <h2>{{ player.playerName }}</h2>
+        <p><strong>Posició:</strong> {{ player.position }}</p>
+        <p><strong>Punts:</strong> {{ player.points || 0 }}</p>
+        <p><strong>Equip:</strong> {{ player.teamName }}</p>
+        <p *ngIf="player.price"><strong>Preu:</strong> {{ player.price }}€</p>
+        <p *ngIf="player.height"><strong>Alçada:</strong> {{ player.height }} cm</p>
+        <p *ngIf="player.speed"><strong>Velocitat:</strong> {{ player.speed }}</p>
+        <p *ngIf="player.shooting"><strong>Dispar:</strong> {{ player.shooting }}</p>
       </div>
       <div class="card-actions">
-        <button (click)="deletePlayer(player.PlayerID)">Eliminar</button>
+        <button (click)="deletePlayer(player.id)">Eliminar</button>
       </div>
     </div>
   </div>
@@ -34,28 +32,23 @@
       <!-- Nom -->
       <div class="form-group">
         <label for="name">Nom:</label>
-        <input
-          id="name"
-          type="text"
-          [(ngModel)]="newPlayer.name"
-          name="name"
-          required
-          aria-required="true"
-          aria-describedby="name-desc"
-        />
+        <input id="name" type="text"
+               [(ngModel)]="newPlayer.name"
+               name="name"
+               required
+               aria-required="true"
+               aria-describedby="name-desc" />
         <small id="name-desc">Introdueix el nom complet del jugador.</small>
       </div>
       
       <!-- Posició -->
       <div class="form-group">
         <label for="position">Posició:</label>
-        <select
-          id="position"
-          [(ngModel)]="newPlayer.position"
-          name="position"
-          required
-          aria-required="true"
-        >
+        <select id="position"
+                [(ngModel)]="newPlayer.position"
+                name="position"
+                required
+                aria-required="true">
           <option value="" disabled selected>Selecciona una posició</option>
           <option *ngFor="let position of positions" [value]="position">
             {{ position }}
@@ -66,16 +59,14 @@
       <!-- Equip -->
       <div class="form-group">
         <label for="team">Equip:</label>
-        <select
-          id="team"
-          [(ngModel)]="newPlayer.team"
-          name="team"
-          required
-          aria-required="true"
-        >
+        <select id="team"
+                [(ngModel)]="newPlayer.teamId"
+                name="teamId"
+                required
+                aria-required="true">
           <option value="" disabled selected>Selecciona un equip</option>
-          <option *ngFor="let team of teams" [value]="team.TeamID">
-            {{ team.TeamName }}
+          <option *ngFor="let team of teams" [value]="team.id">
+            {{ team.teamName }}
           </option>
         </select>
       </div>
@@ -83,104 +74,82 @@
       <!-- Preu -->
       <div class="form-group">
         <label for="price">Preu (€):</label>
-        <input
-          id="price"
-          type="number"
-          [(ngModel)]="newPlayer.price"
-          name="price"
-          required
-          aria-required="true"
-        />
+        <input id="price" type="number"
+               [(ngModel)]="newPlayer.price"
+               name="price"
+               required
+               aria-required="true" />
       </div>
       
       <!-- Alçada -->
       <div class="form-group">
         <label for="height">Alçada (cm):</label>
-        <input
-          id="height"
-          type="number"
-          [(ngModel)]="newPlayer.height"
-          name="height"
-          required
-          aria-required="true"
-        />
+        <input id="height" type="number"
+               [(ngModel)]="newPlayer.height"
+               name="height"
+               required
+               aria-required="true" />
       </div>
       
       <!-- Velocitat -->
       <div class="form-group">
         <label for="speed">Velocitat:</label>
-        <input
-          id="speed"
-          type="number"
-          [(ngModel)]="newPlayer.speed"
-          name="speed"
-          required
-          aria-required="true"
-        />
+        <input id="speed" type="number"
+               [(ngModel)]="newPlayer.speed"
+               name="speed"
+               required
+               aria-required="true" />
       </div>
       
       <!-- Dispar -->
       <div class="form-group">
         <label for="shooting">Dispar:</label>
-        <input
-          id="shooting"
-          type="number"
-          [(ngModel)]="newPlayer.shooting"
-          name="shooting"
-          required
-          aria-required="true"
-        />
+        <input id="shooting" type="number"
+               [(ngModel)]="newPlayer.shooting"
+               name="shooting"
+               required
+               aria-required="true" />
       </div>
       
       <!-- Opcions "En venda" (radio buttons) -->
       <fieldset class="form-group">
         <legend>En venda:</legend>
         <div>
-          <input
-            type="radio"
-            id="isForSaleYes"
-            name="isForSale"
-            [(ngModel)]="newPlayer.isForSale"
-            [value]="true"
-          />
+          <input type="radio"
+                 id="isForSaleYes"
+                 name="isForSale"
+                 [(ngModel)]="newPlayer.isForSale"
+                 [value]="true" />
           <label for="isForSaleYes">Sí</label>
         </div>
         <div>
-          <input
-            type="radio"
-            id="isForSaleNo"
-            name="isForSale"
-            [(ngModel)]="newPlayer.isForSale"
-            [value]="false"
-          />
+          <input type="radio"
+                 id="isForSaleNo"
+                 name="isForSale"
+                 [(ngModel)]="newPlayer.isForSale"
+                 [value]="false" />
           <label for="isForSaleNo">No</label>
         </div>
       </fieldset>
       
       <!-- Està actiu (checkbox) -->
       <div class="form-group">
-        <input
-          id="isActive"
-          type="checkbox"
-          [(ngModel)]="newPlayer.isActive"
-          name="isActive"
-        />
+        <input id="isActive" type="checkbox"
+               [(ngModel)]="newPlayer.isActive"
+               name="isActive" />
         <label for="isActive">Està actiu</label>
       </div>
       
       <!-- Pujar imatge -->
       <div class="form-group">
         <label for="image">Imatge del jugador:</label>
-        <input
-          id="image"
-          type="file"
-          (change)="onFileSelected($event)"
-          required
-          aria-required="true"
-        />
+        <input id="image" type="file"
+               (change)="onFileSelected($event)"
+               required
+               aria-required="true" />
       </div>
       
       <button type="submit">Afegir Jugador</button>
     </form>
   </div>
-  
+</div>

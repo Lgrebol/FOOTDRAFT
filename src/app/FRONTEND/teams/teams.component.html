@@ -5,12 +5,12 @@
   <div class="teams-list">
     <div *ngFor="let team of teams" class="team-card">
       <div class="team-header">
-        <h3>{{ team.TeamName }}</h3>
+        <h3>{{ team.teamName }}</h3>
       </div>
       <div class="team-body">
-        <p><strong>Usuari:</strong> {{ team.UserName }}</p>
-        <p><strong>Color de la Samarreta:</strong> {{ team.ShirtColor }}</p>
-        <button (click)="deleteTeam(team.TeamID)">Eliminar</button>
+        <p><strong>Usuari:</strong> {{ team.username }}</p>
+        <p><strong>Color de la Samarreta:</strong> {{ team.shirtColor }}</p>
+        <button (click)="deleteTeam(team.id)">Eliminar</button>
       </div>
     </div>
   </div>
@@ -31,7 +31,6 @@
     </div>
     <div class="form-group">
       <label for="shirtColor">Color de la Samarreta:</label>
-      <!-- Ara és un input de text per introduir el valor del color (ex: #4caf50) -->
       <input
         id="shirtColor"
         type="text"
@@ -50,8 +49,8 @@
         required
       >
         <option value="" disabled selected>Selecciona un usuari</option>
-        <option *ngFor="let user of users" [value]="user.UserID">
-          {{ user.UserName }}
+        <option *ngFor="let user of users" [value]="user.id">
+          {{ user.username }}
         </option>
       </select>
     </div>
@@ -63,21 +62,20 @@
   <div class="assign-section">
     <div class="form-group">
       <label for="selectTeam">Selecciona Equip:</label>
-      <select id="selectTeam" [(ngModel)]="selectedTeamId" name="selectedTeamId">
-        <option value="" disabled selected>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.TeamID">
-          {{ team.TeamName }}
-        </option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="selectPlayer">Selecciona Jugador Reservat:</label>
-      <select id="selectPlayer" [(ngModel)]="selectedPlayerId" name="selectedPlayerId">
-        <option value="" disabled selected>Selecciona un jugador reservat</option>
-        <option *ngFor="let player of reservedPlayers" [value]="player.PlayerID">
-          {{ player.PlayerName }} - {{ player.Position }}
-        </option>
-      </select>
+<!-- Afegir propietats que faltaven -->
+<select [(ngModel)]="selectedTeamId" name="selectedTeamId">
+  <option value="" disabled selected>Selecciona un equip</option>
+  <option *ngFor="let team of teams" [value]="team.id">
+    {{ team.teamName }}
+  </option>
+</select>
+
+<select [(ngModel)]="selectedPlayerId" name="selectedPlayerId">
+  <option value="" disabled selected>Selecciona un jugador</option>
+  <option *ngFor="let player of reservedPlayers" [value]="player.id">
+    {{ player.playerName }}
+  </option>
+</select>
     </div>
     <button (click)="assignPlayerToTeam()">Assignar Jugador</button>
   </div>

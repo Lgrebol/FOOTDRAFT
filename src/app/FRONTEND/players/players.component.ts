@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { DataService, Player, Team } from '../shared/data.service';
 
 @Component({
   selector: 'app-players',
@@ -11,14 +11,15 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./players.component.css']
 })
 export class PlayersComponent implements OnInit {
-  players: any[] = [];
-  teams: any[] = [];
-
-  // Camps per al nou jugador
+  players: Player[] = [];
+  teams: Team[] = [];
+  selectedFile: File | null = null;
+  
+  // Corregir estructura newPlayer
   newPlayer = {
     name: '',
     position: '',
-    team: '',
+    teamId: null as number | null,  // Canviar de 'team' a 'teamId'
     isActive: true,
     isForSale: false,
     price: 0,
@@ -28,106 +29,51 @@ export class PlayersComponent implements OnInit {
   };
 
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
-  selectedFile: File | null = null; // Fitxer seleccionat
 
-  constructor(public http: HttpClient) {}
+  constructor(private dataService: DataService) {}
 
-  ngOnInit() {
-    this.fetchPlayers();
-    this.fetchTeams();
+  ngOnInit(): void {
+    this.loadData();
   }
 
-  // Obtenir la llista de jugadors
-  fetchPlayers() {
-    this.http.get<any[]>('http://localhost:3000/api/v1/players').subscribe(
-      (data) => {
-        this.players = data;
-      },
-      (error) => {
-        console.error('Error carregant els jugadors:', error);
-      }
-    );
+  private loadData(): void {
+    this.dataService.getPlayers().subscribe(players => this.players = players);
+    this.dataService.getTeams().subscribe(teams => this.teams = teams);
   }
 
-  // Obtenir la llista d'equips
-  fetchTeams() {
-    this.http.get<any[]>('http://localhost:3000/api/v1/teams').subscribe(
-      (data) => {
-        this.teams = data;
-      },
-      (error) => {
-        console.error('Error carregant els equips:', error);
-      }
-    );
+  // Afegir mètode per gestionar fitxers
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
   }
 
-  // Capturar el fitxer seleccionat
-  onFileSelected(event: any) {
-    if (event.target.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
+  addPlayer(): void {
+    const formData = new FormData();
+    
+    // Configurar FormData correctament
+    formData.append('playerName', this.newPlayer.name);
+    formData.append('position', this.newPlayer.position);
+    formData.append('teamID', String(this.newPlayer.teamId));
+    formData.append('isActive', this.newPlayer.isActive ? '1' : '0');
+    formData.append('isForSale', this.newPlayer.isForSale ? '1' : '0');
+    formData.append('price', String(this.newPlayer.price));
+    formData.append('height', String(this.newPlayer.height));
+    formData.append('speed', String(this.newPlayer.speed));
+    formData.append('shooting', String(this.newPlayer.shooting));
+    
+    if (this.selectedFile) {
+      formData.append('image', this.selectedFile);
     }
+
+    this.dataService.addPlayer(formData).subscribe({
+      next: () => this.loadData(),
+      error: (err) => console.error('Error afegint jugador:', err)
+    });
   }
 
-  // Afegir un nou jugador
-  addPlayer() {
-    // Si no hi ha equips disponibles, no s'ha de procedir
-    if (!this.teams || this.teams.length === 0) {
-      return;
-    }
-    // Comprovem que tots els camps siguin omplerts
-    if (
-      this.newPlayer.name &&
-      this.newPlayer.position &&
-      this.newPlayer.team &&
-      this.selectedFile
-    ) {
-      const formData = new FormData();
-      formData.append('playerName', this.newPlayer.name);
-      formData.append('position', this.newPlayer.position);
-      formData.append('teamID', this.newPlayer.team);
-      formData.append('isActive', this.newPlayer.isActive ? '1' : '0');
-      formData.append('isForSale', this.newPlayer.isForSale ? '1' : '0');
-      formData.append('price', this.newPlayer.price.toString());
-      formData.append('height', this.newPlayer.height.toString());
-      formData.append('speed', this.newPlayer.speed.toString());
-      formData.append('shooting', this.newPlayer.shooting.toString());
-      formData.append('image', this.selectedFile, this.selectedFile.name);
-
-      this.http.post('http://localhost:3000/api/v1/players', formData).subscribe(
-        () => {
-          this.fetchPlayers(); // Actualitza la llista
-          // Reseteja el formulari
-          this.newPlayer = {
-            name: '',
-            position: '',
-            team: '',
-            isActive: true,
-            isForSale: false,
-            price: 0,
-            height: 0,
-            speed: 0,
-            shooting: 0
-          };
-          this.selectedFile = null;
-        },
-        (error) => {
-          console.error('Error afegint el jugador:', error);
-        }
-      );
-    } else {
-      alert("Tots els camps són obligatoris, incloent la imatge.");
-    }
-  }
-
-  // Eliminar un jugador
-  deletePlayer(playerId: number) {
-    this.http.delete(`http://localhost:3000/api/v1/players/${playerId}`).subscribe(
-      () => {
-        this.fetchPlayers();
-      },
-      (error) => {
-        console.error('Error eliminant el jugador:', error);
-      }
-    );
+  deletePlayer(playerId: number): void {
+    this.dataService.deletePlayer(playerId).subscribe({
+      next: () => this.loadData(),
+      error: (err) => console.error('Error eliminant jugador:', err)
+    });
   }
 }

@@ -4,8 +4,9 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AuthService {
-  getCurrentUserID(): number {
-    // Suposant que l'ID de l'usuari s'emmagatzema al localStorage després d'iniciar sessió
+  // Getter acting as a "getter" for the current user ID.
+  get currentUserID(): number {
+    // Assuming the user ID is stored in localStorage after login.
     return Number(localStorage.getItem('userID')) || 0;
   }
 }

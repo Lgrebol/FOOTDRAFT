@@ -24,7 +24,8 @@ export class RegistreService {
     return this.http.post<any>(this.apiURLValidate, body);
   }
 
-  saveToken(token: string): void {
+  // Use property getter/setter for the token.
+  set token(token: string) {
     if (typeof window !== 'undefined' && window.localStorage) {
       localStorage.setItem('authToken', token);
     } else {
@@ -32,18 +33,10 @@ export class RegistreService {
     }
   }
 
-  getToken(): string | null {
+  get token(): string | null {
     if (typeof window !== 'undefined' && window.localStorage) {
       return localStorage.getItem('authToken');
     }
     return this.storage['authToken'] || null;
-  }
-
-  setToken(token: string): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem('authToken', token);
-    } else {
-      this.storage['authToken'] = token;
-    }
   }
 }

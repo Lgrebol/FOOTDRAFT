@@ -188,3 +188,125 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Estils generals */
+.team-name {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* Targetes d'estadístiques */
+.stats-container {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 10px;
+}
+
+.main-score {
+  text-align: center;
+  background: #f8f9fa;
+  border: 2px solid #3498db;
+}
+
+.main-score .score {
+  font-size: 2.5em;
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.stat-value {
+  font-size: 2em;
+  color: #3498db;
+  font-weight: bold;
+}
+
+/* Esdeveniments */
+.event-card {
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  padding: 10px;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.event-time {
+  background: #3498db;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.match-message {
+  text-align: center;
+  font-size: 1.2em;
+  color: #27ae60;
+  margin-top: 20px;
+  padding: 15px;
+  background: #e8f5e9;
+  border-radius: 5px;
+}
+
+/* Espaiat al marcador final */
+.final-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.goals-spacer {
+  margin: 0 1.5rem;
+  font-size: 2.5em;
+}
+
+.team {
+  min-width: 120px;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+/* Assegurar visualització de totes les estadístiques */
+.stats-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.stat-value {
+  font-size: 2.2em;
+}
+
+/* Adaptació per mòbils */
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .final-score {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .goals-spacer {
+    margin: 0 0.5rem;
+  }
+}
