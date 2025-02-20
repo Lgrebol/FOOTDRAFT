@@ -1,21 +1,17 @@
 import sql from "mssql";
 import connectDb from "../config/db.js";
-import { getUserFootcoins, updateUserFootcoins } from "../models/betModel.js"; // o crea un mètode específic en un model d'usuaris
 
 export const createPlayer = async (req, res) => {
   const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
   
-  // Comprovem que s'ha pujat una imatge
   if (!req.file) {
     return res.status(400).send({ error: "Cal pujar una imatge." });
   }
   
-  // Comprovem que els camps obligatoris existeixin
   if (!playerName || !position || !teamID) {
     return res.status(400).send({ error: "Falten camps obligatoris." });
   }
   
-  // Convertim el buffer de la imatge a una cadena Base64
   const imageBase64 = req.file.buffer.toString('base64');
   
   try {
