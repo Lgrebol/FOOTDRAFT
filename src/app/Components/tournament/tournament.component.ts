@@ -54,4 +54,8 @@ export class TournamentComponent implements OnInit {
       error: (error) => console.error("Error deleting tournament:", error)
     });
   }
+
+  trackById(index: number, item: any): number {
+    return item.id;
+  }
 }

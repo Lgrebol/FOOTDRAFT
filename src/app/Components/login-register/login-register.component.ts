@@ -1,4 +1,4 @@
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -19,7 +19,7 @@ interface JwtPayload {
 @Component({
   selector: 'app-login-register',
   standalone: true,
-  imports: [FormsModule, NgIf, CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './login-register.component.html',
   styleUrls: ['./login-register.component.css']
 })

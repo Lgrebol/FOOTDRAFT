@@ -57,7 +57,7 @@
   <div class="match-display" *ngIf="matchStarted && !matchSummary?.matchEnded">
     <div class="scoreboard">
       <div class="team local">
-        <h3>{{ getTeamName(match?.homeTeamID) || 'Equip Local' }}</h3>
+        <h3>{{ getTeamName(match!.homeTeamID) || 'Equip Local' }}</h3>
         <div class="score">{{ match?.homeGoals || 0 }}</div>
       </div>
       
@@ -67,7 +67,7 @@
       </div>
       
       <div class="team visitor">
-        <h3>{{ getTeamName(match?.awayTeamID) || 'Equip Visitant' }}</h3>
+        <h3>{{ getTeamName(match!.awayTeamID) || 'Equip Visitant' }}</h3>
         <div class="score">{{ match?.awayGoals || 0 }}</div>
       </div>
     </div>
@@ -93,11 +93,11 @@
         <div class="stat-card main-score">
           <h3>Marcador Final</h3>
           <div class="final-score">
-            <span class="team">{{ getTeamName(match?.homeTeamID) }}</span>
+            <span class="team">{{ getTeamName(match!.homeTeamID) }}</span>
             <span class="goals-spacer">{{ matchSummary.homeGoals }}</span>
             <span class="separator">-</span>
             <span class="goals-spacer">{{ matchSummary.awayGoals }}</span>
-            <span class="team">{{ getTeamName(match?.awayTeamID) }}</span>
+            <span class="team">{{ getTeamName(match!.awayTeamID) }}</span>
           </div>
         </div>
   

@@ -1,15 +1,16 @@
 import { Routes } from '@angular/router';
-import { LoginRegisterComponent } from './FRONTEND/login-register/login-register.component';
-import { MainLayoutComponent } from './FRONTEND/main-layout/main-layout.component';
-import { DashboardComponent } from './FRONTEND/dashboard/dashboard.component';
-import { PlayersComponent } from './FRONTEND/players/players.component';
-import { TeamsComponent } from './FRONTEND/teams/teams.component';
-import { TournamentComponent } from './FRONTEND/tournament/tournament.component';
-import { MatchComponent } from './FRONTEND/match/match.component';
-import { StoreComponent } from './FRONTEND/store/store.component';
+import { LoginRegisterComponent } from './Components/login-register/login-register.component';
+import { MainLayoutComponent } from './Components/main-layout/main-layout.component';
+import { DashboardComponent } from './Components/dashboard/dashboard.component';
+import { PlayersComponent } from './Components/players/players.component';
+import { TeamsComponent } from './Components/teams/teams.component';
+import { TournamentComponent } from './Components/tournament/tournament.component';
+import { MatchComponent } from './Components/match/match.component';
+import { StoreComponent } from './Components/store/store.component';
+
 export const appRoutes: Routes = [
-  { path: '', component: LoginRegisterComponent },  // Aquesta segueix sent la ruta per defecte
-  { path: 'login', component: LoginRegisterComponent }, // Afegim la ruta explícita per login
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginRegisterComponent },
   {
     path: '',
     component: MainLayoutComponent,
@@ -22,6 +23,5 @@ export const appRoutes: Routes = [
       { path: 'store', component: StoreComponent }
     ]
   },
-  { path: 'login', redirectTo: '/login' }
+  { path: '**', redirectTo: 'login' }
 ];
-
