@@ -3,11 +3,11 @@ import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { DataService } from '../shared/data.service';
+import { AuthService } from '../../Serveis/auth.service';
+import { UserService } from '../../Serveis/user.service';
 
 interface LoginResponse {
   token: string;
-  footcoins?: number;
 }
 
 interface JwtPayload {
@@ -41,7 +41,8 @@ export class LoginRegisterComponent implements AfterViewInit {
 
   constructor(
     private router: Router,
-    private dataService: DataService
+    private authService: AuthService,
+    private userService: UserService
   ) {}
 
   ngAfterViewInit(): void {
@@ -84,9 +85,9 @@ export class LoginRegisterComponent implements AfterViewInit {
   }
 
   private registerUser(): void {
-    this.dataService.registerUser(this.username, this.email, this.password).subscribe({
-      next: (response) => {
-        console.log('Registre exitós', response);
+    this.userService.registerUser(this.username, this.email, this.password).subscribe({
+      next: () => {
+        alert('Registre exitós! Inicieu sessió');
         this.clearForm();
         this.switchToLogin();
       },
@@ -124,10 +125,10 @@ export class LoginRegisterComponent implements AfterViewInit {
       return;
     }
 
-    this.dataService.loginUser(this.email, this.password).subscribe({
-      next: (response: LoginResponse) => {
+    this.authService.loginUser(this.email, this.password).subscribe({
+      next: (response) => {
         if (response.token) {
-          this.handleSuccessfulLogin(response);
+          this.handleSuccessfulLogin(response.token);
         }
       },
       error: (error) => {
@@ -137,21 +138,17 @@ export class LoginRegisterComponent implements AfterViewInit {
     });
   }
 
-// login-register.component.ts
-private handleSuccessfulLogin(response: LoginResponse): void {
-  const decodedToken = jwtDecode<JwtPayload>(response.token);
-  
-  // Emmagatzema el token i l'ID d'usuari
-  localStorage.setItem('authToken', response.token);
-  localStorage.setItem('userId', decodedToken.userId.toString());
-  
-  // Actualitza les dades de l'usuari
-  this.dataService.refreshCurrentUserData().subscribe({
-    next: () => this.router.navigate(['/dashboard']),
-    error: (err) => {
-      console.error('Error actualitzant dades:', err);
-      this.router.navigate(['/dashboard']);
-    }
-  });
-}
+  private handleSuccessfulLogin(token: string): void {
+    const decodedToken = jwtDecode<JwtPayload>(token);
+    
+    localStorage.setItem('authToken', token);
+    
+    this.authService.refreshCurrentUserData().subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: (err) => {
+        console.error('Error actualitzant dades:', err);
+        this.router.navigate(['/dashboard']);
+      }
+    });
+  }
 }

@@ -8,6 +8,7 @@ export const getDashboardStats = async (req, res) => {
       SELECT 
         (SELECT COUNT(*) FROM Teams) AS totalTeams,
         (SELECT COUNT(*) FROM Players) AS totalPlayers,
+        (SELECT COUNT(*) FROM Tournaments) AS totalTournaments,
         (SELECT ISNULL(SUM(HomeGoals + AwayGoals), 0) FROM Matches) AS totalGoals,
         (SELECT COUNT(*) FROM Matches) AS totalMatches
     `);

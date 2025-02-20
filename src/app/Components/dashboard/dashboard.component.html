@@ -1,7 +1,35 @@
-<div class="dashboard">
-  <h2>Dashboard Global</h2>
-  <p>Total Equips: {{ stats?.totalTeams }}</p>
-  <p>Total Jugadors: {{ stats?.totalPlayers }}</p>
-  <p>Total Gols en Partits: {{ stats?.totalGoals }}</p>
-  <p>Total Partits Jugats: {{ stats?.totalMatches }}</p>
+<div class="dashboard-container">
+  <h2 class="dashboard-title">🏆 Dashboard Global</h2>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">⚽</div>
+      <h3 class="stat-title">Equips</h3>
+      <p class="stat-value">{{ stats?.totalTeams || 0 }}</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👤</div>
+      <h3 class="stat-title">Jugadors</h3>
+      <p class="stat-value">{{ stats?.totalPlayers || 0 }}</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🏟️</div>
+      <h3 class="stat-title">Torneigs</h3>
+      <p class="stat-value">{{ stats?.totalTournaments || 0 }}</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🥅</div>
+      <h3 class="stat-title">Gols</h3>
+      <p class="stat-value">{{ stats?.totalGoals || 0 }}</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⏱️</div>
+      <h3 class="stat-title">Partits</h3>
+      <p class="stat-value">{{ stats?.totalMatches || 0 }}</p>
+    </div>
+  </div>
 </div>

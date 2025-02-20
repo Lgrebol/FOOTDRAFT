@@ -23,7 +23,15 @@ export class AuthService {
   }
   
   loginUser(email: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/users/login`, { email, password });
+    return this.http.post<{ token: string }>(
+      `${this.apiUrl}/users/login`, 
+      { email, password }
+    ).pipe(
+      tap(response => {
+        localStorage.setItem('authToken', response.token);
+        this.refreshCurrentUserData().subscribe();
+      })
+    );
   }
   
   registerUser(username: string, email: string, password: string): Observable<any> {
@@ -65,9 +73,8 @@ export class AuthService {
     );
   }
 
-logoutUser(): void {
-  localStorage.removeItem('authToken');
-  this.currentUserSubject.next(null);
-  this.footcoinsSubject.next(0);
-}
+  logoutUser(): void {
+    localStorage.removeItem('authToken');
+    this.currentUserSubject.next(null);
+  }
 }

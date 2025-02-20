@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService, DashboardStats } from '../shared/data.service';
+import { DashboardService } from '../../Serveis/dashboard.service';
+import { DashboardStats } from '../../Classes/dashboard/dashboard-stats.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,12 +10,14 @@ import { DataService, DashboardStats } from '../shared/data.service';
 export class DashboardComponent implements OnInit {
   stats: DashboardStats | null = null;
 
-  constructor(private dataService: DataService) {}
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
-    this.dataService.getDashboardStats().subscribe(
-      (data) => this.stats = data,
-      (error) => console.error('Error loading dashboard stats:', error)
-    );
+    this.dashboardService.getDashboardStats().subscribe({
+      next: (data) => {
+        this.stats = data;
+      },
+      error: (error) => console.error('Error loading dashboard stats:', error)
+    });
   }
 }

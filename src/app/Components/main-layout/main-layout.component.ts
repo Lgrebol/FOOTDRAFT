@@ -46,6 +46,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logoutUser();
+    this.userService.logoutUser();
     this.redirectToLogin();
   }
 

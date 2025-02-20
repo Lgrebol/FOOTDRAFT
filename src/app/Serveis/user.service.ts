@@ -87,10 +87,6 @@ export class UserService {
 
   // Tancar sessió
   logoutUser(): void {
-    localStorage.removeItem('authToken');
-    this.currentUserSubject.next(null);
     this.footcoinsSubject.next(0);
   }
-
-  
 }

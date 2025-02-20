@@ -1,23 +1,11 @@
 export class DashboardStats {
-  totalTeams: number;
-  totalPlayers: number;
-  totalTournaments: number;
-  totalGoals: number;
-  totalMatches: number;
-
   constructor(
-    totalTeams: number,
-    totalPlayers: number,
-    totalTournaments: number,
-    totalGoals: number,
-    totalMatches: number
-  ) {
-    this.totalTeams = totalTeams;
-    this.totalPlayers = totalPlayers;
-    this.totalTournaments = totalTournaments;
-    this.totalGoals = totalGoals;
-    this.totalMatches = totalMatches;
-  }
+    public totalTeams: number,
+    public totalPlayers: number,
+    public totalTournaments: number,
+    public totalGoals: number,
+    public totalMatches: number
+  ) {}
 
   // Exemple: Actualitzar estadístiques
   updateStats(stats: Partial<DashboardStats>): void {

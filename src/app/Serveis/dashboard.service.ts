@@ -1,38 +1,38 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { DashboardStats } from '../Classes/dashboard/dashboard-stats.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = 'http://localhost:3000/api/v1';
+  private apiUrl = 'http://localhost:3000/api/v1/dashboard';
   private dashboardStatsSubject = new BehaviorSubject<DashboardStats | null>(null);
   
-  constructor(private http: HttpClient) {
-    this.fetchDashboardStats();
-  }
-  
-  private fetchDashboardStats(): void {
-    this.http.get<any>(`${this.apiUrl}/dashboard`).subscribe(
-      data => {
+  constructor(private http: HttpClient) {}
+
+  getDashboardStats(): Observable<DashboardStats | null> {
+    return this.http.get<DashboardStats>(this.apiUrl).pipe(
+      tap(data => {
         const stats = new DashboardStats(
           data.totalTeams,
           data.totalPlayers,
-          data.totalTournaments,
+          data.totalTournaments || 0, // Valor per defecte si no existeix
           data.totalGoals,
           data.totalMatches
         );
         this.dashboardStatsSubject.next(stats);
-      },
-      error => console.error('Error fetching dashboard stats:', error)
+      }),
+      catchError(error => {
+        console.error('Error fetching dashboard stats:', error);
+        return throwError(() => new Error('Error carregant estadístiques'));
+      })
     );
   }
-  
-  getDashboardStats(): Observable<DashboardStats | null> {
-    this.fetchDashboardStats();
+
+  getStatsObservable(): Observable<DashboardStats | null> {
     return this.dashboardStatsSubject.asObservable();
   }
 }
