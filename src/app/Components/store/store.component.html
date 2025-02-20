@@ -27,10 +27,9 @@
 
   <div class="players-grid">
     <div class="player-card" *ngFor="let player of storePlayers">
-      <!-- Mostrem la imatge real si existeix, altrament un placeholder -->
-      <img [src]="player.imageUrl ? 'data:image/png;base64,' + player.imageUrl : 'assets/soccer-player.png'" 
-      class="player-image"
-      alt="{{ player.playerName }}">
+    <img [src]="player.imageUrl ? 'data:image/png;base64,' + player.imageUrl : 'assets/soccer-player.png'"
+     class="player-image"
+     alt="{{ player.playerName }}">
       <div class="player-name">{{ player.playerName }}</div>
       <div class="player-info">Posició: {{ player.position }}</div>
       <div class="player-info">Preu: {{ player.price }}€</div>

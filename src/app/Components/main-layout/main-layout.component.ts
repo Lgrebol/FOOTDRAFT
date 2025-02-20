@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DataService } from '../shared/data.service';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../Serveis/auth.service';
+import { UserService } from '../../Serveis/user.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -10,34 +12,48 @@ import { DataService } from '../shared/data.service';
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css']
 })
-export class MainLayoutComponent implements OnInit {
+export class MainLayoutComponent implements OnInit, OnDestroy {
   footcoins: number = 0;
+  private footcoinsSubscription!: Subscription;
 
-  constructor(private dataService: DataService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadUserData();
-    // Afegir gestió d'undefined amb operador nullish coalescing (??)
-    this.dataService.getFootcoinsUpdates().subscribe(coins => {
-      this.footcoins = coins ?? 0; // Assigna 0 si és undefined
-    });
+    this.subscribeToFootcoins();
   }
 
   private loadUserData(): void {
-    this.dataService.refreshCurrentUserData().subscribe({
+    this.authService.refreshCurrentUserData().subscribe({
       next: (user) => {
-        // Assegurar que sempre s'envia un número
-        this.dataService.updateFootcoins(user.footcoins ?? 0);
+        if (user) {
+          this.userService.updateFootcoins(user.footcoins);
+        }
       },
-      error: (err) => {
-        this.router.navigate(['/login']);
-      }
+      error: () => this.redirectToLogin()
     });
   }
 
+  private subscribeToFootcoins(): void {
+    this.footcoinsSubscription = this.userService.getFootcoinsUpdates().subscribe(
+      (coins) => this.footcoins = coins ?? 0
+    );
+  }
+
   logout(): void {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userId');
+    this.authService.logoutUser();
+    this.redirectToLogin();
+  }
+
+  private redirectToLogin(): void {
     this.router.navigate(['/login']);
+  }
+
+  ngOnDestroy(): void {
+    this.footcoinsSubscription?.unsubscribe();
   }
 }

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DataService, Player } from '../shared/data.service';
+import { StoreService } from '../../Serveis/store.service';
+import { Player } from '../../Classes/players/player.model';
 
 @Component({
   selector: 'app-store',
@@ -12,33 +13,31 @@ import { DataService, Player } from '../shared/data.service';
 })
 export class StoreComponent implements OnInit {
   storePlayers: Player[] = [];
-  currentUserID: number = 6;
-
+  currentUserID: number = 6; // Això hauria de venir de l'autenticació
   searchTerm: string = '';
   minPrice: number | null = null;
   maxPrice: number | null = null;
 
-  constructor(private dataService: DataService) {}
+  constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
-    this.dataService.getStorePlayers().subscribe(
-      (players) => (this.storePlayers = players)
+    this.storeService.getStorePlayers().subscribe(
+      players => this.storePlayers = players
     );
   }
 
   applyFilters(): void {
-    this.dataService.refreshStorePlayers(this.searchTerm, this.minPrice || undefined, this.maxPrice || undefined);
+    this.storeService.refreshStorePlayers(
+      this.searchTerm, 
+      this.minPrice || undefined, 
+      this.maxPrice || undefined
+    );
   }
 
   buyPlayer(playerId: number): void {
-    this.dataService.buyPlayer(playerId, this.currentUserID).subscribe(
-      (res: any) => {
-        alert(res.message);
-      },
-      (error) => {
-        console.error('Error buying player:', error);
-        alert(error.error?.error || 'Error buying player');
-      }
-    );
+    this.storeService.buyPlayer(playerId, this.currentUserID).subscribe({
+      next: () => alert('Jugador comprat correctament!'),
+      error: error => alert(error.error?.error || 'Error en la compra')
+    });
   }
 }

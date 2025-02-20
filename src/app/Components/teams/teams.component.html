@@ -62,20 +62,19 @@
   <div class="assign-section">
     <div class="form-group">
       <label for="selectTeam">Selecciona Equip:</label>
-<!-- Afegir propietats que faltaven -->
-<select [(ngModel)]="selectedTeamId" name="selectedTeamId">
-  <option value="" disabled selected>Selecciona un equip</option>
-  <option *ngFor="let team of teams" [value]="team.id">
-    {{ team.teamName }}
-  </option>
-</select>
+      <select [(ngModel)]="selectedTeamId" name="selectedTeamId">
+        <option value="" disabled selected>Selecciona un equip</option>
+        <option *ngFor="let team of teams" [value]="team.id">
+          {{ team.teamName }}
+        </option>
+      </select>
 
-<select [(ngModel)]="selectedPlayerId" name="selectedPlayerId">
-  <option value="" disabled selected>Selecciona un jugador</option>
-  <option *ngFor="let player of reservedPlayers" [value]="player.id">
-    {{ player.playerName }}
-  </option>
-</select>
+      <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId">
+        <option value="" disabled selected>Selecciona un jugador</option>
+        <option *ngFor="let player of reservedPlayers" [value]="player.id">
+          {{ player.playerName }}
+        </option>
+      </select>
     </div>
     <button (click)="assignPlayerToTeam()">Assignar Jugador</button>
   </div>

@@ -29,6 +29,10 @@ export class UserService {
     return this.currentUserSubject.asObservable();
   }
 
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}`);
+  }
+  
   // Obtenir les actualitzacions dels footcoins
   getFootcoinsUpdates(): Observable<number> {
     return this.footcoinsSubject.asObservable();
@@ -87,4 +91,6 @@ export class UserService {
     this.currentUserSubject.next(null);
     this.footcoinsSubject.next(0);
   }
+
+  
 }

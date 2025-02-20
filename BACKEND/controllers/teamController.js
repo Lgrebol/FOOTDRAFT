@@ -40,11 +40,9 @@ export const getTeams = async (req, res) => {
   }
 };
 
-
 // Eliminar un equip
 export const deleteTeam = async (req, res) => {
   const { id } = req.params;
-
   try {
     const pool = await connectDb();
     await pool
@@ -60,12 +58,10 @@ export const deleteTeam = async (req, res) => {
 // Traspassar un jugador reservat a un equip
 export const addPlayerFromReserve = async (req, res) => {
   const { teamId } = req.params;
-  const { playerId, userID } = req.body; // userID del propietari que té reservat el jugador
+  const { playerId, userID } = req.body;
 
   if (!playerId || !userID) {
-    return res
-      .status(400)
-      .send({ error: "Falten camps obligatoris: playerId i userID." });
+    return res.status(400).send({ error: "Falten camps obligatoris: playerId i userID." });
   }
 
   try {

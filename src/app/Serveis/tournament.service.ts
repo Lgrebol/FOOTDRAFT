@@ -28,13 +28,12 @@ export class TournamentService {
   }
   
   getTournaments(): Observable<Tournament[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/tournaments`).pipe(
-      map(tournaments => tournaments.map(t =>
-        new Tournament(t.TournamentID, t.TournamentName, t.TournamentType, t.StartDate, t.EndDate)
-      ))
-    );
+    return this.tournamentsSubject.asObservable();
   }
   
+  trackById(index: number, item: Tournament): number {
+    return item.id;
+  }
   addTournament(tournamentData: { tournamentName: string; tournamentType: string; startDate: string; endDate: string }): Observable<Tournament> {
     return this.http.post<any>(`${this.apiUrl}/tournaments`, tournamentData).pipe(
       tap(() => this.fetchTournaments()),
@@ -47,4 +46,5 @@ export class TournamentService {
       tap(() => this.fetchTournaments())
     );
   }
+
 }

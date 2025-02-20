@@ -64,4 +64,10 @@ export class AuthService {
       map(user => user?.footcoins)
     );
   }
+
+logoutUser(): void {
+  localStorage.removeItem('authToken');
+  this.currentUserSubject.next(null);
+  this.footcoinsSubject.next(0);
+}
 }

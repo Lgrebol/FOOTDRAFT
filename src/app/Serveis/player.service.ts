@@ -1,4 +1,3 @@
-// src/app/services/player.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -83,6 +82,10 @@ export class PlayerService {
         p.TeamName
       ))
     );
+  }
+  
+  getReservedPlayers(userId: number): Observable<Player[]> {
+    return this.http.get<Player[]>(`${this.apiUrl}/reserved/${userId}`);
   }
   
   deletePlayer(playerId: number): Observable<any> {

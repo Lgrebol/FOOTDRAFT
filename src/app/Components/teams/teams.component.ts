@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DataService, Team, User, Player } from '../shared/data.service';
+import { TeamService } from '../../Serveis/team.service';
+import { UserService } from '../../Serveis/user.service';
+import { PlayerService } from '../../Serveis/player.service';
+import { Team } from '../../Classes/teams/team.model';
+import { User } from '../../Classes/user/user.model';
+import { Player } from '../../Classes/players/player.model';
 
 @Component({
   selector: 'app-teams',
@@ -18,8 +23,8 @@ export class TeamsComponent implements OnInit {
   selectedTeamId: number | null = null;
   selectedPlayerId: number | null = null;
   
-  // Add a property for the current user ID
-  currentUserId: number = 6; // Replace this with the actual logged-in user ID
+  // Exemple: ID de l'usuari actual (hauries d'obtenir-lo del teu servei d'autenticació)
+  currentUserId: number = 6;
 
   newTeam = {
     name: '',
@@ -27,52 +32,54 @@ export class TeamsComponent implements OnInit {
     userId: null as number | null
   };
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private teamService: TeamService,
+    private userService: UserService,
+    private playerService: PlayerService
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
   }
 
   private loadData(): void {
-    this.dataService.getTeams().subscribe(teams => this.teams = teams);
-    this.dataService.getUsers().subscribe(users => this.users = users);
-    // Pass the currentUserId to getReservedPlayers
-    this.dataService.getReservedPlayers(this.currentUserId).subscribe(
+    this.teamService.getTeams().subscribe(teams => this.teams = teams);
+    this.userService.getUsers().subscribe(users => this.users = users);
+    this.playerService.getReservedPlayers(this.currentUserId).subscribe(
       players => this.reservedPlayers = players
     );
   }
 
   assignPlayerToTeam(): void {
     if (this.selectedTeamId && this.selectedPlayerId) {
-      // Pass the currentUserId as the third argument
-      this.dataService.assignPlayerToTeam(
+      this.teamService.assignPlayerToTeam(
         this.selectedTeamId,
         this.selectedPlayerId,
         this.currentUserId
       ).subscribe({
         next: () => this.loadData(),
-        error: (err) => console.error('Error assignant jugador:', err)
+        error: err => console.error('Error assignant jugador:', err)
       });
     }
   }
 
   addTeam(): void {
     if (this.newTeam.name && this.newTeam.shirtColor && this.newTeam.userId) {
-      this.dataService.addTeam({
+      this.teamService.addTeam({
         teamName: this.newTeam.name,
         shirtColor: this.newTeam.shirtColor,
         userID: this.newTeam.userId
       }).subscribe({
         next: () => this.loadData(),
-        error: (err) => console.error('Error afegint equip:', err)
+        error: err => console.error('Error afegint equip:', err)
       });
     }
   }
 
   deleteTeam(teamId: number): void {
-    this.dataService.deleteTeam(teamId).subscribe({
+    this.teamService.deleteTeam(teamId).subscribe({
       next: () => this.loadData(),
-      error: (err) => console.error('Error eliminant equip:', err)
+      error: err => console.error('Error eliminant equip:', err)
     });
   }
 }

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { DataService, Tournament } from '../shared/data.service';
+import { TournamentService } from '../../Serveis/tournament.service'; // Corregir ruta segons estructura
+import { Tournament } from '../../Classes/tournament/tournament.model'; // Nou path de la classe
 
 @Component({
   selector: 'app-tournament',
@@ -18,34 +19,39 @@ export class TournamentComponent implements OnInit {
   tournaments: Tournament[] = [];
   newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
 
-  constructor(private dataService: DataService) {}
+  constructor(private tournamentService: TournamentService) {}
 
   ngOnInit(): void {
-    this.dataService.getTournaments().subscribe(
-      (tournaments) => (this.tournaments = tournaments)
+    this.tournamentService.getTournaments().subscribe(
+      (tournaments) => this.tournaments = tournaments
     );
   }
 
   addTournament(): void {
     if (this.newTournament.name) {
-      this.dataService.addTournament({
+      this.tournamentService.addTournament({
         tournamentName: this.newTournament.name,
         tournamentType: this.newTournament.type,
         startDate: this.newTournament.startDate,
         endDate: this.newTournament.endDate
-      }).subscribe(
-        () => {
+      }).subscribe({
+        next: () => {
           this.newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
+          this.tournamentService.getTournaments().subscribe( // Forçar actualització
+            (tournaments) => this.tournaments = tournaments
+          );
         },
-        (error) => console.error("Error adding tournament:", error)
-      );
+        error: (error) => console.error("Error adding tournament:", error)
+      });
     }
   }
 
   deleteTournament(id: number): void {
-    this.dataService.deleteTournament(id).subscribe(
-      () => {},
-      (error) => console.error("Error deleting tournament:", error)
-    );
+    this.tournamentService.deleteTournament(id).subscribe({
+      next: () => {
+        this.tournaments = this.tournaments.filter(t => t.id !== id);
+      },
+      error: (error) => console.error("Error deleting tournament:", error)
+    });
   }
 }
