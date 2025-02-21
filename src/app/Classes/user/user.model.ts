@@ -1,12 +1,12 @@
 export class User {
   constructor(
-    private _id: number,
+    private _id: string,
     private _username: string,
     private _email: string,
     private _footcoins: number
   ) {}
 
-  get id(): number {
+  get id(): string {
     return this._id;
   }
   get username(): string {
@@ -19,7 +19,6 @@ export class User {
     return this._footcoins;
   }
 
-  // Exemple: Actualitzar les footcoins de l'usuari
   updateFootcoins(newAmount: number): void {
     this._footcoins = newAmount;
   }

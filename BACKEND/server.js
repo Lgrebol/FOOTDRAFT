@@ -1,24 +1,23 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDb from "./config/db.js";  // Connexió a la base de dades
-import userRoutes from "./routes/userRoutes.js";  // Rutes per a usuaris
-import playerRoutes from "./routes/playerRoutes.js";  // Rutes per a jugadors
-import teamRoutes from "./routes/teamRoutes.js";  // Rutes per a equips
-import tournamentRoutes from "./routes/tournamentRoutes.js";  // Rutes per a tornejos
+import connectDb from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js";
+import playerRoutes from "./routes/playerRoutes.js";
+import teamRoutes from "./routes/teamRoutes.js";
+import tournamentRoutes from "./routes/tournamentRoutes.js";
 import matchRoutes from "./routes/matchRoutes.js";
 import reserveRoutes from "./routes/reserveRoutes.js";
 import betRoutes from "./routes/betRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
-dotenv.config();  // Carregar variables d'entorn des del fitxer .env
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;  // Port per a l'aplicació
+const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(express.json());  // Permet que l'API accepti JSON en el cos de la petició
-
+app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:4200',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
@@ -27,40 +26,24 @@ app.use(cors({
   credentials: true
 }));
 
-// Rutes per a usuaris
 app.use("/api/v1/users", userRoutes);
-
-// Rutes per a jugadors
 app.use("/api/v1/players", playerRoutes);
-
-// Rutes per a equips
 app.use("/api/v1/teams", teamRoutes);
-
-// Rutes per a tornejos
 app.use("/api/v1/tournaments", tournamentRoutes);
-
-//Rutes per agafar el match
 app.use("/api/v1/matches", matchRoutes);
-
-//Rutes per reservar jugadors
 app.use("/api/v1/reserve", reserveRoutes);
-
 app.use("/api/v1/bets", betRoutes);
-
 app.use("/api/v1/auth", authRoutes);
-
 app.use("/api/v1/dashboard", dashboardRoutes);
-// Connexió a la base de dades
+
 connectDb().catch((err) => {
-  console.error("Error connectant a la base de dades:", err);  // Si hi ha un error a la connexió de la base de dades
+  console.error("Error connectant a la base de dades:", err);
 });
 
-// Ruta de prova
 app.get("/", (req, res) => {
-  res.send("API per FOOTDRAFT està en execució correctament.");  // Missatge que confirma que l'API està en execució
+  res.send("API per FOOTDRAFT està en execució correctament.");
 });
 
-// Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);  // Missatge que mostra que el servidor està en marxa
+  console.log(`Server running on port ${PORT}`);
 });

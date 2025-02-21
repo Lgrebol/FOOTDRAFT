@@ -19,7 +19,7 @@ export class TournamentService {
     this.http.get<any[]>(`${this.apiUrl}/tournaments`).subscribe(
       tournaments => {
         const tournamentInstances = tournaments.map(t =>
-          new Tournament(t.TournamentID, t.TournamentName, t.TournamentType, t.StartDate, t.EndDate)
+          new Tournament(t.TournamentUUID, t.TournamentName, t.TournamentType, t.StartDate, t.EndDate)
         );
         this.tournamentsSubject.next(tournamentInstances);
       },
@@ -31,20 +31,20 @@ export class TournamentService {
     return this.tournamentsSubject.asObservable();
   }
   
-  trackById(index: number, item: Tournament): number {
+  trackById(index: number, item: Tournament): string {
     return item.id;
   }
+  
   addTournament(tournamentData: { tournamentName: string; tournamentType: string; startDate: string; endDate: string }): Observable<Tournament> {
     return this.http.post<any>(`${this.apiUrl}/tournaments`, tournamentData).pipe(
       tap(() => this.fetchTournaments()),
-      map(t => new Tournament(t.TournamentID, t.TournamentName, t.TournamentType, t.StartDate, t.EndDate))
+      map(t => new Tournament(t.TournamentUUID, t.TournamentName, t.TournamentType, t.StartDate, t.EndDate))
     );
   }
   
-  deleteTournament(tournamentId: number): Observable<any> {
+  deleteTournament(tournamentId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/tournaments/${tournamentId}`).pipe(
       tap(() => this.fetchTournaments())
     );
   }
-
 }

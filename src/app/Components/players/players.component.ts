@@ -21,7 +21,7 @@ export class PlayersComponent implements OnInit {
   newPlayer = {
     name: '',
     position: '',
-    teamId: null as number | null,
+    teamId: '' as string, // actualitzat a string
     isActive: true,
     isForSale: false,
     price: 0,
@@ -54,7 +54,7 @@ export class PlayersComponent implements OnInit {
     const formData = new FormData();
     formData.append('playerName', this.newPlayer.name);
     formData.append('position', this.newPlayer.position);
-    formData.append('teamID', String(this.newPlayer.teamId));
+    formData.append('teamID', this.newPlayer.teamId);
     formData.append('isActive', this.newPlayer.isActive ? '1' : '0');
     formData.append('isForSale', this.newPlayer.isForSale ? '1' : '0');
     formData.append('price', String(this.newPlayer.price));
@@ -70,7 +70,7 @@ export class PlayersComponent implements OnInit {
     });
   }
 
-  deletePlayer(playerId: number): void {
+  deletePlayer(playerId: string): void {
     this.playerService.deletePlayer(playerId).subscribe({
       next: () => this.loadData(),
       error: (err) => console.error('Error eliminant jugador:', err)

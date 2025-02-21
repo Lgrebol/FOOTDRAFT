@@ -11,7 +11,7 @@ export class Store {
     this._availablePlayers.push(player);
   }
 
-  removePlayer(playerId: number): void {
+  removePlayer(playerId: string): void {
     this._availablePlayers = this._availablePlayers.filter(player => player.id !== playerId);
-  }
+  }  
 }

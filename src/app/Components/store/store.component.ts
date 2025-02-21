@@ -13,7 +13,7 @@ import { Player } from '../../Classes/players/player.model';
 })
 export class StoreComponent implements OnInit {
   storePlayers: Player[] = [];
-  currentUserID: number = 6; // Això hauria de venir de l'autenticació
+  currentUserID: string = '6';
   searchTerm: string = '';
   minPrice: number | null = null;
   maxPrice: number | null = null;
@@ -34,10 +34,10 @@ export class StoreComponent implements OnInit {
     );
   }
 
-  buyPlayer(playerId: number): void {
+  buyPlayer(playerId: string): void {
     this.storeService.buyPlayer(playerId, this.currentUserID).subscribe({
       next: () => alert('Jugador comprat correctament!'),
       error: error => alert(error.error?.error || 'Error en la compra')
     });
-  }
+  }  
 }

@@ -17,8 +17,8 @@ import { Team } from '../../Classes/teams/team.model';
 })
 export class MatchComponent implements OnInit, OnDestroy {
   teams: Team[] = [];
-  selectedHomeTeam: number | null = null;
-  selectedAwayTeam: number | null = null;
+  selectedHomeTeam: string | null = null;
+  selectedAwayTeam: string | null = null;
   match: Match | null = null;
   matchSummary: any = null;
   matchStarted: boolean = false;
@@ -26,7 +26,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   betAmount: number = 0;
   predictedWinner: string = 'home';
-  currentUserID: number = 6;
+  currentUserID: string = '6';
 
   constructor(
     private matchService: MatchService,
@@ -58,7 +58,7 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (!this.canStartMatch()) return;
 
     const newMatch = {
-      tournamentID: 8,
+      tournamentID: '8',
       homeTeamID: this.selectedHomeTeam!,
       awayTeamID: this.selectedAwayTeam!,
       matchDate: new Date()
@@ -75,12 +75,12 @@ export class MatchComponent implements OnInit, OnDestroy {
     });
   }
 
-  getTeamName(teamId: number): string {
+  getTeamName(teamId: string): string {
     const team = this.teams.find(t => t.id === teamId);
     return team?.teamName || 'Equip Desconegut';
   }
 
-  private startPolling(matchID: number): void {
+  private startPolling(matchID: string): void {
     this.pollingSubscription = interval(1000).subscribe(() => {
       this.matchService.getMatch(matchID).subscribe({
         next: (match) => {
@@ -108,7 +108,7 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.pollingSubscription?.unsubscribe();
   }
 
-  simulateMatch(matchID: number): void {
+  simulateMatch(matchID: string): void {
     this.matchService.simulateMatch(matchID).subscribe({
       next: () => console.log('Simulació completada'),
       error: (error) => console.error('Error en simulació:', error)
@@ -137,16 +137,16 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   placeBet(): void {
-    if (!this.selectedHomeTeam || !this.selectedAwayTeam) return;
-
+    if (!this.selectedHomeTeam || !this.selectedAwayTeam || !this.match) return;
+  
     const betData = {
-      matchID: this.match?.id,
+      matchID: this.match.id,
       homeTeamID: this.selectedHomeTeam,
       awayTeamID: this.selectedAwayTeam,
       amount: this.betAmount,
       predictedWinner: this.predictedWinner
     };
-
+  
     this.betService.placeBet(betData).subscribe({
       next: () => alert('Aposta realitzada amb èxit!'),
       error: (error) => alert(error.error?.error || "Error en l'aposta")

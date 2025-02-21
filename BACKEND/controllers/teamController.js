@@ -1,7 +1,6 @@
 import sql from "mssql";
 import connectDb from "../config/db.js";
 
-// Crear un equip
 export const createTeam = async (req, res) => {
   const { teamName, shirtColor, userID } = req.body;
 
@@ -15,7 +14,7 @@ export const createTeam = async (req, res) => {
       .request()
       .input("teamName", sql.VarChar, teamName)
       .input("shirtColor", sql.VarChar, shirtColor)
-      .input("userID", sql.Int, userID)
+      .input("userID", sql.UniqueIdentifier, userID)
       .query(
         "INSERT INTO Teams (TeamName, ShirtColor, UserID) VALUES (@teamName, @shirtColor, @userID)"
       );
@@ -25,12 +24,11 @@ export const createTeam = async (req, res) => {
   }
 };
 
-// Obtenir tots els equips
 export const getTeams = async (req, res) => {
   try {
     const pool = await connectDb();
     const result = await pool.request().query(`
-      SELECT T.TeamID, T.TeamName, T.ShirtColor, U.Name AS UserName
+      SELECT T.TeamUUID, T.TeamName, T.ShirtColor, U.Name AS UserName
       FROM Teams T
       LEFT JOIN Users U ON T.UserID = U.UserID
     `);
@@ -40,25 +38,24 @@ export const getTeams = async (req, res) => {
   }
 };
 
-// Eliminar un equip
 export const deleteTeam = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // id és ara un UUID
+
   try {
     const pool = await connectDb();
     await pool
       .request()
-      .input("id", sql.Int, id)
-      .query("DELETE FROM Teams WHERE TeamID = @id");
+      .input("id", sql.UniqueIdentifier, id)
+      .query("DELETE FROM Teams WHERE TeamUUID = @id");
     res.status(200).send({ message: "Equip eliminat correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
 
-// Traspassar un jugador reservat a un equip
 export const addPlayerFromReserve = async (req, res) => {
-  const { teamId } = req.params;
-  const { playerId, userID } = req.body;
+  const { teamId } = req.params; // teamId és un UUID
+  const { playerId, userID } = req.body; // playerId i userID ara són UUID
 
   if (!playerId || !userID) {
     return res.status(400).send({ error: "Falten camps obligatoris: playerId i userID." });
@@ -66,13 +63,12 @@ export const addPlayerFromReserve = async (req, res) => {
 
   try {
     const pool = await connectDb();
-    // Comprovar que el jugador està reservat per aquest usuari
     const result = await pool
       .request()
-      .input("playerId", sql.Int, playerId)
-      .input("userID", sql.Int, userID)
+      .input("playerId", sql.UniqueIdentifier, playerId)
+      .input("userID", sql.UniqueIdentifier, userID)
       .query(
-        "SELECT * FROM Players WHERE PlayerID = @playerId AND ReserveUserID = @userID"
+        "SELECT * FROM Players WHERE PlayerUUID = @playerId AND ReserveUserID = @userID"
       );
 
     if (result.recordset.length === 0) {
@@ -81,26 +77,24 @@ export const addPlayerFromReserve = async (req, res) => {
       });
     }
 
-    // Comprovar que l'equip no té ja 5 jugadors actius
     const countResult = await pool
       .request()
-      .input("teamId", sql.Int, teamId)
+      .input("teamId", sql.UniqueIdentifier, teamId)
       .query("SELECT COUNT(*) AS playerCount FROM Players WHERE TeamID = @teamId AND IsActive = 1");
     const playerCount = countResult.recordset[0].playerCount;
     if (playerCount >= 5) {
       return res.status(400).send({ error: "Aquest equip ja té 5 jugadors." });
     }
 
-    // Actualitzar el jugador: assignar-lo a l'equip i buidar la reserva
     await pool
       .request()
-      .input("playerId", sql.Int, playerId)
-      .input("teamId", sql.Int, teamId)
+      .input("playerId", sql.UniqueIdentifier, playerId)
+      .input("teamId", sql.UniqueIdentifier, teamId)
       .query(
         `UPDATE Players 
          SET TeamID = @teamId,
              ReserveUserID = NULL
-         WHERE PlayerID = @playerId`
+         WHERE PlayerUUID = @playerId`
       );
 
     res.status(200).send({ message: "Jugador traspassat a l'equip correctament." });

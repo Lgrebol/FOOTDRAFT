@@ -19,10 +19,10 @@ export class StoreService {
     this.http.get<any[]>(`${this.apiUrl}/store`, { params }).pipe(
       map((players: any[]) => players.map(p =>
         new Player(
-          p.PlayerID,
+          p.PlayerUUID,
           p.PlayerName,
           p.Position,
-          p.TeamID,
+          p.TeamUUID,
           p.IsActive,
           p.IsForSale,
           p.Price,
@@ -32,7 +32,7 @@ export class StoreService {
           p.PlayerImage,
           p.Points,
           p.TeamName
-        )
+        )        
       ))
     ).subscribe({
       next: (players: Player[]) => this.storePlayersSubject.next(players),
@@ -53,9 +53,9 @@ export class StoreService {
     this.fetchStorePlayers(params);
   }
 
-  buyPlayer(playerId: number, userId: number): Observable<any> {
+  buyPlayer(playerId: string, userId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/buy/${playerId}`, { userID: userId }).pipe(
       tap(() => this.fetchStorePlayers())
     );
-  }
+  }  
 }

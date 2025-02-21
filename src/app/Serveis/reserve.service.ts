@@ -12,14 +12,15 @@ export class ReserveService {
 
   constructor(private http: HttpClient) {}
 
-  getReservedPlayers(userId: number): Observable<Player[]> {
+  // Ara userId és de tipus string (UUID)
+  getReservedPlayers(userId: string): Observable<Player[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${userId}`).pipe(
       map(players => players.map(p =>
         new Player(
-          p.PlayerID,
+          p.PlayerUUID,
           p.PlayerName,
           p.Position,
-          p.TeamID,
+          p.TeamUUID,
           p.IsActive,
           p.IsForSale,
           p.Price,

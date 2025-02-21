@@ -1,15 +1,15 @@
 import connectDb from "../config/db.js";
 import sql from "mssql";
 
-export const createPlayer = async (name, position, teamId) => {
+export const createPlayer = async (name, position, teamUUID) => {
   const pool = await connectDb();
   await pool
     .request()
     .input("name", sql.VarChar, name)
     .input("position", sql.VarChar, position)
-    .input("teamId", sql.Int, teamId)
+    .input("teamUUID", sql.UniqueIdentifier, teamUUID)
     .query(
-      "INSERT INTO Players (Name, Position, TeamID) VALUES (@name, @position, @teamId)"
+      "INSERT INTO Players (PlayerName, Position, TeamID) VALUES (@name, @position, @teamUUID)"
     );
 };
 
@@ -19,19 +19,19 @@ export const getAllPlayers = async () => {
   return result.recordset;
 };
 
-export const getPlayersByTeam = async (teamId) => {
+export const getPlayersByTeam = async (teamUUID) => {
   const pool = await connectDb();
   const result = await pool
     .request()
-    .input("teamId", sql.Int, teamId)
-    .query("SELECT * FROM Players WHERE TeamID = @teamId");
+    .input("teamUUID", sql.UniqueIdentifier, teamUUID)
+    .query("SELECT * FROM Players WHERE TeamID = @teamUUID");
   return result.recordset;
 };
 
-export const deletePlayer = async (playerId) => {
+export const deletePlayer = async (playerUUID) => {
   const pool = await connectDb();
   await pool
     .request()
-    .input("playerId", sql.Int, playerId)
-    .query("DELETE FROM Players WHERE PlayerID = @playerId");
+    .input("playerUUID", sql.UniqueIdentifier, playerUUID)
+    .query("DELETE FROM Players WHERE PlayerUUID = @playerUUID");
 };

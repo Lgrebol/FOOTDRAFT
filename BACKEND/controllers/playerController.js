@@ -24,7 +24,7 @@ export const createPlayer = async (req, res) => {
       .request()
       .input("playerName", sql.VarChar, playerName)
       .input("position", sql.VarChar, position)
-      .input("teamID", sql.Int, teamID)
+      .input("teamID", sql.UniqueIdentifier, teamID) // Ara s'espera un UUID
       .input("isActive", sql.Bit, isActive)
       .input("isForSale", sql.Bit, isForSale)
       .input("price", sql.Decimal(10, 2), price)
@@ -40,7 +40,6 @@ export const createPlayer = async (req, res) => {
   }
 };
 
-// Obtenir tots els jugadors
 export const getPlayers = async (req, res) => {
   try {
     const pool = await connectDb();
@@ -55,8 +54,6 @@ export const getPlayers = async (req, res) => {
   }
 };
 
-
-// Eliminar un jugador
 export const deletePlayer = async (req, res) => {
   const playerId = req.params.id;
 
@@ -64,29 +61,24 @@ export const deletePlayer = async (req, res) => {
     const pool = await connectDb();
     await pool
       .request()
-      .input("playerId", sql.Int, playerId)
-      .query("DELETE FROM Players WHERE PlayerID = @playerId");
+      .input("playerId", sql.UniqueIdentifier, playerId)
+      .query("DELETE FROM Players WHERE PlayerUUID = @playerId");
     res.status(200).send({ message: "Jugador eliminat correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
 
-// Obtenir els jugadors disponibles a la tenda
-// Obtenir els jugadors disponibles a la tenda amb filtre opcional de cerca i preu
 export const getPlayersForSale = async (req, res) => {
   try {
     const pool = await connectDb();
-    // Consulta base
     let query = `
       SELECT * FROM Players 
       WHERE IsForSale = 1 AND ReserveUserID IS NULL
     `;
 
-    // Extreure els paràmetres de la query string
     const { search, minPrice, maxPrice } = req.query;
 
-    // Afegir condicions segons els paràmetres rebuts
     if (search) {
       query += " AND PlayerName LIKE @search";
     }
@@ -97,10 +89,8 @@ export const getPlayersForSale = async (req, res) => {
       query += " AND Price <= @maxPrice";
     }
 
-    // Preparar la request
     const request = pool.request();
     if (search) {
-      // Afegim els % per a fer la cerca amb LIKE
       request.input("search", sql.VarChar, `%${search}%`);
     }
     if (minPrice) {
@@ -117,11 +107,9 @@ export const getPlayersForSale = async (req, res) => {
   }
 };
 
-
-// Comprar un jugador (passant el userID del comprador al cos de la petició)
 export const buyPlayer = async (req, res) => {
   const playerId = req.params.id;
-  const { userID } = req.body; // En un entorn real, s'obtindria del token
+  const { userID } = req.body; // Ara s'espera que userID sigui un UUID
 
   if (!userID) {
     return res.status(400).send({ error: "Falta el userID del comprador." });
@@ -129,59 +117,49 @@ export const buyPlayer = async (req, res) => {
 
   try {
     const pool = await connectDb();
-    // Comprovar que el jugador està disponible a la tenda
     const result = await pool
       .request()
-      .input("playerId", sql.Int, playerId)
+      .input("playerId", sql.UniqueIdentifier, playerId)
       .query(
-        "SELECT * FROM Players WHERE PlayerID = @playerId AND IsForSale = 1 AND ReserveUserID IS NULL"
+        "SELECT * FROM Players WHERE PlayerUUID = @playerId AND IsForSale = 1 AND ReserveUserID IS NULL"
       );
 
     if (result.recordset.length === 0) {
-      return res
-        .status(400)
-        .send({ error: "Aquest jugador no està disponible per a la compra." });
+      return res.status(400).send({ error: "Aquest jugador no està disponible per a la compra." });
     }
 
-    // Comprovem que l'usuari té diners suficients
     const coinsResult = await pool
       .request()
-      .input("userID", sql.Int, userID)
-      .query("SELECT Footcoins FROM Users WHERE UserID = @userID");
+      .input("userID", sql.UniqueIdentifier, userID)
+      .query("SELECT Footcoins FROM Users WHERE UserUUID = @userID");
     if (coinsResult.recordset.length === 0) {
       return res.status(404).send({ error: "Usuari no trobat." });
     }
     const currentCoins = coinsResult.recordset[0].Footcoins;
-    // Suposem que el preu del jugador està al camp Price
     const playerPrice = result.recordset[0].Price;
     if (currentCoins < playerPrice) {
       return res.status(400).send({ error: "No tens diners suficients per comprar aquest jugador." });
     }
 
-    // Actualitzar el jugador: assignar ReserveUserID i marcar-lo com no a la venda
     await pool
       .request()
-      .input("playerId", sql.Int, playerId)
-      .input("userID", sql.Int, userID)
+      .input("playerId", sql.UniqueIdentifier, playerId)
+      .input("userID", sql.UniqueIdentifier, userID)
       .query(`
         UPDATE Players 
         SET ReserveUserID = @userID,
             IsForSale = 0
-        WHERE PlayerID = @playerId
+        WHERE PlayerUUID = @playerId
       `);
 
-    // Deduir el preu del jugador del saldo de l'usuari
     await pool
       .request()
-      .input("userID", sql.Int, userID)
+      .input("userID", sql.UniqueIdentifier, userID)
       .input("amount", sql.Decimal(18,2), -playerPrice)
-      .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserID = @userID");
+      .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserUUID = @userID");
 
-    res
-      .status(200)
-      .send({ message: "Jugador comprat i afegit a la reserva correctament." });
+    res.status(200).send({ message: "Jugador comprat i afegit a la reserva correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
-

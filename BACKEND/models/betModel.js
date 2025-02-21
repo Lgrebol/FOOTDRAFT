@@ -1,34 +1,31 @@
 import connectDb from "../config/db.js";
 import sql from "mssql";
 
-// Inserta una nova aposta amb estat 'pending'
-export const createBet = async (userID, matchID, amount, predictedWinner, homeTeamID, awayTeamID) => {
+export const createBet = async (userUUID, matchUUID, amount, predictedWinner, homeTeamUUID, awayTeamUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
-    .input("userID", sql.Int, userID)
-    .input("matchID", sql.Int, matchID) // Pot ser null
+    .input("userUUID", sql.UniqueIdentifier, userUUID)
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
     .input("amount", sql.Decimal(18, 2), amount)
     .input("predictedWinner", sql.VarChar, predictedWinner)
-    .input("homeTeamID", sql.Int, homeTeamID)
-    .input("awayTeamID", sql.Int, awayTeamID)
+    .input("homeTeamUUID", sql.UniqueIdentifier, homeTeamUUID)
+    .input("awayTeamUUID", sql.UniqueIdentifier, awayTeamUUID)
     .query(
       `INSERT INTO Bets (UserID, MatchID, Amount, PredictedWinner, Status, HomeTeamID, AwayTeamID)
        OUTPUT INSERTED.BetID
-       VALUES (@userID, @matchID, @amount, @predictedWinner, 'pending', @homeTeamID, @awayTeamID)`
+       VALUES (@userUUID, @matchUUID, @amount, @predictedWinner, 'pending', @homeTeamUUID, @awayTeamUUID)`
     );
   return result.recordset[0].BetID;
 };
 
-// Obté totes les apostes d'un partit donat
-export const getBetsByMatch = async (matchID) => {
+export const getBetsByMatch = async (matchUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
-    .input("matchID", sql.Int, matchID)
-    .query("SELECT * FROM Bets WHERE MatchID = @matchID");
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
+    .query("SELECT * FROM Bets WHERE MatchID = @matchUUID");
   return result.recordset;
 };
 
-// Actualitza l'estat d'una aposta i, opcionalment, el guany
 export const updateBetStatus = async (betID, status, winnings = 0) => {
   const pool = await connectDb();
   await pool.request()
@@ -38,24 +35,22 @@ export const updateBetStatus = async (betID, status, winnings = 0) => {
     .query("UPDATE Bets SET Status = @status, Winnings = @winnings WHERE BetID = @betID");
 };
 
-// Actualitza el saldo (Footcoins) d'un usuari
-export const updateUserFootcoins = async (userID, amount) => {
+export const updateUserFootcoins = async (userUUID, amount) => {
   const pool = await connectDb();
   const result = await pool
     .request()
-    .input("userID", sql.Int, userID)
-    .input("amount", sql.Decimal(18, 2), amount) // Canvia sql.Int → sql.Decimal
-    .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserID = @userID");
+    .input("userUUID", sql.UniqueIdentifier, userUUID)
+    .input("amount", sql.Decimal(18, 2), amount)
+    .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserUUID = @userUUID");
   
-  console.log(`Actualitzat saldo usuari ${userID}: +${amount} Footcoins`);
+  console.log(`Actualitzat saldo usuari ${userUUID}: +${amount} Footcoins`);
   return result;
 };
 
-// Obté els Footcoins actuals d'un usuari
-export const getUserFootcoins = async (userID) => {
+export const getUserFootcoins = async (userUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
-    .input("userID", sql.Int, userID)
-    .query("SELECT Footcoins FROM Users WHERE UserID = @userID");
+    .input("userUUID", sql.UniqueIdentifier, userUUID)
+    .query("SELECT Footcoins FROM Users WHERE UserUUID = @userUUID");
   return result.recordset[0].Footcoins;
 };

@@ -1,9 +1,9 @@
 export class Player {
   constructor(
-    private _id: number,
+    private _id: string,
     private _playerName: string,
     private _position: string,
-    private _teamID: number,
+    private _teamID: string,
     private _isActive: boolean,
     private _isForSale: boolean,
     private _price: number,
@@ -15,7 +15,7 @@ export class Player {
     private _teamName?: string
   ) {}
 
-  get id(): number {
+  get id(): string {
     return this._id;
   }
   get playerName(): string {
@@ -24,7 +24,7 @@ export class Player {
   get position(): string {
     return this._position;
   }
-  get teamID(): number {
+  get teamID(): string {
     return this._teamID;
   }
   get isActive(): boolean {
@@ -55,7 +55,6 @@ export class Player {
     return this._teamName;
   }
 
-  // Exemple: Calcular la valoració del jugador
   calculateRating(): number {
     return (this._height + this._speed + this._shooting) / 3;
   }

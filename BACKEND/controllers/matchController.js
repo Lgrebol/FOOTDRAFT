@@ -13,11 +13,11 @@ import connectDb from "../config/db.js";
 
 // Funció per restablir els esdeveniments i el marcador del partit
 export const resetMatchController = async (req, res) => {
-  const { matchID } = req.body;
+  const { matchID } = req.body; // Ara matchID és un UUID (string)
   if (!matchID) return res.status(400).send({ error: "Falta el camp matchID." });
 
   try {
-    await resetMatchData(matchID); // Aquesta funció ha d'estar definida al teu model
+    await resetMatchData(matchID); // Aquesta funció ha d'estar definida al model i utilitzar el nou camp (MatchUUID)
     res.status(200).json({ message: "Dades del partit reiniciades correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -28,27 +28,28 @@ export const resetMatchController = async (req, res) => {
 export const createMatchController = async (req, res) => {
   try {
     const { tournamentID, homeTeamID, awayTeamID, matchDate } = req.body;
+    // Es suposa que tournamentID, homeTeamID i awayTeamID són ara UUID (strings)
     const matchID = await createMatch(tournamentID, homeTeamID, awayTeamID, matchDate);
-    res.status(201).json({ matchID });
+    res.status(201).json({ matchID }); // matchID serà un UUID
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
 
-// Funció per actualitzar el temps actual del partit (la columna CurrentMinute ha d'existir a la taula Matches)
+// Funció per actualitzar el temps actual del partit
 export const updateMatchTime = async (matchID, currentMinute) => {
   const pool = await connectDb();
   await pool
     .request()
-    .input("matchID", sql.Int, matchID)
+    .input("matchID", sql.UniqueIdentifier, matchID)
     .input("currentMinute", sql.Int, currentMinute)
-    .query("UPDATE Matches SET CurrentMinute = @currentMinute WHERE MatchID = @matchID");
+    .query("UPDATE Matches SET CurrentMinute = @currentMinute WHERE MatchUUID = @matchID");
 };
 
 // Funció per obtenir un partit amb els seus esdeveniments
 export const getMatchController = async (req, res) => {
   try {
-    const { matchID } = req.params; // si la ruta és /:matchID
+    const { matchID } = req.params; // Ara matchID és un UUID
     const match = await getMatchById(matchID);
     if (!match) return res.status(404).send({ error: "Partida no trobada" });
 
@@ -63,7 +64,7 @@ export const getMatchController = async (req, res) => {
 
 // Funció per simular un partit complet
 export const startMatchSimulationController = async (req, res) => {
-  const { matchID } = req.body;
+  const { matchID } = req.body; // matchID és ara un UUID
   if (!matchID) return res.status(400).send({ error: "Falta el camp matchID." });
   try {
     // Obtenir la partida
@@ -75,12 +76,12 @@ export const startMatchSimulationController = async (req, res) => {
     // Obtenir els jugadors actius dels dos equips
     const homePlayersResult = await pool
       .request()
-      .input("teamID", sql.Int, match.HomeTeamID)
-      .query("SELECT PlayerID, PlayerName FROM Players WHERE TeamID = @teamID AND IsActive = 1");
+      .input("teamID", sql.UniqueIdentifier, match.HomeTeamID) // Ara HomeTeamID és UUID
+      .query("SELECT PlayerUUID, PlayerName FROM Players WHERE TeamID = @teamID AND IsActive = 1");
     const awayPlayersResult = await pool
       .request()
-      .input("teamID", sql.Int, match.AwayTeamID)
-      .query("SELECT PlayerID, PlayerName FROM Players WHERE TeamID = @teamID AND IsActive = 1");
+      .input("teamID", sql.UniqueIdentifier, match.AwayTeamID) // Ara AwayTeamID és UUID
+      .query("SELECT PlayerUUID, PlayerName FROM Players WHERE TeamID = @teamID AND IsActive = 1");
 
     const homePlayers = homePlayersResult.recordset;
     const awayPlayers = awayPlayersResult.recordset;
@@ -116,7 +117,7 @@ export const startMatchSimulationController = async (req, res) => {
       if (minute === 45) {
         const breakDescription = "Break de mitja partida";
         events.push({ minute, eventType: "Break", description: breakDescription });
-        await addMatchEvent(matchID, 0, "Break", minute, breakDescription);
+        await addMatchEvent(matchID, null, "Break", minute, breakDescription);
         // Pausa per 1 segon (1000 ms)
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -126,7 +127,6 @@ export const startMatchSimulationController = async (req, res) => {
 
       // Amb 30% de probabilitat es genera un esdeveniment durant aquest minut
       if (Math.random() < 0.3) {
-        // Per mantenir l'equilibri, si la diferència de gols és ≥2, es dóna prioritat a l'equip que va perdent
         let teamChoice;
         if (Math.abs(homeGoals - awayGoals) >= 2) {
           teamChoice = homeGoals > awayGoals ? "away" : "home";
@@ -139,7 +139,6 @@ export const startMatchSimulationController = async (req, res) => {
           ? homePlayers[Math.floor(Math.random() * homePlayers.length)]
           : awayPlayers[Math.floor(Math.random() * awayPlayers.length)];
         if (player) {
-          // Decideix el tipus d'esdeveniment: Goal, Falta o Vermella
           const eventChance = Math.random();
           let eventType = "Goal";
           if (eventChance < 0.5) {
@@ -158,7 +157,7 @@ export const startMatchSimulationController = async (req, res) => {
                 awayGoals += 2;
               }
               description = `${player.PlayerName} ha marcat una golejada per a l'${teamChoice === "home" ? "equip local" : "equip visitant"} al minut ${minute}`;
-              await updatePlayerStatistics(player.PlayerID, 2, 0, 0, 0);
+              await updatePlayerStatistics(player.PlayerUUID, 2, 0, 0, 0);
             } else {
               if (teamChoice === "home") {
                 homeGoals++;
@@ -166,7 +165,7 @@ export const startMatchSimulationController = async (req, res) => {
                 awayGoals++;
               }
               description = `${player.PlayerName} ha marcat per a l'${teamChoice === "home" ? "equip local" : "equip visitant"} al minut ${minute}`;
-              await updatePlayerStatistics(player.PlayerID, 1, 0, 0, 0);
+              await updatePlayerStatistics(player.PlayerUUID, 1, 0, 0, 0);
             }
           } else if (eventType === "Falta") {
             if (teamChoice === "home") {
@@ -182,11 +181,11 @@ export const startMatchSimulationController = async (req, res) => {
               awayRedCards++;
             }
             description = `${player.PlayerName} ha rebut una targeta vermella per a l'${teamChoice === "home" ? "equip local" : "equip visitant"} al minut ${minute}`;
-            await updatePlayerStatistics(player.PlayerID, 0, 0, 0, 1);
+            await updatePlayerStatistics(player.PlayerUUID, 0, 0, 0, 1);
           }
           const eventObj = { minute, eventType, description, team: teamChoice };
           events.push(eventObj);
-          await addMatchEvent(matchID, player.PlayerID, eventType, minute, description);
+          await addMatchEvent(matchID, player.PlayerUUID, eventType, minute, description);
           await updateMatchScore(matchID, homeGoals, awayGoals);
         }
       }
@@ -196,7 +195,6 @@ export const startMatchSimulationController = async (req, res) => {
     for (let minute = 91; minute <= 90 + extraMinutes; minute++) {
       await updateMatchTime(matchID, minute);
       await new Promise(resolve => setTimeout(resolve, simulatedMinuteDuration));
-      // Durant l'afegit, amb menor probabilitat (20%), només es simula un gol
       if (Math.random() < 0.2) {
         let teamChoice = Math.random() < 0.5 ? "home" : "away";
         let player = teamChoice === "home" 
@@ -212,28 +210,24 @@ export const startMatchSimulationController = async (req, res) => {
           const description = `${player.PlayerName} ha marcat per a l'${teamChoice === "home" ? "equip local" : "equip visitant"} al minut ${minute} (afegit)`;
           const eventObj = { minute, eventType, description, team: teamChoice };
           events.push(eventObj);
-          await addMatchEvent(matchID, player.PlayerID, eventType, minute, description);
+          await addMatchEvent(matchID, player.PlayerUUID, eventType, minute, description);
           await updateMatchScore(matchID, homeGoals, awayGoals);
         }
       }
     }
 
-    // Recopilació de les estadístiques finals
     const totalGoals = homeGoals + awayGoals;
     const totalFouls = homeFouls + awayFouls;
     const totalRedCards = homeRedCards + awayRedCards;
 
-    // Determinar l'equip guanyador
     let winningTeam = "draw";
     if (homeGoals > awayGoals) {
       winningTeam = "home";
     } else if (awayGoals > homeGoals) {
       winningTeam = "away";
     }
-    // Resolució de les apostes (la funció actualitzada s'encarrega d'actualitzar els Footcoins dels usuaris que han apostat)
     await resolveBetsForMatch(matchID, winningTeam);
 
-    // Afegim els camps per indicar que el partit ha finalitzat
     const summary = {
       homeGoals,
       awayGoals,
@@ -246,7 +240,7 @@ export const startMatchSimulationController = async (req, res) => {
       totalRedCards,
       extraMinutes,
       finalMinute: 90 + extraMinutes,
-      events, // Tots els esdeveniments simulats
+      events,
       currentMinute: 90 + extraMinutes,
       matchEnded: true,
       message: "El partit ha finalitzat. Mostrant estadístiques finals."

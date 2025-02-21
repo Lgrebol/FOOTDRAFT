@@ -45,10 +45,10 @@ export class PlayerService {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(players => players.map(p =>
         new Player(
-          p.PlayerID,
+          p.PlayerUUID,
           p.PlayerName,
           p.Position,
-          p.TeamID,
+          p.TeamID,    
           p.IsActive,
           p.IsForSale,
           p.Price,
@@ -63,11 +63,12 @@ export class PlayerService {
     );
   }
   
+  
   addPlayer(playerData: FormData): Observable<Player> {
     return this.http.post<any>(this.apiUrl, playerData).pipe(
       tap(() => this.fetchPlayers()),
       map(p => new Player(
-        p.PlayerID,
+        p.PlayerUUID, 
         p.PlayerName,
         p.Position,
         p.TeamID,
@@ -84,11 +85,11 @@ export class PlayerService {
     );
   }
   
-  getReservedPlayers(userId: number): Observable<Player[]> {
-    return this.http.get<Player[]>(`${this.apiUrl}/reserved/${userId}`);
-  }
+  getReservedPlayers(userId: string): Observable<Player[]> {
+    return this.http.get<Player[]>(`/api/players/reserved/${userId}`);
+  }  
   
-  deletePlayer(playerId: number): Observable<any> {
+  deletePlayer(playerId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${playerId}`).pipe(
       tap(() => this.fetchPlayers())
     );

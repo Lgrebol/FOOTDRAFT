@@ -1,71 +1,64 @@
-// models/matchModel.js
 import connectDb from "../config/db.js";
 import sql from "mssql";
 
-// Crear una partida (match)
-export const createMatch = async (tournamentID, homeTeamID, awayTeamID, matchDate) => {
+export const createMatch = async (tournamentUUID, homeTeamUUID, awayTeamUUID, matchDate) => {
   const pool = await connectDb();
   const result = await pool.request()
-    .input("tournamentID", sql.Int, tournamentID)
-    .input("homeTeamID", sql.Int, homeTeamID)
-    .input("awayTeamID", sql.Int, awayTeamID)
+    .input("tournamentUUID", sql.UniqueIdentifier, tournamentUUID)
+    .input("homeTeamUUID", sql.UniqueIdentifier, homeTeamUUID)
+    .input("awayTeamUUID", sql.UniqueIdentifier, awayTeamUUID)
     .input("matchDate", sql.DateTime, matchDate)
     .query(
       `INSERT INTO Matches (TournamentID, HomeTeamID, AwayTeamID, MatchDate)
-       OUTPUT INSERTED.MatchID
-       VALUES (@tournamentID, @homeTeamID, @awayTeamID, @matchDate)`
+       OUTPUT INSERTED.MatchUUID
+       VALUES (@tournamentUUID, @homeTeamUUID, @awayTeamUUID, @matchDate)`
     );
-  return result.recordset[0].MatchID;
+  return result.recordset[0].MatchUUID;
 };
 
-// Obtenir informació d'una partida
-export const getMatchById = async (matchID) => {
+export const getMatchById = async (matchUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
-    .input("matchID", sql.Int, matchID)
-    .query("SELECT * FROM Matches WHERE MatchID = @matchID");
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
+    .query("SELECT * FROM Matches WHERE MatchUUID = @matchUUID");
   return result.recordset[0];
 };
 
-// Afegir un esdeveniment a la partida amb el nou esquema
-export const addMatchEvent = async (matchID, playerID, eventType, minute, description) => {
+export const addMatchEvent = async (matchUUID, playerUUID, eventType, minute, description) => {
   const pool = await connectDb();
   await pool.request()
-    .input("matchID", sql.Int, matchID)
-    .input("playerID", sql.Int, playerID)
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
+    .input("playerUUID", sql.UniqueIdentifier, playerUUID)
     .input("eventType", sql.VarChar, eventType)
     .input("minute", sql.Int, minute)
     .input("description", sql.VarChar, description)
     .query(
       `INSERT INTO MatchEvents (MatchID, PlayerID, EventType, Minute, Description)
-       VALUES (@matchID, @playerID, @eventType, @minute, @description)`
+       VALUES (@matchUUID, @playerUUID, @eventType, @minute, @description)`
     );
 };
 
-// Obtenir tots els esdeveniments d'una partida (ordenats per minut)
-export const getMatchEvents = async (matchID) => {
+export const getMatchEvents = async (matchUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
-    .input("matchID", sql.Int, matchID)
-    .query("SELECT * FROM MatchEvents WHERE MatchID = @matchID ORDER BY Minute");
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
+    .query("SELECT * FROM MatchEvents WHERE MatchID = @matchUUID ORDER BY Minute");
   return result.recordset;
 };
 
-// Actualitzar el marcador de la partida
-export const updateMatchScore = async (matchID, homeGoals, awayGoals) => {
+export const updateMatchScore = async (matchUUID, homeGoals, awayGoals) => {
   const pool = await connectDb();
   await pool.request()
-    .input("matchID", sql.Int, matchID)
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
     .input("homeGoals", sql.Int, homeGoals)
     .input("awayGoals", sql.Int, awayGoals)
-    .query("UPDATE Matches SET HomeGoals = @homeGoals, AwayGoals = @awayGoals WHERE MatchID = @matchID");
+    .query("UPDATE Matches SET HomeGoals = @homeGoals, AwayGoals = @awayGoals WHERE MatchUUID = @matchUUID");
 };
 
-// Actualitzar les estadístiques d'un jugador (incrementar per exemple el nombre de gols, targetes, etc.)
-export const updatePlayerStatistics = async (playerID, goals, assists, yellowCards, redCards) => {
+export const updatePlayerStatistics = async (playerUUID, goals, assists, yellowCards, redCards) => {
   const pool = await connectDb();
   await pool.request()
-    .input("playerID", sql.Int, playerID)
+    .input("playerUUID", sql.UniqueIdentifier, playerUUID)
     .input("goals", sql.Int, goals)
     .input("assists", sql.Int, assists)
     .input("yellowCards", sql.Int, yellowCards)
@@ -75,16 +68,15 @@ export const updatePlayerStatistics = async (playerID, goals, assists, yellowCar
                 Assists = Assists + @assists, 
                 YellowCards = YellowCards + @yellowCards, 
                 RedCards = RedCards + @redCards 
-            WHERE PlayerID = @playerID`);
+            WHERE PlayerID = @playerUUID`);
 };
 
-// Reiniciar dades d'una partida: esborra els esdeveniments i reinicia el marcador
-export const resetMatchData = async (matchID) => {
+export const resetMatchData = async (matchUUID) => {
   const pool = await connectDb();
   await pool.request()
-    .input("matchID", sql.Int, matchID)
-    .query("DELETE FROM MatchEvents WHERE MatchID = @matchID");
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
+    .query("DELETE FROM MatchEvents WHERE MatchID = @matchUUID");
   await pool.request()
-    .input("matchID", sql.Int, matchID)
-    .query("UPDATE Matches SET HomeGoals = 0, AwayGoals = 0 WHERE MatchID = @matchID");
+    .input("matchUUID", sql.UniqueIdentifier, matchUUID)
+    .query("UPDATE Matches SET HomeGoals = 0, AwayGoals = 0 WHERE MatchUUID = @matchUUID");
 };

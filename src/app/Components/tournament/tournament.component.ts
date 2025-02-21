@@ -46,14 +46,14 @@ export class TournamentComponent implements OnInit {
     }
   }
 
-  deleteTournament(id: number): void {
+  deleteTournament(id: string): void {
     this.tournamentService.deleteTournament(id).subscribe({
       next: () => {
         this.tournaments = this.tournaments.filter(t => t.id !== id);
       },
       error: (error) => console.error("Error deleting tournament:", error)
     });
-  }
+  }  
 
   trackById(index: number, item: any): number {
     return item.id;

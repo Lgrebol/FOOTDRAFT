@@ -59,18 +59,18 @@
       <div class="form-group">
         <label for="team">Equip:</label>
         <select id="team"
-                [(ngModel)]="newPlayer.teamId"
-                name="teamId"
-                required
-                aria-required="true">
-          <option value="" disabled selected>Selecciona un equip</option>
-          <option *ngFor="let team of teams" [value]="team.id">
-            {{ team.teamName }}
-          </option>
-        </select>
+        [(ngModel)]="newPlayer.teamId"
+        name="teamId"
+        required
+        aria-required="true">
+        <option value="" disabled selected>Selecciona un equip</option>
+        <option *ngFor="let team of teams" [value]="team.id">
+          {{ team.teamName }}
+        </option>
+      </select>
       </div>
       
-      <!-- Preu -->
+      <!-- Preu --> 
       <div class="form-group">
         <label for="price">Preu (€):</label>
         <input id="price" type="number"

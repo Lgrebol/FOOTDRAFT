@@ -16,30 +16,31 @@ export class MatchService {
     return this.http.post(this.apiUrl, matchData);
   }
 
-  getMatch(matchId: number): Observable<Match> {
+  getMatch(matchId: string): Observable<Match> {
     return this.http.get<any>(`${this.apiUrl}/${matchId}`).pipe(
       map(response => {
         const backendData = response.match;
         return new Match(
-          backendData.MatchID,
-          backendData.HomeTeamID,
-          backendData.AwayTeamID,
+          backendData.MatchID,  
+          backendData.HomeTeamID,    
+          backendData.AwayTeamID,  
           backendData.HomeGoals,
           backendData.AwayGoals,
           backendData.CurrentMinute,
-          backendData.TournamentID,
+          backendData.TournamentID,   
           backendData.MatchDate,
           backendData.events || []
         );
       })
     );
   }
+  
 
-  simulateMatch(matchId: number): Observable<any> {
+  simulateMatch(matchId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/simulate`, { matchID: matchId });
   }
 
-  resetMatch(matchId: number): Observable<any> {
+  resetMatch(matchId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/reset`, { matchID: matchId });
   }
 }

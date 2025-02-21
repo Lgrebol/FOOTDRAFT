@@ -20,16 +20,15 @@ export class TeamsComponent implements OnInit {
   users: User[] = [];
   reservedPlayers: Player[] = [];
   
-  selectedTeamId: number | null = null;
-  selectedPlayerId: number | null = null;
+  selectedTeamId: string | null = null;
+  selectedPlayerId: string | null = null;
   
-  // Exemple: ID de l'usuari actual (hauries d'obtenir-lo del teu servei d'autenticació)
-  currentUserId: number = 6;
+  currentUserId: string = '6';
 
   newTeam = {
     name: '',
     shirtColor: '',
-    userId: null as number | null
+    userId: '' as string
   };
 
   constructor(
@@ -76,7 +75,7 @@ export class TeamsComponent implements OnInit {
     }
   }
 
-  deleteTeam(teamId: number): void {
+  deleteTeam(teamId: string): void {
     this.teamService.deleteTeam(teamId).subscribe({
       next: () => this.loadData(),
       error: err => console.error('Error eliminant equip:', err)

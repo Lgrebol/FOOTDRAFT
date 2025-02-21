@@ -1,13 +1,13 @@
 export class Tournament {
   constructor(
-    private _id: number,
+    private _id: string,
     private _tournamentName: string,
     private _tournamentType: string,
     private _startDate: string,
     private _endDate: string
   ) {}
 
-  get id(): number {
+  get id(): string {
     return this._id;
   }
   get tournamentName(): string {
@@ -23,7 +23,6 @@ export class Tournament {
     return this._endDate;
   }
 
-  // Exemple: Calcular la durada del torneig en dies
   getDuration(): number {
     const start = new Date(this._startDate);
     const end = new Date(this._endDate);

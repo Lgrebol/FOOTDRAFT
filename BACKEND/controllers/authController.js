@@ -4,16 +4,16 @@ import jwt from "jsonwebtoken";
 
 export const getCurrentUser = async (req, res) => {
   try {
-    const userId = req.user.userId; // Assegurar que el middleware estableix userId
+    const userUUID = req.user.userUUID; 
     
     const pool = await connectDb();
     const result = await pool
       .request()
-      .input("userID", sql.Int, userId)
+      .input("userUUID", sql.UniqueIdentifier, userUUID)
       .query(`
-        SELECT UserID, Name, Email, Footcoins 
+        SELECT UserUUID, Name, Email, Footcoins 
         FROM Users 
-        WHERE UserID = @userID
+        WHERE UserUUID = @userUUID
       `);
 
     if (result.recordset.length === 0) {
@@ -22,10 +22,10 @@ export const getCurrentUser = async (req, res) => {
     
     const userData = result.recordset[0];
     res.json({
-      UserID: userData.UserID,
-      Name: userData.Name,
-      Email: userData.Email,
-      Footcoins: userData.Footcoins // Assegurar aquest camp
+      userUUID: userData.UserUUID,
+      name: userData.Name,
+      email: userData.Email,
+      footcoins: userData.Footcoins
     });
     
   } catch (error) {
@@ -34,7 +34,6 @@ export const getCurrentUser = async (req, res) => {
   }
 };
 
-// Exemple de controlador de login (per referència)
 export const loginUsers = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -49,13 +48,11 @@ export const loginUsers = async (req, res) => {
     }
 
     const user = result.recordset[0];
-    // Aquí aniria la verificació real de la contrasenya (hashejada)
-
     const token = jwt.sign(
       {
-        userId: user.UserID,
+        userUUID: user.UserUUID,
         email: user.Email,
-        footcoins: user.Footcoins // ← Això és el que mostrarem al front
+        footcoins: user.Footcoins
       },
       process.env.JWT_SECRET,
       { expiresIn: '10h' }

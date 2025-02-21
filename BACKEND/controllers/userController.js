@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import connectDb from "../config/db.js";
 import sql from "mssql";
 
-// Registration logic
 export const registerUsers = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -17,7 +16,8 @@ export const registerUsers = async (req, res) => {
   try {
     const pool = await connectDb();
     const hashedPassword = await bcrypt.hash(password, 10);
-    const uuid = uuidv4();
+    // Generem un UUID per l'usuari
+    const userUUID = uuidv4();
 
     await pool
       .request()
@@ -25,8 +25,9 @@ export const registerUsers = async (req, res) => {
       .input("email", sql.VarChar, email)
       .input("password", sql.VarChar, hashedPassword)
       .input("footcoins", sql.Decimal(18, 2), 100000)
+      .input("userUUID", sql.UniqueIdentifier, userUUID)
       .query(
-        "INSERT INTO Users (Name, Email, PasswordHash, Footcoins) VALUES (@name, @email, @password, @footcoins)"
+        "INSERT INTO Users (Name, Email, PasswordHash, Footcoins, UserUUID) VALUES (@name, @email, @password, @footcoins, @userUUID)"
       );
 
     res.status(201).json({ message: "User registered successfully" });
@@ -36,7 +37,6 @@ export const registerUsers = async (req, res) => {
   }
 };
 
-// Login logic
 export const loginUsers = async (req, res) => {
   const { email, password } = req.body;
 
@@ -58,9 +58,8 @@ export const loginUsers = async (req, res) => {
       return res.status(401).json({ error: "Incorrect password" });
     }
 
-    // 🔹 Canvi de expiresIn de '1h' a '10h'
     const token = jwt.sign(
-      { userId: user.UserID, name: user.Name },
+      { userUUID: user.UserUUID, name: user.Name },
       process.env.JWT_SECRET,
       { expiresIn: "10h" }
     );
@@ -72,13 +71,12 @@ export const loginUsers = async (req, res) => {
   }
 };
 
-// Get all users logic
 export const getUsers = async (req, res) => {
   try {
     const pool = await connectDb();
     const result = await pool
       .request()
-      .query("SELECT UserID, Name AS UserName FROM Users");
+      .query("SELECT UserUUID, Name AS UserName FROM Users");
 
     res.status(200).json(result.recordset);
   } catch (error) {

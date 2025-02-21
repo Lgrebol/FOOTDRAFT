@@ -6,7 +6,7 @@ export const createTeam = async (name) => {
   await pool
     .request()
     .input("name", sql.VarChar, name)
-    .query("INSERT INTO Teams (Name) VALUES (@name)");
+    .query("INSERT INTO Teams (TeamName) VALUES (@name)");
 };
 
 export const getAllTeams = async () => {
@@ -15,19 +15,19 @@ export const getAllTeams = async () => {
   return result.recordset;
 };
 
-export const getTeamById = async (teamId) => {
+export const getTeamById = async (teamUUID) => {
   const pool = await connectDb();
   const result = await pool
     .request()
-    .input("teamId", sql.Int, teamId)
-    .query("SELECT * FROM Teams WHERE TeamID = @teamId");
+    .input("teamUUID", sql.UniqueIdentifier, teamUUID)
+    .query("SELECT * FROM Teams WHERE TeamUUID = @teamUUID");
   return result.recordset[0];
 };
 
-export const deleteTeam = async (teamId) => {
+export const deleteTeam = async (teamUUID) => {
   const pool = await connectDb();
   await pool
     .request()
-    .input("teamId", sql.Int, teamId)
-    .query("DELETE FROM Teams WHERE TeamID = @teamId");
+    .input("teamUUID", sql.UniqueIdentifier, teamUUID)
+    .query("DELETE FROM Teams WHERE TeamUUID = @teamUUID");
 };
