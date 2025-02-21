@@ -1,10 +1,10 @@
 USE [master]
 GO
-/****** Object:  Database [FOOTDRAFT]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Database [FOOTDRAFT]    Script Date: 21/02/2025 20:01:36 ******/
 CREATE DATABASE [FOOTDRAFT]
  CONTAINMENT = NONE
  ON  PRIMARY 
-( NAME = N'FOOTDRAFT', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\FOOTDRAFT.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+( NAME = N'FOOTDRAFT', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\FOOTDRAFT.mdf' , SIZE = 73728KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
  LOG ON 
 ( NAME = N'FOOTDRAFT_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\FOOTDRAFT_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
  WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
@@ -82,17 +82,17 @@ ALTER DATABASE [FOOTDRAFT] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP
 GO
 USE [FOOTDRAFT]
 GO
-/****** Object:  User [user]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  User [user]    Script Date: 21/02/2025 20:01:36 ******/
 CREATE USER [user] FOR LOGIN [user] WITH DEFAULT_SCHEMA=[dbo]
 GO
-/****** Object:  User [footdraft_user]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  User [footdraft_user]    Script Date: 21/02/2025 20:01:36 ******/
 CREATE USER [footdraft_user] FOR LOGIN [footdraft_user] WITH DEFAULT_SCHEMA=[dbo]
 GO
 ALTER ROLE [db_owner] ADD MEMBER [user]
 GO
 ALTER ROLE [db_owner] ADD MEMBER [footdraft_user]
 GO
-/****** Object:  Table [dbo].[Bets]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Bets]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -113,7 +113,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Matches]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Matches]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -127,13 +127,14 @@ CREATE TABLE [dbo].[Matches](
 	[AwayGoals] [int] NULL,
 	[MatchDate] [datetime] NOT NULL,
 	[CurrentMinute] [int] NULL,
+	[MatchUUID] [uniqueidentifier] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[MatchID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MatchEvents]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[MatchEvents]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -151,7 +152,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Player_Statistics]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Player_Statistics]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -169,7 +170,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Players]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Players]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -188,13 +189,14 @@ CREATE TABLE [dbo].[Players](
 	[IsForSale] [bit] NOT NULL,
 	[ReserveUserID] [int] NULL,
 	[PlayerImage] [varchar](max) NULL,
+	[PlayerUUID] [uniqueidentifier] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[PlayerID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Teams]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Teams]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -207,6 +209,7 @@ CREATE TABLE [dbo].[Teams](
 	[UserID] [int] NOT NULL,
 	[IsActive] [bit] NULL,
 	[CoachName] [varchar](50) NULL,
+	[TeamUUID] [uniqueidentifier] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[TeamID] ASC
@@ -217,7 +220,7 @@ UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Teams_Tournaments]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Teams_Tournaments]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -232,7 +235,7 @@ CREATE TABLE [dbo].[Teams_Tournaments](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Tournaments]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Tournaments]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -243,13 +246,14 @@ CREATE TABLE [dbo].[Tournaments](
 	[TournamentType] [varchar](20) NULL,
 	[StartDate] [date] NOT NULL,
 	[EndDate] [date] NULL,
+	[TournamentUUID] [uniqueidentifier] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[TournamentID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 20/02/2025 15:48:15 ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 21/02/2025 20:01:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -261,6 +265,7 @@ CREATE TABLE [dbo].[Users](
 	[PasswordHash] [varchar](255) NOT NULL,
 	[RegistrationDate] [datetime] NULL,
 	[Footcoins] [decimal](18, 2) NOT NULL,
+	[UserUUID] [uniqueidentifier] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[UserID] ASC
@@ -279,6 +284,8 @@ ALTER TABLE [dbo].[Matches] ADD  DEFAULT ((0)) FOR [AwayGoals]
 GO
 ALTER TABLE [dbo].[Matches] ADD  DEFAULT ((0)) FOR [CurrentMinute]
 GO
+ALTER TABLE [dbo].[Matches] ADD  CONSTRAINT [DF_Matches_MatchUUID]  DEFAULT (newid()) FOR [MatchUUID]
+GO
 ALTER TABLE [dbo].[Player_Statistics] ADD  DEFAULT ((0)) FOR [Goals]
 GO
 ALTER TABLE [dbo].[Player_Statistics] ADD  DEFAULT ((0)) FOR [Assists]
@@ -295,11 +302,19 @@ ALTER TABLE [dbo].[Players] ADD  DEFAULT ((0)) FOR [Price]
 GO
 ALTER TABLE [dbo].[Players] ADD  DEFAULT ((1)) FOR [IsForSale]
 GO
+ALTER TABLE [dbo].[Players] ADD  CONSTRAINT [DF_Players_PlayerUUID]  DEFAULT (newid()) FOR [PlayerUUID]
+GO
 ALTER TABLE [dbo].[Teams] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Teams] ADD  CONSTRAINT [DF_Teams_TeamUUID]  DEFAULT (newid()) FOR [TeamUUID]
+GO
+ALTER TABLE [dbo].[Tournaments] ADD  CONSTRAINT [DF_Tournaments_TournamentUUID]  DEFAULT (newid()) FOR [TournamentUUID]
 GO
 ALTER TABLE [dbo].[Users] ADD  DEFAULT (getdate()) FOR [RegistrationDate]
 GO
 ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_Footcoins]  DEFAULT ((100000)) FOR [Footcoins]
+GO
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_UserUUID]  DEFAULT (newid()) FOR [UserUUID]
 GO
 ALTER TABLE [dbo].[Bets]  WITH CHECK ADD  CONSTRAINT [FK_Bets_AwayTeam] FOREIGN KEY([AwayTeamID])
 REFERENCES [dbo].[Teams] ([TeamID])
