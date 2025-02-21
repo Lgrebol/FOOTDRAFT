@@ -1,16 +1,22 @@
 export class LoginRegister {
-  email: string;
-  password: string;
-  username?: string; // Només per registre
+  constructor(
+    private _email: string,
+    private _password: string,
+    private _username?: string
+  ) {}
 
-  constructor(email: string, password: string, username?: string) {
-    this.email = email;
-    this.password = password;
-    this.username = username;
+  get email(): string {
+    return this._email;
+  }
+  get password(): string {
+    return this._password;
+  }
+  get username(): string | undefined {
+    return this._username;
   }
 
   // Exemple: Validar dades d'entrada
   isValid(): boolean {
-    return this.email.includes('@') && this.password.length > 0;
+    return this._email.includes('@') && this._password.length > 0;
   }
 }

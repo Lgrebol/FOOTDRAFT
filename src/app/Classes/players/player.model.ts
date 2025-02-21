@@ -1,50 +1,62 @@
 export class Player {
-  id: number;
-  playerName: string;
-  position: string;
-  teamID: number;
-  isActive: boolean;
-  isForSale: boolean;
-  price: number;
-  height: number;
-  speed: number;
-  shooting: number;
-  imageUrl?: string;
-  points?: number;
-  teamName?: string;
-
   constructor(
-    id: number,
-    playerName: string,
-    position: string,
-    teamID: number,
-    isActive: boolean,
-    isForSale: boolean,
-    price: number,
-    height: number,
-    speed: number,
-    shooting: number,
-    imageUrl?: string,
-    points?: number,
-    teamName?: string
-  ) {
-    this.id = id;
-    this.playerName = playerName;
-    this.position = position;
-    this.teamID = teamID;
-    this.isActive = isActive;
-    this.isForSale = isForSale;
-    this.price = price;
-    this.height = height;
-    this.speed = speed;
-    this.shooting = shooting;
-    this.imageUrl = imageUrl;
-    this.points = points;
-    this.teamName = teamName;
+    private _id: number,
+    private _playerName: string,
+    private _position: string,
+    private _teamID: number,
+    private _isActive: boolean,
+    private _isForSale: boolean,
+    private _price: number,
+    private _height: number,
+    private _speed: number,
+    private _shooting: number,
+    private _imageUrl?: string,
+    private _points?: number,
+    private _teamName?: string
+  ) {}
+
+  get id(): number {
+    return this._id;
+  }
+  get playerName(): string {
+    return this._playerName;
+  }
+  get position(): string {
+    return this._position;
+  }
+  get teamID(): number {
+    return this._teamID;
+  }
+  get isActive(): boolean {
+    return this._isActive;
+  }
+  get isForSale(): boolean {
+    return this._isForSale;
+  }
+  get price(): number {
+    return this._price;
+  }
+  get height(): number {
+    return this._height;
+  }
+  get speed(): number {
+    return this._speed;
+  }
+  get shooting(): number {
+    return this._shooting;
+  }
+  get imageUrl(): string | undefined {
+    return this._imageUrl;
+  }
+  get points(): number | undefined {
+    return this._points;
+  }
+  get teamName(): string | undefined {
+    return this._teamName;
   }
 
-  // Exemple de mètode: calcular la valoració del jugador
+  // Exemple: Calcular la valoració del jugador
   calculateRating(): number {
-    return (this.height + this.speed + this.shooting) / 3;
+    return (this._height + this._speed + this._shooting) / 3;
   }
 }

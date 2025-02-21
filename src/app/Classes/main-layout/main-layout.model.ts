@@ -1,17 +1,21 @@
 export class MainLayout {
-  title: string;
-  navigationItems: Array<{ label: string; route: string }>;
+  constructor(
+    private _title: string,
+    private _navigationItems: Array<{ label: string; route: string }>
+  ) {}
 
-  constructor(title: string, navigationItems: Array<{ label: string; route: string }>) {
-    this.title = title;
-    this.navigationItems = navigationItems;
+  get title(): string {
+    return this._title;
+  }
+  get navigationItems(): Array<{ label: string; route: string }> {
+    return this._navigationItems;
   }
 
   addNavigationItem(item: { label: string; route: string }): void {
-    this.navigationItems.push(item);
+    this._navigationItems.push(item);
   }
 
   removeNavigationItem(route: string): void {
-    this.navigationItems = this.navigationItems.filter(item => item.route !== route);
+    this._navigationItems = this._navigationItems.filter(item => item.route !== route);
   }
 }

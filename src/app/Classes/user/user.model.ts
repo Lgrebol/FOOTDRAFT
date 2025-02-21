@@ -1,18 +1,26 @@
 export class User {
-  id: number;
-  username: string;
-  email: string;
-  footcoins: number;
+  constructor(
+    private _id: number,
+    private _username: string,
+    private _email: string,
+    private _footcoins: number
+  ) {}
 
-  constructor(id: number, username: string, email: string, footcoins: number) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-    this.footcoins = footcoins;
+  get id(): number {
+    return this._id;
+  }
+  get username(): string {
+    return this._username;
+  }
+  get email(): string {
+    return this._email;
+  }
+  get footcoins(): number {
+    return this._footcoins;
   }
 
   // Exemple: Actualitzar les footcoins de l'usuari
   updateFootcoins(newAmount: number): void {
-    this.footcoins = newAmount;
+    this._footcoins = newAmount;
   }
 }

@@ -1,17 +1,17 @@
 import { Player } from '../players/player.model';
 
 export class Store {
-  availablePlayers: Player[];
+  constructor(private _availablePlayers: Player[] = []) {}
 
-  constructor(availablePlayers: Player[] = []) {
-    this.availablePlayers = availablePlayers;
+  get availablePlayers(): Player[] {
+    return this._availablePlayers;
   }
 
   addPlayer(player: Player): void {
-    this.availablePlayers.push(player);
+    this._availablePlayers.push(player);
   }
 
   removePlayer(playerId: number): void {
-    this.availablePlayers = this.availablePlayers.filter(player => player.id !== playerId);
+    this._availablePlayers = this._availablePlayers.filter(player => player.id !== playerId);
   }
 }
