@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [FOOTDRAFT]    Script Date: 22/02/2025 14:11:56 ******/
+/****** Object:  Database [FOOTDRAFT]    Script Date: 22/02/2025 16:03:24 ******/
 CREATE DATABASE [FOOTDRAFT]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -82,10 +82,10 @@ ALTER DATABASE [FOOTDRAFT] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP
 GO
 USE [FOOTDRAFT]
 GO
-/****** Object:  User [footdraft_user]    Script Date: 22/02/2025 14:11:56 ******/
+/****** Object:  User [footdraft_user]    Script Date: 22/02/2025 16:03:24 ******/
 CREATE USER [footdraft_user] FOR LOGIN [footdraft_user] WITH DEFAULT_SCHEMA=[dbo]
 GO
-/****** Object:  Table [dbo].[Bets]    Script Date: 22/02/2025 14:11:56 ******/
+/****** Object:  Table [dbo].[Bets]    Script Date: 22/02/2025 16:03:24 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -106,7 +106,7 @@ CREATE TABLE [dbo].[Bets](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Matches]    Script Date: 22/02/2025 14:11:57 ******/
+/****** Object:  Table [dbo].[Matches]    Script Date: 22/02/2025 16:03:24 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -126,7 +126,7 @@ CREATE TABLE [dbo].[Matches](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MatchEvents]    Script Date: 22/02/2025 14:11:57 ******/
+/****** Object:  Table [dbo].[MatchEvents]    Script Date: 22/02/2025 16:03:24 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -144,7 +144,7 @@ CREATE TABLE [dbo].[MatchEvents](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Players]    Script Date: 22/02/2025 14:11:57 ******/
+/****** Object:  Table [dbo].[Players]    Script Date: 22/02/2025 16:03:24 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -169,7 +169,24 @@ CREATE TABLE [dbo].[Players](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Teams]    Script Date: 22/02/2025 14:11:57 ******/
+/****** Object:  Table [dbo].[PlayerStatistics]    Script Date: 22/02/2025 16:03:24 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PlayerStatistics](
+	[PlayerUUID] [uniqueidentifier] NOT NULL,
+	[Goals] [int] NOT NULL,
+	[Assists] [int] NOT NULL,
+	[YellowCards] [int] NOT NULL,
+	[RedCards] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PlayerUUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Teams]    Script Date: 22/02/2025 16:03:24 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -192,7 +209,22 @@ CREATE TABLE [dbo].[Teams](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Tournaments]    Script Date: 22/02/2025 14:11:57 ******/
+/****** Object:  Table [dbo].[Teams_Tournaments]    Script Date: 22/02/2025 16:03:24 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Teams_Tournaments](
+	[TeamUUID] [uniqueidentifier] NOT NULL,
+	[TournamentUUID] [uniqueidentifier] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[TeamUUID] ASC,
+	[TournamentUUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Tournaments]    Script Date: 22/02/2025 16:03:24 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -209,7 +241,7 @@ CREATE TABLE [dbo].[Tournaments](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 22/02/2025 14:11:57 ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 22/02/2025 16:03:24 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -254,6 +286,14 @@ GO
 ALTER TABLE [dbo].[Players] ADD  DEFAULT ((0)) FOR [Price]
 GO
 ALTER TABLE [dbo].[Players] ADD  DEFAULT ((1)) FOR [IsForSale]
+GO
+ALTER TABLE [dbo].[PlayerStatistics] ADD  DEFAULT ((0)) FOR [Goals]
+GO
+ALTER TABLE [dbo].[PlayerStatistics] ADD  DEFAULT ((0)) FOR [Assists]
+GO
+ALTER TABLE [dbo].[PlayerStatistics] ADD  DEFAULT ((0)) FOR [YellowCards]
+GO
+ALTER TABLE [dbo].[PlayerStatistics] ADD  DEFAULT ((0)) FOR [RedCards]
 GO
 ALTER TABLE [dbo].[Teams] ADD  DEFAULT (newid()) FOR [TeamUUID]
 GO
@@ -325,11 +365,20 @@ REFERENCES [dbo].[Users] ([UserUUID])
 GO
 ALTER TABLE [dbo].[Players] CHECK CONSTRAINT [FK_Players_Users]
 GO
+ALTER TABLE [dbo].[PlayerStatistics]  WITH CHECK ADD FOREIGN KEY([PlayerUUID])
+REFERENCES [dbo].[Players] ([PlayerUUID])
+GO
 ALTER TABLE [dbo].[Teams]  WITH CHECK ADD  CONSTRAINT [FK_Teams_Users] FOREIGN KEY([UserUUID])
 REFERENCES [dbo].[Users] ([UserUUID])
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[Teams] CHECK CONSTRAINT [FK_Teams_Users]
+GO
+ALTER TABLE [dbo].[Teams_Tournaments]  WITH CHECK ADD FOREIGN KEY([TeamUUID])
+REFERENCES [dbo].[Teams] ([TeamUUID])
+GO
+ALTER TABLE [dbo].[Teams_Tournaments]  WITH CHECK ADD FOREIGN KEY([TournamentUUID])
+REFERENCES [dbo].[Tournaments] ([TournamentUUID])
 GO
 ALTER TABLE [dbo].[Players]  WITH CHECK ADD CHECK  (([Position]='Goalkeeper' OR [Position]='Defender' OR [Position]='Midfielder' OR [Position]='Forward'))
 GO
