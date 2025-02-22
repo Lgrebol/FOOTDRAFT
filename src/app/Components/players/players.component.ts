@@ -51,8 +51,8 @@ export class PlayersComponent implements OnInit {
     });
   }
 
-  deletePlayer(playerId: string): void {
-    this.playerService.deletePlayer(playerId).subscribe({
+  deletePlayer(playerUUID: string): void {
+    this.playerService.deletePlayer(playerUUID).subscribe({
       next: () => this.loadData(),
       error: (err) => console.error('Error eliminant jugador:', err)
     });

@@ -8,23 +8,24 @@ export interface MatchEvent {
 export class Match {
   constructor(
     private _id: string,
-    private _homeTeamID: string,
-    private _awayTeamID: string,
+    private _homeTeamUUID: string,
+    private _awayTeamUUID: string,
     private _homeGoals: number,
     private _awayGoals: number,
     private _currentMinute: number,
-    private _tournamentID: string,
+    private _tournamentUUID: string,
     private _matchDate: string,
     private _events: MatchEvent[] = []
   ) {}
 
   get id(): string { return this._id; }
-  get homeTeamID(): string { return this._homeTeamID; }
-  get awayTeamID(): string { return this._awayTeamID; }
+  get homeTeamUUID(): string { return this._homeTeamUUID; } 
+  get awayTeamUUID(): string { return this._awayTeamUUID; } 
+  get matchUUID(): string { return this._id; }
   get homeGoals(): number { return this._homeGoals; }
   get awayGoals(): number { return this._awayGoals; }
   get currentMinute(): number { return this._currentMinute; }
-  get tournamentID(): string { return this._tournamentID; }
+  get tournamentUUID(): string { return this._tournamentUUID; }
   get matchDate(): string { return this._matchDate; }
   get events(): MatchEvent[] { return this._events; }
 
@@ -60,13 +61,13 @@ export class Match {
 
   static fromApi(data: any): Match {
     return new Match(
-      data.MatchID || data.id,
-      data.HomeTeamID,
-      data.AwayTeamID,
+      data.MatchUUID || data.id,
+      data.HomeTeamUUID,
+      data.AwayTeamUUID,
       data.HomeGoals,
       data.AwayGoals,
       data.CurrentMinute,
-      data.TournamentID,
+      data.TournamentUUID,
       data.MatchDate,
       data.events || []
     );

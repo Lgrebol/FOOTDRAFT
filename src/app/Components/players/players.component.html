@@ -20,7 +20,7 @@
         <p *ngIf="player.shooting"><strong>Dispar:</strong> {{ player.shooting }}</p>
       </div>
       <div class="card-actions">
-        <button (click)="deletePlayer(player.id)">Eliminar</button>
+        <button (click)="deletePlayer(player.playerUUID)">Eliminar</button>
       </div>
     </div>
   </div>
@@ -59,12 +59,12 @@
       <div class="form-group">
         <label for="team">Equip:</label>
         <select id="team"
-                [(ngModel)]="newPlayer.teamID"
-                name="teamId"
+                [(ngModel)]="newPlayer.teamUUID"
+                name="teamUUID"
                 required
                 aria-required="true">
           <option value="" disabled selected>Selecciona un equip</option>
-          <option *ngFor="let team of teams" [value]="team.id">
+          <option *ngFor="let team of teams" [value]="team.teamUUID">
             {{ team.teamName }}
           </option>
         </select>

@@ -46,17 +46,16 @@ export class TournamentComponent implements OnInit {
     }
   }
 
-  deleteTournament(id: string): void {
-    this.tournamentService.deleteTournament(id).subscribe({
+  deleteTournament(tournamentUUID: string): void {
+    this.tournamentService.deleteTournament(tournamentUUID).subscribe({
       next: () => {
-        // Actualitzem la llista local eliminant l'element esborrat
-        this.tournaments = this.tournaments.filter(t => t.id !== id);
+        this.tournaments = this.tournaments.filter(t => t.tournamentUUID !== tournamentUUID);
       },
       error: (error) => console.error("Error deleting tournament:", error)
     });
   }  
 
   trackById(index: number, item: Tournament): string {
-    return item.id;
+    return item.tournamentUUID;
   }
 }

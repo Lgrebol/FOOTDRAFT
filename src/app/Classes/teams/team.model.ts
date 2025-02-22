@@ -1,15 +1,15 @@
 export class Team {
   constructor(
-    private _id: string = '',
+    private _teamUUID: string = '',
     private _teamName: string = '',
     private _shirtColor: string = '',
-    private _userID: string = '',
+    private _userUUID: string = '',
     private _username?: string
   ) {}
 
   // Getters
-  get id(): string {
-    return this._id;
+  get teamUUID(): string {
+    return this._teamUUID;
   }
   get teamName(): string {
     return this._teamName;
@@ -17,8 +17,8 @@ export class Team {
   get shirtColor(): string {
     return this._shirtColor;
   }
-  get userID(): string {
-    return this._userID;
+  get userUUID(): string {
+    return this._userUUID;
   }
   get username(): string | undefined {
     return this._username;
@@ -31,8 +31,8 @@ export class Team {
   set shirtColor(value: string) {
     this._shirtColor = value;
   }
-  set userID(value: string) {
-    this._userID = value;
+  set userUUID(value: string) {
+    this._userUUID = value;
   }
   set username(value: string | undefined) {
     this._username = value;
@@ -42,11 +42,11 @@ export class Team {
     return `${this._teamName} - ${this._shirtColor}`;
   }
 
-  toPayload(): { teamName: string; shirtColor: string; userID: string } {
+  toPayload(): { teamName: string; shirtColor: string; userUUID: string } {
     return {
       teamName: this._teamName,
       shirtColor: this._shirtColor,
-      userID: this._userID
+      userUUID: this._userUUID
     };
   }
 
@@ -55,7 +55,7 @@ export class Team {
       data.TeamUUID || data.id,
       data.TeamName,
       data.ShirtColor,
-      data.UserID,
+      data.UserUUID || data.UserID,
       data.UserName
     );
   }

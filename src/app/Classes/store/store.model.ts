@@ -15,8 +15,9 @@ export class Store {
     this._availablePlayers.push(player);
   }
 
-  removePlayer(playerId: string): void {
-    this._availablePlayers = this._availablePlayers.filter(player => player.id !== playerId);
+  // Ara utilitzem player.playerUUID en lloc de player.id
+  removePlayer(playerUUID: string): void {
+    this._availablePlayers = this._availablePlayers.filter(player => player.playerUUID !== playerUUID);
   }
 }
 
@@ -84,8 +85,8 @@ export class StoreModel {
     this.store.addPlayer(player);
   }
 
-  removePlayer(playerId: string): void {
-    this.store.removePlayer(playerId);
+  removePlayer(playerUUID: string): void {
+    this.store.removePlayer(playerUUID);
   }
 
   setLoading(loading: boolean): void {

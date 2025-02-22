@@ -17,7 +17,7 @@
         <td>{{ tournament.startDate }}</td>
         <td>{{ tournament.endDate }}</td>
         <td>
-          <button class="btn btn-danger btn-sm" (click)="deleteTournament(tournament.id)">
+          <button class="btn btn-danger btn-sm" (click)="deleteTournament(tournament.tournamentUUID)">
             Esborrar
           </button>
         </td>
@@ -34,8 +34,7 @@
         placeholder="Nom del torneig"
         [(ngModel)]="tournamentForm.tournament.tournamentName"
         name="name"
-        required
-      />
+        required />
     </div>
     <div class="mb-2">
       <select class="form-control" [(ngModel)]="tournamentForm.tournament.tournamentType" name="type">
@@ -49,16 +48,14 @@
         class="form-control"
         [(ngModel)]="tournamentForm.tournament.startDate"
         name="startDate"
-        required
-      />
+        required />
     </div>
     <div class="mb-2">
       <input
         type="date"
         class="form-control"
         [(ngModel)]="tournamentForm.tournament.endDate"
-        name="endDate"
-      />
+        name="endDate" />
     </div>
     <button type="submit" class="btn btn-success" [disabled]="tournamentForm.loading">
       Afegir Torneig

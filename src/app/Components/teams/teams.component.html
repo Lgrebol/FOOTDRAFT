@@ -1,7 +1,6 @@
 <div class="teams-container">
   <h1>Llista d'Equips</h1>
   
-  <!-- Llista d'equips -->
   <div *ngFor="let team of teams" class="team-card">
     <div class="team-header">
       <h3>{{ team.teamName }}</h3>
@@ -9,11 +8,10 @@
     <div class="team-body">
       <p><strong>Usuari:</strong> {{ team.username }}</p>
       <p><strong>Color de la Samarreta:</strong> {{ team.shirtColor }}</p>
-      <button (click)="deleteTeam(team.id)">Eliminar</button>
+      <button (click)="deleteTeam(team.teamUUID)">Eliminar</button>
     </div>
   </div>
 
-  <!-- Formulari per afegir un equip -->
   <form (ngSubmit)="addTeam()" class="team-form">
     <div class="form-group">
       <label for="name">Nom de l'Equip:</label>
@@ -23,8 +21,7 @@
         [(ngModel)]="newTeam.teamName"
         name="teamName"
         placeholder="Introdueix el nom"
-        required
-      />
+        required />
     </div>
     <div class="form-group">
       <label for="shirtColor">Color de la Samarreta:</label>
@@ -34,19 +31,17 @@
         [(ngModel)]="newTeam.shirtColor"
         name="shirtColor"
         placeholder="EX: blau"
-        required
-      />
+        required />
     </div>
     <div class="form-group">
       <label for="user">Usuari:</label>
       <select
         id="user"
-        [(ngModel)]="newTeam.userID"
-        name="userID"
-        required
-      >
+        [(ngModel)]="newTeam.userUUID"
+        name="userUUID"
+        required>
         <option value="" disabled selected>Selecciona un usuari</option>
-        <option *ngFor="let user of users" [value]="user.id">
+        <option *ngFor="let user of users" [value]="user.userUUID">
           {{ user.username }}
         </option>
       </select>
@@ -54,20 +49,19 @@
     <button type="submit">Afegir Equip</button>
   </form>
 
-  <!-- Secció per assignar jugadors reservats a un equip -->
   <div class="assign-section">
     <div class="form-group">
       <label for="selectTeam">Selecciona Equip:</label>
       <select [(ngModel)]="selectedTeamId" name="selectedTeamId">
         <option value="" disabled selected>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.id">
+        <option *ngFor="let team of teams" [value]="team.teamUUID">
           {{ team.teamName }}
         </option>
       </select>
 
       <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId">
         <option value="" disabled selected>Selecciona un jugador</option>
-        <option *ngFor="let player of reservedPlayers" [value]="player.id">
+        <option *ngFor="let player of reservedPlayers" [value]="player.playerUUID">
           {{ player.playerName }}
         </option>
       </select>

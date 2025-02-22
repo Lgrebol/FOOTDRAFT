@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { User } from '../Classes/user/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:3000/api/v1/users';
+  private apiUrl = 'http://localhost:3000/api/v1';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private footcoinsSubject = new BehaviorSubject<number>(0);
 
@@ -27,7 +27,7 @@ export class UserService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}`);
+    return this.http.get<User[]>(`${this.apiUrl}/users`);
   }
   
   getFootcoinsUpdates(): Observable<number> {
@@ -35,7 +35,7 @@ export class UserService {
   }
 
   refreshCurrentUserData(): Observable<User> {
-    return this.http.get<any>(`${this.apiUrl}/current-user`, {
+    return this.http.get<any>(`${this.apiUrl}/auth/current-user`, {
       headers: this.getAuthHeaders()
     }).pipe(
       tap(userData => {
@@ -63,8 +63,8 @@ export class UserService {
     if (!user.isValidForRegistration()) {
       return throwError(() => new Error('Invalid registration data'));
     }
-    return this.http.post(`${this.apiUrl}/register`, { 
-      username: user.username, 
+    return this.http.post(`${this.apiUrl}/users/register`, { 
+      name: user.username, 
       email: user.email, 
       password: user.password 
     });
@@ -75,7 +75,7 @@ export class UserService {
       return throwError(() => new Error('Invalid login data'));
     }
     return this.http.post<{ token: string }>(
-      `${this.apiUrl}/login`, 
+      `${this.apiUrl}/users/login`, 
       { email: user.email, password: user.password }
     ).pipe(
       tap(response => {

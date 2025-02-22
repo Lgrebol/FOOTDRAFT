@@ -18,4 +18,4 @@ export class MainLayout {
   removeNavigationItem(route: string): void {
     this._navigationItems = this._navigationItems.filter(item => item.route !== route);
   }
-}//canviat
+}

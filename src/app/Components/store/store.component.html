@@ -7,22 +7,19 @@
       placeholder="Cerca jugador..." 
       [(ngModel)]="storeModel.filter.searchTerm" 
       (input)="applyFilters()"
-      class="filter-input"
-    >
+      class="filter-input">
     <input 
       type="number" 
       placeholder="Preu mínim" 
       [(ngModel)]="storeModel.filter.minPrice" 
       (input)="applyFilters()"
-      class="filter-input"
-    >
+      class="filter-input">
     <input 
       type="number" 
       placeholder="Preu màxim" 
       [(ngModel)]="storeModel.filter.maxPrice" 
       (input)="applyFilters()"
-      class="filter-input"
-    >
+      class="filter-input">
   </div>
 
   <div class="players-grid">
@@ -48,7 +45,7 @@
           <div>Velocitat</div>
         </div>
       </div>
-      <button class="buy-button" (click)="buyPlayer(player.id)">Comprar</button>
+      <button class="buy-button" (click)="buyPlayer(player.playerUUID)">Comprar</button>
     </div>
   </div>
   

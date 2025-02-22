@@ -17,18 +17,18 @@ export class MatchService {
     return this.http.post(this.apiUrl, matchData);
   }
 
-  getMatch(matchId: string): Observable<Match> {
-    return this.http.get<any>(`${this.apiUrl}/${matchId}`).pipe(
+  getMatch(matchUUID: string): Observable<Match> {
+    return this.http.get<any>(`${this.apiUrl}/${matchUUID}`).pipe(
       map(response => Match.fromApi(response.match))
     );
   }
 
-  simulateMatch(matchId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/simulate`, { matchID: matchId });
+  simulateMatch(matchUUID: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/simulate`, { matchID: matchUUID });
   }
 
-  resetMatch(matchId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reset`, { matchID: matchId });
+  resetMatch(matchUUID: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset`, { matchID: matchUUID });
   }
 
   placeBet(betData: any): Observable<any> {

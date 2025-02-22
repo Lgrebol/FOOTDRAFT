@@ -59,7 +59,7 @@ export class TeamsComponent implements OnInit {
   }
 
   addTeam(): void {
-    if (this.newTeam.teamName && this.newTeam.shirtColor && this.newTeam.userID) {
+    if (this.newTeam.teamName && this.newTeam.shirtColor && this.newTeam.userUUID) {
       this.teamService.addTeam(this.newTeam).subscribe({
         next: () => {
           this.loadData();
@@ -70,8 +70,8 @@ export class TeamsComponent implements OnInit {
     }
   }
 
-  deleteTeam(teamId: string): void {
-    this.teamService.deleteTeam(teamId).subscribe({
+  deleteTeam(teamUUID: string): void {
+    this.teamService.deleteTeam(teamUUID).subscribe({
       next: () => this.loadData(),
       error: err => console.error('Error eliminant equip:', err)
     });

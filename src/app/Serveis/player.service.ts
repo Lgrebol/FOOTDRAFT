@@ -38,14 +38,14 @@ export class PlayerService {
     );
   }
   
-  deletePlayer(playerId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${playerId}`).pipe(
+  deletePlayer(playerUUID: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${playerUUID}`).pipe(
       tap(() => this.fetchPlayers())
     );
   }
   
-  getReservedPlayers(userId: string): Observable<Player[]> {
-    const reserveUrl = `http://localhost:3000/api/v1/reserve/${userId}`;
+  getReservedPlayers(userUUID: string): Observable<Player[]> {
+    const reserveUrl = `http://localhost:3000/api/v1/reserve/${userUUID}`;
     return this.http.get<any[]>(reserveUrl).pipe(
       map(players => players.map(p => Player.fromApi(p)))
     );

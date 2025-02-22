@@ -46,16 +46,16 @@ export class TeamService {
     );
   }
 
-  deleteTeam(teamId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${teamId}`, { headers: this.getAuthHeaders() }).pipe(
+  deleteTeam(teamUUID: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${teamUUID}`, { headers: this.getAuthHeaders() }).pipe(
       tap(() => this.fetchTeams())
     );
   }
 
-  assignPlayerToTeam(teamId: string, playerId: string, userID: string): Observable<any> {
+  assignPlayerToTeam(teamUUID: string, playerUUID: string, userUUID: string): Observable<any> {
     return this.http.post(
-      `${this.apiUrl}/${teamId}/add-player-from-reserve`,
-      { playerId, userID },
+      `${this.apiUrl}/${teamUUID}/add-player-from-reserve`,
+      { playerId: playerUUID, userID: userUUID },
       { headers: this.getAuthHeaders() }
     ).pipe(
       tap(() => this.fetchTeams())

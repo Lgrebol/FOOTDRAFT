@@ -2,10 +2,10 @@ export class Player {
   private _imageFile?: File;
 
   constructor(
-    private _id: string = '',
+    private _playerUUID: string = '',
     private _playerName: string = '',
     private _position: string = '',
-    private _teamID: string = '',
+    private _teamUUID: string = '',
     private _isActive: boolean = true,
     private _isForSale: boolean = false,
     private _price: number = 0,
@@ -17,10 +17,11 @@ export class Player {
     private _teamName?: string
   ) {}
 
-  get id(): string { return this._id; }
+  // Getters
+  get playerUUID(): string { return this._playerUUID; }
   get playerName(): string { return this._playerName; }
   get position(): string { return this._position; }
-  get teamID(): string { return this._teamID; }
+  get teamUUID(): string { return this._teamUUID; }
   get isActive(): boolean { return this._isActive; }
   get isForSale(): boolean { return this._isForSale; }
   get price(): number { return this._price; }
@@ -32,9 +33,10 @@ export class Player {
   get teamName(): string | undefined { return this._teamName; }
   get imageFile(): File | undefined { return this._imageFile; }
 
+  // Setters
   set playerName(value: string) { this._playerName = value; }
   set position(value: string) { this._position = value; }
-  set teamID(value: string) { this._teamID = value; }
+  set teamUUID(value: string) { this._teamUUID = value; }
   set isActive(value: boolean) { this._isActive = value; }
   set isForSale(value: boolean) { this._isForSale = value; }
   set price(value: number) { this._price = value; }
@@ -54,7 +56,8 @@ export class Player {
     const formData = new FormData();
     formData.append('playerName', this._playerName);
     formData.append('position', this._position);
-    formData.append('teamID', this._teamID);
+    // Ara s'envia "teamUUID" en lloc de "teamID"
+    formData.append('teamUUID', this._teamUUID);
     formData.append('isActive', this._isActive ? '1' : '0');
     formData.append('isForSale', this._isForSale ? '1' : '0');
     formData.append('price', String(this._price));
@@ -72,7 +75,7 @@ export class Player {
       data.PlayerUUID || data.PlayerID,
       data.PlayerName,
       data.Position,
-      data.TeamID || data.TeamUUID,
+      data.TeamUUID || data.TeamID,
       data.IsActive,
       data.IsForSale,
       data.Price,

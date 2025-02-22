@@ -2,16 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
 import { UserService } from '../../Serveis/user.service';
 import { User } from '../../Classes/user/user.model';
 
-interface LoginResponse {
-  token: string;
-}
-
 interface JwtPayload {
-  userId: number;
+  userUUID: string;
   email: string;
   footcoins?: number;
 }

@@ -32,7 +32,7 @@ export class TournamentService {
   }
   
   trackById(index: number, item: Tournament): string {
-    return item.id;
+    return item.tournamentUUID;
   }
   
   addTournament(tournamentData: { tournamentName: string; tournamentType: string; startDate: string; endDate: string }): Observable<Tournament> {
@@ -42,8 +42,8 @@ export class TournamentService {
     );
   }
   
-  deleteTournament(tournamentId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/tournaments/${tournamentId}`).pipe(
+  deleteTournament(tournamentUUID: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/tournaments/${tournamentUUID}`).pipe(
       tap(() => this.fetchTournaments())
     );
   }

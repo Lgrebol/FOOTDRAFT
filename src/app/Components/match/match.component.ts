@@ -25,7 +25,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   betAmount: number = 0;
   predictedWinner: string = 'home';
-  currentUserID: string = '6';
+  currentUserUUID: string = '6';
 
   constructor(
     private matchService: MatchService,
@@ -56,31 +56,31 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (!this.canStartMatch()) return;
 
     const newMatch = {
-      tournamentID: '8',
-      homeTeamID: this.selectedHomeTeam!,
-      awayTeamID: this.selectedAwayTeam!,
+      tournamentUUID: '8',
+      homeTeamUUID: this.selectedHomeTeam!,
+      awayTeamUUID: this.selectedAwayTeam!,
       matchDate: new Date()
     };
 
     this.matchService.createMatch(newMatch).subscribe({
       next: (res: any) => {
-        const matchID = res.matchID;
+        const matchUUID = res.matchUUID;
         this.matchStarted = true;
-        this.startPolling(matchID);
-        this.simulateMatch(matchID);
+        this.startPolling(matchUUID);
+        this.simulateMatch(matchUUID);
       },
       error: (error) => console.error('Error creant partit:', error)
     });
   }
 
-  getTeamName(teamId: string): string {
-    const team = this.teams.find(t => t.id === teamId);
+  getTeamName(teamUUID: string): string {
+    const team = this.teams.find(t => t.teamUUID === teamUUID);
     return team?.teamName || 'Equip Desconegut';
   }
 
-  private startPolling(matchID: string): void {
+  private startPolling(matchUUID: string): void {
     this.pollingSubscription = interval(1000).subscribe(() => {
-      this.matchService.getMatch(matchID).subscribe({
+      this.matchService.getMatch(matchUUID).subscribe({
         next: (match) => {
           this.match = match;
           if (match.isMatchEnded()) {
@@ -98,8 +98,8 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.pollingSubscription?.unsubscribe();
   }
 
-  simulateMatch(matchID: string): void {
-    this.matchService.simulateMatch(matchID).subscribe({
+  simulateMatch(matchUUID: string): void {
+    this.matchService.simulateMatch(matchUUID).subscribe({
       next: () => console.log('Simulació completada'),
       error: (error) => console.error('Error en simulació:', error)
     });
@@ -108,7 +108,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   resetMatch(): void {
     if (!this.match) return;
 
-    this.matchService.resetMatch(this.match.id).subscribe({
+    this.matchService.resetMatch(this.match!.id).subscribe({
       next: () => {
         this.resetComponentState();
         this.loadTeams();
@@ -130,9 +130,9 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (!this.selectedHomeTeam || !this.selectedAwayTeam || !this.match) return;
   
     const betData = {
-      matchID: this.match.id,
-      homeTeamID: this.selectedHomeTeam,
-      awayTeamID: this.selectedAwayTeam,
+      matchUUID: this.match!.id,
+      homeTeamUUID: this.selectedHomeTeam,
+      awayTeamUUID: this.selectedAwayTeam,
       amount: this.betAmount,
       predictedWinner: this.predictedWinner
     };

@@ -13,7 +13,7 @@ import { StoreModel } from '../../Classes/store/store.model';
 })
 export class StoreComponent implements OnInit {
   storeModel: StoreModel = new StoreModel();
-  currentUserID: string = '6';
+  currentUserUUID: string = '6';
 
   constructor(private storeService: StoreService) {}
 
@@ -31,11 +31,11 @@ export class StoreComponent implements OnInit {
     );
   }
 
-  buyPlayer(playerId: string): void {
-    this.storeService.buyPlayer(playerId, this.currentUserID).subscribe({
+  buyPlayer(playerUUID: string): void {
+    this.storeService.buyPlayer(playerUUID, this.currentUserUUID).subscribe({
       next: () => {
         this.storeModel.setSuccess('Jugador comprat correctament!');
-        this.storeModel.removePlayer(playerId);
+        this.storeModel.removePlayer(playerUUID);
       },
       error: error => {
         this.storeModel.setError(error.error?.error || 'Error en la compra');

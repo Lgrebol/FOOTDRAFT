@@ -5,7 +5,7 @@
       <h3>Equip Local</h3>
       <select [(ngModel)]="selectedHomeTeam">
         <option value="" disabled>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.id">
+        <option *ngFor="let team of teams" [value]="team.teamUUID">
           {{ team.teamName }}
         </option>
       </select>
@@ -15,7 +15,7 @@
       <h3>Equip Visitant</h3>
       <select [(ngModel)]="selectedAwayTeam">
         <option value="" disabled>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.id">
+        <option *ngFor="let team of teams" [value]="team.teamUUID">
           {{ team.teamName }}
         </option>
       </select>
@@ -57,7 +57,7 @@
   <div class="match-display" *ngIf="matchStarted && !matchSummary?.matchEnded">
     <div class="scoreboard">
       <div class="team local">
-        <h3>{{ getTeamName(match!.homeTeamID) || 'Equip Local' }}</h3>
+        <h3>{{ getTeamName(match!.homeTeamUUID) || 'Equip Local' }}</h3>
         <div class="score">{{ match?.homeGoals || 0 }}</div>
       </div>
       
@@ -67,7 +67,7 @@
       </div>
       
       <div class="team visitor">
-        <h3>{{ getTeamName(match!.awayTeamID) || 'Equip Visitant' }}</h3>
+        <h3>{{ getTeamName(match!.awayTeamUUID) || 'Equip Visitant' }}</h3>
         <div class="score">{{ match?.awayGoals || 0 }}</div>
       </div>
     </div>
@@ -84,44 +84,44 @@
     </div>
   </div>
 
-    <!-- Resum final -->
-    <div class="match-summary" *ngIf="matchSummary?.matchEnded">
-      <h2>🏆 PARTIT FINALITZAT 🏆</h2>
-      
-      <div class="stats-container">
-        <!-- Marcador final amb espaiat corregit -->
-        <div class="stat-card main-score">
-          <h3>Marcador Final</h3>
-          <div class="final-score">
-            <span class="team">{{ getTeamName(match!.homeTeamID) }}</span>
-            <span class="goals-spacer">{{ matchSummary.homeGoals }}</span>
-            <span class="separator">-</span>
-            <span class="goals-spacer">{{ matchSummary.awayGoals }}</span>
-            <span class="team">{{ getTeamName(match!.awayTeamID) }}</span>
-          </div>
+  <!-- Resum final -->
+  <div class="match-summary" *ngIf="matchSummary?.matchEnded">
+    <h2>🏆 PARTIT FINALITZAT 🏆</h2>
+    
+    <div class="stats-container">
+      <!-- Marcador final -->
+      <div class="stat-card main-score">
+        <h3>Marcador Final</h3>
+        <div class="final-score">
+          <span class="team">{{ getTeamName(match!.homeTeamUUID) }}</span>
+          <span class="goals-spacer">{{ matchSummary.homeGoals }}</span>
+          <span class="separator">-</span>
+          <span class="goals-spacer">{{ matchSummary.awayGoals }}</span>
+          <span class="team">{{ getTeamName(match!.awayTeamUUID) }}</span>
         </div>
+      </div>
   
-        <!-- Estadístiques completes -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <h4>Gols Totals</h4>
-            <div class="stat-value">{{ matchSummary.totalGoals }}</div>
-          </div>
-          
-          <div class="stat-card">
-            <h4>Falts Totals</h4>
-            <div class="stat-value">{{ matchSummary.totalFouls || 0 }}</div>
-          </div>
-          
-          <div class="stat-card">
-            <h4>Targetes Vermelles</h4>
-            <div class="stat-value">{{ matchSummary.totalRedCards || 0 }}</div>
-          </div>
+      <!-- Estadístiques completes -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>Gols Totals</h4>
+          <div class="stat-value">{{ matchSummary.totalGoals }}</div>
         </div>
+        
+        <div class="stat-card">
+          <h4>Falts Totals</h4>
+          <div class="stat-value">{{ matchSummary.totalFouls || 0 }}</div>
+        </div>
+        
+        <div class="stat-card">
+          <h4>Targetes Vermelles</h4>
+          <div class="stat-value">{{ matchSummary.totalRedCards || 0 }}</div>
+        </div>
+      </div>
   
-        <div class="match-message">
-          {{ matchSummary.message }}
-        </div>
+      <div class="match-message">
+        {{ matchSummary.message }}
       </div>
     </div>
   </div>
+</div>

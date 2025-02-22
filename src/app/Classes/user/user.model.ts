@@ -1,6 +1,6 @@
 export class User {
   constructor(
-    private _id: string = '',
+    private _userUUID: string = '',
     private _username: string = '',
     private _email: string = '',
     private _footcoins: number = 0,
@@ -9,14 +9,14 @@ export class User {
   ) {}
 
   // Getters i setters
-  get id(): string { return this._id; }
+  get userUUID(): string { return this._userUUID; }
   get username(): string { return this._username; }
   get email(): string { return this._email; }
   get footcoins(): number { return this._footcoins; }
   get password(): string | undefined { return this._password; }
   get confirmPassword(): string | undefined { return this._confirmPassword; }
 
-  set id(value: string) { this._id = value; }
+  set userUUID(value: string) { this._userUUID = value; }
   set username(value: string) { this._username = value; }
   set email(value: string) { this._email = value; }
   set footcoins(value: number) { this._footcoins = value; }

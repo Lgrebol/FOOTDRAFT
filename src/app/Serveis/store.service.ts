@@ -53,8 +53,8 @@ export class StoreService {
     this.fetchStorePlayers(params);
   }
 
-  buyPlayer(playerId: string, userId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/buy/${playerId}`, { userID: userId }).pipe(
+  buyPlayer(playerUUID: string, userUUID: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/buy/${playerUUID}`, { userID: userUUID }).pipe(
       tap(() => this.fetchStorePlayers())
     );
   }

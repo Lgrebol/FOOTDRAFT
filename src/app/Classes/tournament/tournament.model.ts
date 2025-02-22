@@ -1,14 +1,14 @@
 export class Tournament {
   constructor(
-    private _id: string = '',
+    private _tournamentUUID: string = '',
     private _tournamentName: string = '',
     private _tournamentType: string = '',
     private _startDate: string = '',
     private _endDate: string = ''
   ) {}
 
-  get id(): string {
-    return this._id;
+  get tournamentUUID(): string {
+    return this._tournamentUUID;
   }
   get tournamentName(): string {
     return this._tournamentName;
