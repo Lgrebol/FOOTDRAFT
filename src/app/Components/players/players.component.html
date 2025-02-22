@@ -32,7 +32,7 @@
       <div class="form-group">
         <label for="name">Nom:</label>
         <input id="name" type="text"
-               [(ngModel)]="newPlayer.name"
+               [(ngModel)]="newPlayer.playerName"
                name="name"
                required
                aria-required="true"
@@ -59,15 +59,15 @@
       <div class="form-group">
         <label for="team">Equip:</label>
         <select id="team"
-        [(ngModel)]="newPlayer.teamId"
-        name="teamId"
-        required
-        aria-required="true">
-        <option value="" disabled selected>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.id">
-          {{ team.teamName }}
-        </option>
-      </select>
+                [(ngModel)]="newPlayer.teamID"
+                name="teamId"
+                required
+                aria-required="true">
+          <option value="" disabled selected>Selecciona un equip</option>
+          <option *ngFor="let team of teams" [value]="team.id">
+            {{ team.teamName }}
+          </option>
+        </select>
       </div>
       
       <!-- Preu --> 
@@ -147,7 +147,6 @@
                required
                aria-required="true" />
       </div>
-      
       <button type="submit">Afegir Jugador</button>
     </form>
   </div>

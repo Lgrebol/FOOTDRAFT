@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { TournamentService } from '../../Serveis/tournament.service'; // Corregir ruta segons estructura
-import { Tournament } from '../../Classes/tournament/tournament.model'; // Nou path de la classe
+import { TournamentService } from '../../Serveis/tournament.service';
+import { Tournament, TournamentFormModel } from '../../Classes/tournament/tournament.model';
 
 @Component({
   selector: 'app-tournament',
@@ -17,7 +17,7 @@ import { Tournament } from '../../Classes/tournament/tournament.model'; // Nou p
 })
 export class TournamentComponent implements OnInit {
   tournaments: Tournament[] = [];
-  newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
+  tournamentForm: TournamentFormModel = new TournamentFormModel();
 
   constructor(private tournamentService: TournamentService) {}
 
@@ -28,20 +28,20 @@ export class TournamentComponent implements OnInit {
   }
 
   addTournament(): void {
-    if (this.newTournament.name) {
-      this.tournamentService.addTournament({
-        tournamentName: this.newTournament.name,
-        tournamentType: this.newTournament.type,
-        startDate: this.newTournament.startDate,
-        endDate: this.newTournament.endDate
-      }).subscribe({
+    if (this.tournamentForm.tournament.tournamentName) {
+      this.tournamentForm.setLoading(true);
+      this.tournamentService.addTournament(this.tournamentForm.toDTO()).subscribe({
         next: () => {
-          this.newTournament = { name: '', type: 'Knockout', startDate: '', endDate: '' };
-          this.tournamentService.getTournaments().subscribe( // Forçar actualització
-            (tournaments) => this.tournaments = tournaments
-          );
+          this.tournamentForm.setSuccess('Torneig afegit correctament');
+          this.tournamentForm.resetForm();
         },
-        error: (error) => console.error("Error adding tournament:", error)
+        error: (error) => {
+          console.error("Error adding tournament:", error);
+          this.tournamentForm.setError('Error afegint torneig');
+        },
+        complete: () => {
+          this.tournamentForm.setLoading(false);
+        }
       });
     }
   }
@@ -49,13 +49,14 @@ export class TournamentComponent implements OnInit {
   deleteTournament(id: string): void {
     this.tournamentService.deleteTournament(id).subscribe({
       next: () => {
+        // Actualitzem la llista local eliminant l'element esborrat
         this.tournaments = this.tournaments.filter(t => t.id !== id);
       },
       error: (error) => console.error("Error deleting tournament:", error)
     });
   }  
 
-  trackById(index: number, item: any): number {
+  trackById(index: number, item: Tournament): string {
     return item.id;
   }
 }

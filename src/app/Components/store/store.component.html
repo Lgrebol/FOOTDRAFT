@@ -5,31 +5,31 @@
     <input 
       type="text" 
       placeholder="Cerca jugador..." 
-      [(ngModel)]="searchTerm" 
+      [(ngModel)]="storeModel.filter.searchTerm" 
       (input)="applyFilters()"
       class="filter-input"
     >
     <input 
       type="number" 
       placeholder="Preu mínim" 
-      [(ngModel)]="minPrice" 
+      [(ngModel)]="storeModel.filter.minPrice" 
       (input)="applyFilters()"
       class="filter-input"
     >
     <input 
       type="number" 
       placeholder="Preu màxim" 
-      [(ngModel)]="maxPrice" 
+      [(ngModel)]="storeModel.filter.maxPrice" 
       (input)="applyFilters()"
       class="filter-input"
     >
   </div>
 
   <div class="players-grid">
-    <div class="player-card" *ngFor="let player of storePlayers">
-    <img [src]="player.imageUrl ? 'data:image/png;base64,' + player.imageUrl : 'assets/soccer-player.png'"
-     class="player-image"
-     alt="{{ player.playerName }}">
+    <div class="player-card" *ngFor="let player of storeModel.store.availablePlayers">
+      <img [src]="player.imageUrl ? 'data:image/png;base64,' + player.imageUrl : 'assets/soccer-player.png'"
+           class="player-image"
+           alt="{{ player.playerName }}">
       <div class="player-name">{{ player.playerName }}</div>
       <div class="player-info">Posició: {{ player.position }}</div>
       <div class="player-info">Preu: {{ player.price }}€</div>
@@ -50,5 +50,12 @@
       </div>
       <button class="buy-button" (click)="buyPlayer(player.id)">Comprar</button>
     </div>
+  </div>
+  
+  <div *ngIf="storeModel.error" class="alert alert-danger mt-2">
+    {{ storeModel.error }}
+  </div>
+  <div *ngIf="storeModel.success" class="alert alert-success mt-2">
+    {{ storeModel.success }}
   </div>
 </div>

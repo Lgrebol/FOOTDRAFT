@@ -3,8 +3,8 @@ import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { AuthService } from '../../Serveis/auth.service';
 import { UserService } from '../../Serveis/user.service';
+import { User } from '../../Classes/user/user.model';
 
 interface LoginResponse {
   token: string;
@@ -28,20 +28,18 @@ export class LoginRegisterComponent implements AfterViewInit {
   @ViewChild('signUpBtn') signUpBtn!: ElementRef<HTMLButtonElement>;
   @ViewChild('container') container!: ElementRef<HTMLElement>;
 
-  username: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
+  userModel: User = new User();
 
-  usernameError: boolean = false;
-  emailError: boolean = false;
-  passwordError: boolean = false;
-  confirmPasswordMismatchError: boolean = false;
-  passwordRegexError: boolean = false;
+  errors = {
+    usernameError: false,
+    emailError: false,
+    passwordError: false,
+    confirmPasswordMismatchError: false,
+    passwordRegexError: false,
+  };
 
   constructor(
     private router: Router,
-    private authService: AuthService,
     private userService: UserService
   ) {}
 
@@ -64,28 +62,22 @@ export class LoginRegisterComponent implements AfterViewInit {
   }
 
   onSubmit(): void {
-    this.validateForm();
-    
-    if (this.isFormValid()) {
+    this.validateRegistrationForm();
+    if (this.userModel.isValidForRegistration()) {
       this.registerUser();
     }
   }
 
-  private validateForm(): void {
-    this.usernameError = !this.username;
-    this.emailError = !this.email;
-    this.passwordError = !this.password;
-    this.confirmPasswordMismatchError = !this.passwordMatchValidator();
-    this.passwordRegexError = !this.passwordValidator();
-  }
-
-  private isFormValid(): boolean {
-    return !!this.username && !!this.email && !!this.password && 
-           this.passwordMatchValidator() && this.passwordValidator();
+  private validateRegistrationForm(): void {
+    this.errors.usernameError = this.userModel.username.trim() === '';
+    this.errors.emailError = !this.userModel.isValidEmail();
+    this.errors.passwordError = !this.userModel.password || this.userModel.password.trim() === '';
+    this.errors.confirmPasswordMismatchError = !this.userModel.isPasswordMatch();
+    this.errors.passwordRegexError = !this.userModel.isValidPassword();
   }
 
   private registerUser(): void {
-    this.userService.registerUser(this.username, this.email, this.password).subscribe({
+    this.userService.registerUser(this.userModel).subscribe({
       next: () => {
         alert('Registre exitós! Inicieu sessió');
         this.clearForm();
@@ -99,33 +91,20 @@ export class LoginRegisterComponent implements AfterViewInit {
   }
 
   private clearForm(): void {
-    this.username = '';
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
+    this.userModel = new User();
   }
 
   private switchToLogin(): void {
     this.container.nativeElement.classList.remove('sign-up-mode');
   }
 
-  passwordMatchValidator(): boolean {
-    return this.password === this.confirmPassword;
-  }
-
-  passwordValidator(): boolean {
-    const minLength = 6;
-    const symbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
-    return this.password.length >= minLength && symbolRegex.test(this.password);
-  }
-
   handleSignIn(): void {
-    if (!this.email || !this.password) {
-      alert('Si us plau, omple tots els camps');
+    if (!this.userModel.isValidForLogin()) {
+      alert('Si us plau, omple tots els camps correctament');
       return;
     }
 
-    this.authService.loginUser(this.email, this.password).subscribe({
+    this.userService.loginUser(this.userModel).subscribe({
       next: (response) => {
         if (response.token) {
           this.handleSuccessfulLogin(response.token);
@@ -139,11 +118,8 @@ export class LoginRegisterComponent implements AfterViewInit {
   }
 
   private handleSuccessfulLogin(token: string): void {
-    const decodedToken = jwtDecode<JwtPayload>(token);
-    
     localStorage.setItem('authToken', token);
-    
-    this.authService.refreshCurrentUserData().subscribe({
+    this.userService.refreshCurrentUserData().subscribe({
       next: () => this.router.navigate(['/dashboard']),
       error: (err) => {
         console.error('Error actualitzant dades:', err);

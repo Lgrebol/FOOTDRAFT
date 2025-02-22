@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StoreService } from '../../Serveis/store.service';
-import { Player } from '../../Classes/players/player.model';
+import { StoreModel } from '../../Classes/store/store.model';
 
 @Component({
   selector: 'app-store',
@@ -12,32 +12,34 @@ import { Player } from '../../Classes/players/player.model';
   styleUrls: ['./store.component.css']
 })
 export class StoreComponent implements OnInit {
-  storePlayers: Player[] = [];
+  storeModel: StoreModel = new StoreModel();
   currentUserID: string = '6';
-  searchTerm: string = '';
-  minPrice: number | null = null;
-  maxPrice: number | null = null;
 
   constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
     this.storeService.getStorePlayers().subscribe(
-      players => this.storePlayers = players
+      players => this.storeModel.setPlayers(players)
     );
   }
 
   applyFilters(): void {
     this.storeService.refreshStorePlayers(
-      this.searchTerm, 
-      this.minPrice || undefined, 
-      this.maxPrice || undefined
+      this.storeModel.filter.searchTerm,
+      this.storeModel.filter.minPrice || undefined,
+      this.storeModel.filter.maxPrice || undefined
     );
   }
 
   buyPlayer(playerId: string): void {
     this.storeService.buyPlayer(playerId, this.currentUserID).subscribe({
-      next: () => alert('Jugador comprat correctament!'),
-      error: error => alert(error.error?.error || 'Error en la compra')
+      next: () => {
+        this.storeModel.setSuccess('Jugador comprat correctament!');
+        this.storeModel.removePlayer(playerId);
+      },
+      error: error => {
+        this.storeModel.setError(error.error?.error || 'Error en la compra');
+      }
     });
-  }  
+  }
 }

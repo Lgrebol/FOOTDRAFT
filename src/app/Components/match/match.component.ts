@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Subscription, interval } from 'rxjs';
 import { MatchService } from '../../Serveis/match.service';
 import { TeamService } from '../../Serveis/team.service';
-import { BetService } from '../../Serveis/bet.service';
 import { Match } from '../../Classes/match/match.model';
 import { Team } from '../../Classes/teams/team.model';
 
@@ -30,8 +29,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   constructor(
     private matchService: MatchService,
-    private teamService: TeamService,
-    private betService: BetService
+    private teamService: TeamService
   ) {}
 
   ngOnInit(): void {
@@ -85,7 +83,9 @@ export class MatchComponent implements OnInit, OnDestroy {
       this.matchService.getMatch(matchID).subscribe({
         next: (match) => {
           this.match = match;
-          if (match?.currentMinute > 90) this.handleMatchEnd();
+          if (match.isMatchEnded()) {
+            this.handleMatchEnd();
+          }
         },
         error: (error) => console.error('Error carregant dades:', error)
       });
@@ -94,17 +94,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   private handleMatchEnd(): void {
     if (!this.match) return;
-
-    this.matchSummary = {
-      homeGoals: this.match.homeGoals,
-      awayGoals: this.match.awayGoals,
-      totalGoals: this.match.homeGoals + this.match.awayGoals,
-      totalFouls: this.match.events.filter(e => e.eventType === 'Falta').length,
-      totalRedCards: this.match.events.filter(e => e.eventType === 'Vermella').length,
-      matchEnded: true,
-      message: "El partit ha finalitzat!"
-    };
-    
+    this.matchSummary = this.match.getSummary();
     this.pollingSubscription?.unsubscribe();
   }
 
@@ -147,7 +137,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       predictedWinner: this.predictedWinner
     };
   
-    this.betService.placeBet(betData).subscribe({
+    this.matchService.placeBet(betData).subscribe({
       next: () => alert('Aposta realitzada amb èxit!'),
       error: (error) => alert(error.error?.error || "Error en l'aposta")
     });

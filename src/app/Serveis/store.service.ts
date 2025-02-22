@@ -32,7 +32,7 @@ export class StoreService {
           p.PlayerImage,
           p.Points,
           p.TeamName
-        )        
+        )
       ))
     ).subscribe({
       next: (players: Player[]) => this.storePlayersSubject.next(players),
@@ -46,9 +46,9 @@ export class StoreService {
 
   refreshStorePlayers(searchTerm?: string, minPrice?: number, maxPrice?: number): void {
     let params = new HttpParams();
-    if (searchTerm) params = params.set('search', searchTerm);
-    if (minPrice) params = params.set('minPrice', minPrice);
-    if (maxPrice) params = params.set('maxPrice', maxPrice);
+    if (searchTerm) { params = params.set('search', searchTerm); }
+    if (minPrice) { params = params.set('minPrice', minPrice); }
+    if (maxPrice) { params = params.set('maxPrice', maxPrice); }
     
     this.fetchStorePlayers(params);
   }
@@ -57,5 +57,5 @@ export class StoreService {
     return this.http.post(`${this.apiUrl}/buy/${playerId}`, { userID: userId }).pipe(
       tap(() => this.fetchStorePlayers())
     );
-  }  
+  }
 }

@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../Serveis/auth.service';
 import { UserService } from '../../Serveis/user.service';
 
 @Component({
@@ -17,7 +16,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private footcoinsSubscription!: Subscription;
 
   constructor(
-    private authService: AuthService,
     private userService: UserService,
     private router: Router
   ) {}
@@ -28,7 +26,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   private loadUserData(): void {
-    this.authService.refreshCurrentUserData().subscribe({
+    this.userService.refreshCurrentUserData().subscribe({
       next: (user) => {
         if (user) {
           this.userService.updateFootcoins(user.footcoins);
@@ -45,7 +43,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logoutUser();
     this.userService.logoutUser();
     this.redirectToLogin();
   }

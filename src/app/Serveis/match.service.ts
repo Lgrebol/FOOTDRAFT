@@ -9,6 +9,7 @@ import { Match } from '../Classes/match/match.model';
 })
 export class MatchService {
   private apiUrl = 'http://localhost:3000/api/v1/matches';
+  private betsUrl = 'http://localhost:3000/api/v1/bets';
 
   constructor(private http: HttpClient) {}
 
@@ -18,23 +19,9 @@ export class MatchService {
 
   getMatch(matchId: string): Observable<Match> {
     return this.http.get<any>(`${this.apiUrl}/${matchId}`).pipe(
-      map(response => {
-        const backendData = response.match;
-        return new Match(
-          backendData.MatchID,  
-          backendData.HomeTeamID,    
-          backendData.AwayTeamID,  
-          backendData.HomeGoals,
-          backendData.AwayGoals,
-          backendData.CurrentMinute,
-          backendData.TournamentID,   
-          backendData.MatchDate,
-          backendData.events || []
-        );
-      })
+      map(response => Match.fromApi(response.match))
     );
   }
-  
 
   simulateMatch(matchId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/simulate`, { matchID: matchId });
@@ -42,5 +29,9 @@ export class MatchService {
 
   resetMatch(matchId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/reset`, { matchID: matchId });
+  }
+
+  placeBet(betData: any): Observable<any> {
+    return this.http.post(this.betsUrl, betData);
   }
 }

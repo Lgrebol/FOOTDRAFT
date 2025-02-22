@@ -1,12 +1,28 @@
 export class DashboardStats {
-  constructor(
-    private _totalTeams: number,
-    private _totalPlayers: number,
-    private _totalTournaments: number,
-    private _totalGoals: number,
-    private _totalMatches: number
-  ) {}
+  private _totalTeams: number;
+  private _totalPlayers: number;
+  private _totalTournaments: number;
+  private _totalGoals: number;
+  private _totalMatches: number;
+  
+  loading: boolean = false;
+  error: string | null = null;
 
+  constructor(
+    totalTeams: number = 0,
+    totalPlayers: number = 0,
+    totalTournaments: number = 0,
+    totalGoals: number = 0,
+    totalMatches: number = 0
+  ) {
+    this._totalTeams = totalTeams;
+    this._totalPlayers = totalPlayers;
+    this._totalTournaments = totalTournaments;
+    this._totalGoals = totalGoals;
+    this._totalMatches = totalMatches;
+  }
+
+  // Getters
   get totalTeams(): number {
     return this._totalTeams;
   }
@@ -23,18 +39,25 @@ export class DashboardStats {
     return this._totalMatches;
   }
 
-  // Exemple: Actualitzar estadístiques
-  updateStats(stats: Partial<{ 
-    totalTeams: number; 
-    totalPlayers: number; 
-    totalTournaments: number; 
-    totalGoals: number; 
-    totalMatches: number 
+  updateStats(stats: Partial<{
+    totalTeams: number;
+    totalPlayers: number;
+    totalTournaments: number;
+    totalGoals: number;
+    totalMatches: number;
   }>): void {
     if (stats.totalTeams !== undefined) this._totalTeams = stats.totalTeams;
     if (stats.totalPlayers !== undefined) this._totalPlayers = stats.totalPlayers;
     if (stats.totalTournaments !== undefined) this._totalTournaments = stats.totalTournaments;
     if (stats.totalGoals !== undefined) this._totalGoals = stats.totalGoals;
     if (stats.totalMatches !== undefined) this._totalMatches = stats.totalMatches;
+  }
+
+  setLoading(loading: boolean): void {
+    this.loading = loading;
+  }
+
+  setError(error: string | null): void {
+    this.error = error;
   }
 }

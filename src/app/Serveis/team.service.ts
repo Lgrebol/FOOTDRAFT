@@ -26,9 +26,7 @@ export class TeamService {
   private fetchTeams(): void {
     this.http.get<any[]>(this.apiUrl, { headers: this.getAuthHeaders() }).subscribe(
       teams => {
-        const teamInstances = teams.map(t =>
-          new Team(t.TeamUUID, t.TeamName, t.ShirtColor, t.UserID, t.UserName)
-        );
+        const teamInstances = teams.map(t => Team.fromApi(t));
         this.teamsSubject.next(teamInstances);
       },
       error => console.error('Error fetching teams:', error)
@@ -37,16 +35,14 @@ export class TeamService {
 
   getTeams(): Observable<Team[]> {
     return this.http.get<any[]>(this.apiUrl, { headers: this.getAuthHeaders() }).pipe(
-      map(teams => teams.map(t =>
-        new Team(t.TeamUUID, t.TeamName, t.ShirtColor, t.UserID, t.UserName)
-      ))
+      map(teams => teams.map(t => Team.fromApi(t)))
     );
   }
 
-  addTeam(teamData: { teamName: string; shirtColor: string; userID: string }): Observable<Team> {
-    return this.http.post<any>(this.apiUrl, teamData, { headers: this.getAuthHeaders() }).pipe(
+  addTeam(team: Team): Observable<Team> {
+    return this.http.post<any>(this.apiUrl, team.toPayload(), { headers: this.getAuthHeaders() }).pipe(
       tap(() => this.fetchTeams()),
-      map(t => new Team(t.TeamUUID, t.TeamName, t.ShirtColor, t.UserID, t.UserName))
+      map(t => Team.fromApi(t))
     );
   }
 

@@ -16,19 +16,8 @@ import { Team } from '../../Classes/teams/team.model';
 export class PlayersComponent implements OnInit {
   players: Player[] = [];
   teams: Team[] = [];
-  selectedFile: File | null = null;
   
-  newPlayer = {
-    name: '',
-    position: '',
-    teamId: '' as string, // actualitzat a string
-    isActive: true,
-    isForSale: false,
-    price: 0,
-    height: 0,
-    speed: 0,
-    shooting: 0
-  };
+  newPlayer: Player = new Player();
 
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
@@ -47,25 +36,17 @@ export class PlayersComponent implements OnInit {
   }
 
   onFileSelected(event: any): void {
-    this.selectedFile = event.target.files[0];
+    const file: File = event.target.files[0];
+    this.newPlayer.imageFile = file;
   }
 
   addPlayer(): void {
-    const formData = new FormData();
-    formData.append('playerName', this.newPlayer.name);
-    formData.append('position', this.newPlayer.position);
-    formData.append('teamID', this.newPlayer.teamId);
-    formData.append('isActive', this.newPlayer.isActive ? '1' : '0');
-    formData.append('isForSale', this.newPlayer.isForSale ? '1' : '0');
-    formData.append('price', String(this.newPlayer.price));
-    formData.append('height', String(this.newPlayer.height));
-    formData.append('speed', String(this.newPlayer.speed));
-    formData.append('shooting', String(this.newPlayer.shooting));
-    if (this.selectedFile) {
-      formData.append('image', this.selectedFile);
-    }
+    const formData = this.newPlayer.toFormData();
     this.playerService.addPlayer(formData).subscribe({
-      next: () => this.loadData(),
+      next: () => {
+        this.loadData();
+        this.newPlayer = new Player();
+      },
       error: (err) => console.error('Error afegint jugador:', err)
     });
   }

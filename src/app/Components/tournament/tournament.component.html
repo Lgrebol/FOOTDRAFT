@@ -28,20 +28,46 @@
   <h2>Afegir Torneig</h2>
   <form (ngSubmit)="addTournament()">
     <div class="mb-2">
-      <input type="text" class="form-control" placeholder="Nom del torneig" [(ngModel)]="newTournament.name" name="name" required />
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Nom del torneig"
+        [(ngModel)]="tournamentForm.tournament.tournamentName"
+        name="name"
+        required
+      />
     </div>
     <div class="mb-2">
-      <select class="form-control" [(ngModel)]="newTournament.type" name="type">
+      <select class="form-control" [(ngModel)]="tournamentForm.tournament.tournamentType" name="type">
         <option value="Knockout">Knockout</option>
         <option value="League">Lliga</option>
       </select>
     </div>
     <div class="mb-2">
-      <input type="date" class="form-control" [(ngModel)]="newTournament.startDate" name="startDate" required />
+      <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="tournamentForm.tournament.startDate"
+        name="startDate"
+        required
+      />
     </div>
     <div class="mb-2">
-      <input type="date" class="form-control" [(ngModel)]="newTournament.endDate" name="endDate" />
+      <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="tournamentForm.tournament.endDate"
+        name="endDate"
+      />
     </div>
-    <button type="submit" class="btn btn-success">Afegir Torneig</button>
+    <button type="submit" class="btn btn-success" [disabled]="tournamentForm.loading">
+      Afegir Torneig
+    </button>
   </form>
+  <div *ngIf="tournamentForm.error" class="alert alert-danger mt-2">
+    {{ tournamentForm.error }}
+  </div>
+  <div *ngIf="tournamentForm.success" class="alert alert-success mt-2">
+    {{ tournamentForm.success }}
+  </div>
 </div>

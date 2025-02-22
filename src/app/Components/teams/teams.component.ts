@@ -25,11 +25,7 @@ export class TeamsComponent implements OnInit {
   
   currentUserId: string = '6';
 
-  newTeam = {
-    name: '',
-    shirtColor: '',
-    userId: '' as string
-  };
+  newTeam: Team = new Team();
 
   constructor(
     private teamService: TeamService,
@@ -63,13 +59,12 @@ export class TeamsComponent implements OnInit {
   }
 
   addTeam(): void {
-    if (this.newTeam.name && this.newTeam.shirtColor && this.newTeam.userId) {
-      this.teamService.addTeam({
-        teamName: this.newTeam.name,
-        shirtColor: this.newTeam.shirtColor,
-        userID: this.newTeam.userId
-      }).subscribe({
-        next: () => this.loadData(),
+    if (this.newTeam.teamName && this.newTeam.shirtColor && this.newTeam.userID) {
+      this.teamService.addTeam(this.newTeam).subscribe({
+        next: () => {
+          this.loadData();
+          this.newTeam = new Team();
+        },
         error: err => console.error('Error afegint equip:', err)
       });
     }

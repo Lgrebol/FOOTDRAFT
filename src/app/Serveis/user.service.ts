@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
 import { User } from '../Classes/user/user.model';
 
 @Injectable({
@@ -59,16 +59,24 @@ export class UserService {
     this.footcoinsSubject.next(newAmount);
   }
 
-  registerUser(username: string, email: string, password: string): Observable<any> {
+  registerUser(user: User): Observable<any> {
+    if (!user.isValidForRegistration()) {
+      return throwError(() => new Error('Invalid registration data'));
+    }
     return this.http.post(`${this.apiUrl}/register`, { 
-      username, email, password 
+      username: user.username, 
+      email: user.email, 
+      password: user.password 
     });
   }
 
-  loginUser(email: string, password: string): Observable<{ token: string }> {
+  loginUser(user: User): Observable<{ token: string }> {
+    if (!user.isValidForLogin()) {
+      return throwError(() => new Error('Invalid login data'));
+    }
     return this.http.post<{ token: string }>(
       `${this.apiUrl}/login`, 
-      { email, password }
+      { email: user.email, password: user.password }
     ).pipe(
       tap(response => {
         localStorage.setItem('authToken', response.token);
@@ -78,6 +86,8 @@ export class UserService {
   }
 
   logoutUser(): void {
+    localStorage.removeItem('authToken');
+    this.currentUserSubject.next(null);
     this.footcoinsSubject.next(0);
   }
 }

@@ -18,23 +18,7 @@ export class PlayerService {
   private fetchPlayers(): void {
     this.http.get<any[]>(this.apiUrl).subscribe(
       players => {
-        const playerInstances = players.map(p =>
-          new Player(
-            p.PlayerID,
-            p.PlayerName,
-            p.Position,
-            p.TeamID,
-            p.IsActive,
-            p.IsForSale,
-            p.Price,
-            p.Height,
-            p.Speed,
-            p.Shooting,
-            p.PlayerImage,
-            p.Points,
-            p.TeamName
-          )
-        );
+        const playerInstances = players.map(p => Player.fromApi(p));
         this.playersSubject.next(playerInstances);
       },
       error => console.error('Error fetching players:', error)
@@ -43,55 +27,27 @@ export class PlayerService {
   
   getPlayers(): Observable<Player[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
-      map(players => players.map(p =>
-        new Player(
-          p.PlayerUUID,
-          p.PlayerName,
-          p.Position,
-          p.TeamID,    
-          p.IsActive,
-          p.IsForSale,
-          p.Price,
-          p.Height,
-          p.Speed,
-          p.Shooting,
-          p.PlayerImage,
-          p.Points,
-          p.TeamName
-        )
-      ))
+      map(players => players.map(p => Player.fromApi(p)))
     );
   }
-  
   
   addPlayer(playerData: FormData): Observable<Player> {
     return this.http.post<any>(this.apiUrl, playerData).pipe(
       tap(() => this.fetchPlayers()),
-      map(p => new Player(
-        p.PlayerUUID, 
-        p.PlayerName,
-        p.Position,
-        p.TeamID,
-        p.IsActive,
-        p.IsForSale,
-        p.Price,
-        p.Height,
-        p.Speed,
-        p.Shooting,
-        p.PlayerImage,
-        p.Points,
-        p.TeamName
-      ))
+      map(p => Player.fromApi(p))
     );
   }
-  
-  getReservedPlayers(userId: string): Observable<Player[]> {
-    return this.http.get<Player[]>(`/api/players/reserved/${userId}`);
-  }  
   
   deletePlayer(playerId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${playerId}`).pipe(
       tap(() => this.fetchPlayers())
+    );
+  }
+  
+  getReservedPlayers(userId: string): Observable<Player[]> {
+    const reserveUrl = `http://localhost:3000/api/v1/reserve/${userId}`;
+    return this.http.get<any[]>(reserveUrl).pipe(
+      map(players => players.map(p => Player.fromApi(p)))
     );
   }
 }
