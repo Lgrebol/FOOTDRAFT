@@ -16,7 +16,7 @@ export const createTeam = async (req, res) => {
       .input("shirtColor", sql.VarChar, shirtColor)
       .input("userID", sql.UniqueIdentifier, userID)
       .query(
-        "INSERT INTO Teams (TeamName, ShirtColor, UserID) VALUES (@teamName, @shirtColor, @userID)"
+        "INSERT INTO Teams (TeamName, ShirtColor, UserUUID) VALUES (@teamName, @shirtColor, @userID)"
       );
     res.status(201).send({ message: "Equip creat correctament." });
   } catch (err) {
@@ -30,7 +30,7 @@ export const getTeams = async (req, res) => {
     const result = await pool.request().query(`
       SELECT T.TeamUUID, T.TeamName, T.ShirtColor, U.Name AS UserName
       FROM Teams T
-      LEFT JOIN Users U ON T.UserID = U.UserID
+      LEFT JOIN Users U ON T.UserUUID = U.UserUUID
     `);
     res.status(200).send(result.recordset);
   } catch (err) {
@@ -39,7 +39,7 @@ export const getTeams = async (req, res) => {
 };
 
 export const deleteTeam = async (req, res) => {
-  const { id } = req.params; // id és ara un UUID
+  const { id } = req.params;
 
   try {
     const pool = await connectDb();
@@ -54,8 +54,8 @@ export const deleteTeam = async (req, res) => {
 };
 
 export const addPlayerFromReserve = async (req, res) => {
-  const { teamId } = req.params; // teamId és un UUID
-  const { playerId, userID } = req.body; // playerId i userID ara són UUID
+  const { teamId } = req.params;
+  const { playerId, userID } = req.body;
 
   if (!playerId || !userID) {
     return res.status(400).send({ error: "Falten camps obligatoris: playerId i userID." });
@@ -67,9 +67,7 @@ export const addPlayerFromReserve = async (req, res) => {
       .request()
       .input("playerId", sql.UniqueIdentifier, playerId)
       .input("userID", sql.UniqueIdentifier, userID)
-      .query(
-        "SELECT * FROM Players WHERE PlayerUUID = @playerId AND ReserveUserID = @userID"
-      );
+      .query("SELECT * FROM Players WHERE PlayerUUID = @playerId AND ReserveUserUUID = @userID");
 
     if (result.recordset.length === 0) {
       return res.status(400).send({
@@ -80,7 +78,7 @@ export const addPlayerFromReserve = async (req, res) => {
     const countResult = await pool
       .request()
       .input("teamId", sql.UniqueIdentifier, teamId)
-      .query("SELECT COUNT(*) AS playerCount FROM Players WHERE TeamID = @teamId AND IsActive = 1");
+      .query("SELECT COUNT(*) AS playerCount FROM Players WHERE TeamUUID = @teamId AND IsActive = 1"); 
     const playerCount = countResult.recordset[0].playerCount;
     if (playerCount >= 5) {
       return res.status(400).send({ error: "Aquest equip ja té 5 jugadors." });
@@ -92,8 +90,8 @@ export const addPlayerFromReserve = async (req, res) => {
       .input("teamId", sql.UniqueIdentifier, teamId)
       .query(
         `UPDATE Players 
-         SET TeamID = @teamId,
-             ReserveUserID = NULL
+         SET TeamUUID = @teamId,
+             ReserveUserUUID = NULL  
          WHERE PlayerUUID = @playerId`
       );
 

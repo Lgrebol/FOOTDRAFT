@@ -17,14 +17,14 @@ export const createPlayer = async (req, res) => {
   try {
     const pool = await connectDb();
     const query = `
-      INSERT INTO Players (PlayerName, Position, TeamID, IsActive, IsForSale, Price, Height, Speed, Shooting, PlayerImage)
-      VALUES (@playerName, @position, @teamID, @isActive, @isForSale, @price, @height, @speed, @shooting, @playerImage)
+      INSERT INTO Players (PlayerName, Position, TeamUUID, IsActive, IsForSale, Price, Height, Speed, Shooting, PlayerImage)
+      VALUES (@playerName, @position, @teamUUID, @isActive, @isForSale, @price, @height, @speed, @shooting, @playerImage)
     `;
     await pool
       .request()
       .input("playerName", sql.VarChar, playerName)
       .input("position", sql.VarChar, position)
-      .input("teamID", sql.UniqueIdentifier, teamID) // Ara s'espera un UUID
+      .input("teamUUID", sql.UniqueIdentifier, teamID)
       .input("isActive", sql.Bit, isActive)
       .input("isForSale", sql.Bit, isForSale)
       .input("price", sql.Decimal(10, 2), price)
@@ -46,7 +46,7 @@ export const getPlayers = async (req, res) => {
     const result = await pool.request().query(`
       SELECT p.*, t.TeamName 
       FROM Players p
-      LEFT JOIN Teams t ON p.TeamID = t.TeamID
+      LEFT JOIN Teams t ON p.TeamUUID = t.TeamUUID
     `);
     res.status(200).json(result.recordset);
   } catch (err) {
@@ -109,7 +109,7 @@ export const getPlayersForSale = async (req, res) => {
 
 export const buyPlayer = async (req, res) => {
   const playerId = req.params.id;
-  const { userID } = req.body; // Ara s'espera que userID sigui un UUID
+  const { userID } = req.body;
 
   if (!userID) {
     return res.status(400).send({ error: "Falta el userID del comprador." });
@@ -120,9 +120,7 @@ export const buyPlayer = async (req, res) => {
     const result = await pool
       .request()
       .input("playerId", sql.UniqueIdentifier, playerId)
-      .query(
-        "SELECT * FROM Players WHERE PlayerUUID = @playerId AND IsForSale = 1 AND ReserveUserID IS NULL"
-      );
+      .query("SELECT * FROM Players WHERE PlayerUUID = @playerId AND ReserveUserUUID IS NULL");
 
     if (result.recordset.length === 0) {
       return res.status(400).send({ error: "Aquest jugador no està disponible per a la compra." });
@@ -147,7 +145,7 @@ export const buyPlayer = async (req, res) => {
       .input("userID", sql.UniqueIdentifier, userID)
       .query(`
         UPDATE Players 
-        SET ReserveUserID = @userID,
+        SET ReserveUserUUID = @userID,
             IsForSale = 0
         WHERE PlayerUUID = @playerId
       `);

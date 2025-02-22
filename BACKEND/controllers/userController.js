@@ -16,7 +16,6 @@ export const registerUsers = async (req, res) => {
   try {
     const pool = await connectDb();
     const hashedPassword = await bcrypt.hash(password, 10);
-    // Generem un UUID per l'usuari
     const userUUID = uuidv4();
 
     await pool

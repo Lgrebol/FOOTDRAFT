@@ -73,15 +73,15 @@ export const startMatchSimulationController = async (req, res) => {
     
     const pool = await connectDb();
 
-    // Obtenir els jugadors actius dels dos equips
     const homePlayersResult = await pool
-      .request()
-      .input("teamID", sql.UniqueIdentifier, match.HomeTeamID) // Ara HomeTeamID és UUID
-      .query("SELECT PlayerUUID, PlayerName FROM Players WHERE TeamID = @teamID AND IsActive = 1");
-    const awayPlayersResult = await pool
-      .request()
-      .input("teamID", sql.UniqueIdentifier, match.AwayTeamID) // Ara AwayTeamID és UUID
-      .query("SELECT PlayerUUID, PlayerName FROM Players WHERE TeamID = @teamID AND IsActive = 1");
+    .request()
+    .input("teamID", sql.UniqueIdentifier, match.HomeTeamUUID)
+    .query("SELECT PlayerUUID, PlayerName FROM Players WHERE TeamUUID = @teamID AND IsActive = 1");
+
+  const awayPlayersResult = await pool
+    .request()
+    .input("teamID", sql.UniqueIdentifier, match.AwayTeamUUID)
+    .query("SELECT PlayerUUID, PlayerName FROM Players WHERE TeamUUID = @teamID AND IsActive = 1");
 
     const homePlayers = homePlayersResult.recordset;
     const awayPlayers = awayPlayersResult.recordset;

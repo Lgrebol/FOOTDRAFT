@@ -44,6 +44,6 @@ export const registerTeamToTournament = async (teamUUID, tournamentUUID) => {
     .input("teamUUID", sql.UniqueIdentifier, teamUUID)
     .input("tournamentUUID", sql.UniqueIdentifier, tournamentUUID)
     .query(
-      "INSERT INTO Teams_Tournaments (TeamID, TournamentID) VALUES (@teamUUID, @tournamentUUID)"
+      "INSERT INTO Teams_Tournaments (TeamUUID, TournamentUUID) VALUES (@teamUUID, @tournamentUUID)"
     );
 };

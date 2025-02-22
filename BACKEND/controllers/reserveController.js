@@ -8,7 +8,7 @@ export const getReservedPlayers = async (req, res) => {
     const pool = await connectDb();
     const result = await pool.request()
       .input("userId", sql.UniqueIdentifier, userId)
-      .query("SELECT * FROM Players WHERE ReserveUserID = @userId");
+      .query("SELECT * FROM Players WHERE ReserveUserUUID = @userId");
     res.status(200).json(result.recordset);
   } catch (err) {
     res.status(500).send({ error: err.message });

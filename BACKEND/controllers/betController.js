@@ -67,25 +67,25 @@ export const loginUsers = async (req, res) => {
   }
 };
 
-export const resolveBetsForMatch = async (matchID, winningTeam) => {
+export const resolveBetsForMatch = async (matchUUID, winningTeam) => {
   try {
-    const bets = await getBetsByMatch(matchID);
-    console.log(`Resolent apostes per al partit: ${matchID} | Guanyador: ${winningTeam}`);
+    const bets = await getBetsByMatch(matchUUID);
+    console.log(`Resolent apostes per al partit: ${matchUUID} | Guanyador: ${winningTeam}`);
 
     for (const bet of bets) {
       if (bet.Status !== 'pending') continue;
 
       if (winningTeam.toLowerCase() === 'draw') {
         console.log(`EMPAT! L'usuari ${bet.UserUUID} perd ${bet.Amount} Footcoins.`);
-        await updateBetStatus(bet.BetID, 'lost', 0);
+        await updateBetStatus(bet.BetUUID, 'lost', 0);
       } else if (bet.PredictedWinner.toLowerCase() === winningTeam.toLowerCase()) {
         const winnings = bet.Amount * 4;
         console.log(`VICTÒRIA! +${winnings} Footcoins per a l'usuari ${bet.UserUUID}`);
         await updateUserFootcoins(bet.UserUUID, winnings);
-        await updateBetStatus(bet.BetID, 'won', winnings);
+        await updateBetStatus(bet.BetUUID, 'won', winnings);
       } else {
         console.log(`DERROTA. L'usuari ${bet.UserUUID} perd ${bet.Amount} Footcoins.`);
-        await updateBetStatus(bet.BetID, 'lost', 0);
+        await updateBetStatus(bet.BetUUID, 'lost', 0);
       }
     }
     return true;
@@ -97,45 +97,33 @@ export const resolveBetsForMatch = async (matchID, winningTeam) => {
 
 
 export const placeBetController = async (req, res) => {
-  // Extraiem els camps del body
-  const { matchID, homeTeamID, awayTeamID, amount, predictedWinner } = req.body;
-  // Ara obtenim el userUUID del token (ja que el middleware d'autenticació l'ha assignat a req.user)
+  const { matchUUID, homeTeamUUID, awayTeamUUID, amount, predictedWinner } = req.body;
   const userUUID = req.user.userUUID;
 
-  // Validem que tots els camps obligatoris estiguin presents.
-  // No cal validar amb "userUUID <= 0" perquè és una cadena (UUID)
-  if (
-    !userUUID ||
-    (!matchID && (!homeTeamID || !awayTeamID)) ||
-    !amount ||
-    !predictedWinner
-  ) {
+  if (!userUUID || !amount || !predictedWinner || (!matchUUID && (!homeTeamUUID || !awayTeamUUID))) {
     return res.status(400).send({ error: "Falten camps obligatoris." });
   }
 
   try {
-    // Comprovem si l'usuari té suficients footcoins
     const userCoins = await getUserFootcoins(userUUID);
     if (userCoins < amount) {
       return res.status(400).send({ error: "Footcoins insuficients." });
     }
 
-    // Dedueix immediatament la quantitat apostada
     await updateUserFootcoins(userUUID, -amount);
 
-    // Crea l'aposta. Observeu que matchID, homeTeamID i awayTeamID són ara UUIDs
-    const betID = await createBet(
+    const betUUID = await createBet(
       userUUID,
-      matchID || null,
+      matchUUID || null,
       amount,
       predictedWinner,
-      homeTeamID,
-      awayTeamID
+      homeTeamUUID,
+      awayTeamUUID
     );
 
     res.status(201).json({
       message: "Aposta realitzada correctament.",
-      betID,
+      betUUID,
       newBalance: userCoins - amount
     });
   } catch (error) {

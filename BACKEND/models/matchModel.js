@@ -9,7 +9,7 @@ export const createMatch = async (tournamentUUID, homeTeamUUID, awayTeamUUID, ma
     .input("awayTeamUUID", sql.UniqueIdentifier, awayTeamUUID)
     .input("matchDate", sql.DateTime, matchDate)
     .query(
-      `INSERT INTO Matches (TournamentID, HomeTeamID, AwayTeamID, MatchDate)
+      `INSERT INTO Matches (TournamentUUID, HomeTeamUUID, AwayTeamUUID, MatchDate)
        OUTPUT INSERTED.MatchUUID
        VALUES (@tournamentUUID, @homeTeamUUID, @awayTeamUUID, @matchDate)`
     );
@@ -20,7 +20,7 @@ export const getMatchById = async (matchUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
     .input("matchUUID", sql.UniqueIdentifier, matchUUID)
-    .query("SELECT * FROM Matches WHERE MatchUUID = @matchUUID");
+    .query("SELECT MatchUUID, HomeTeamUUID, AwayTeamUUID, HomeGoals, AwayGoals FROM Matches WHERE MatchUUID = @matchUUID");
   return result.recordset[0];
 };
 
@@ -33,7 +33,7 @@ export const addMatchEvent = async (matchUUID, playerUUID, eventType, minute, de
     .input("minute", sql.Int, minute)
     .input("description", sql.VarChar, description)
     .query(
-      `INSERT INTO MatchEvents (MatchID, PlayerID, EventType, Minute, Description)
+      `INSERT INTO MatchEvents (MatchUUID, PlayerUUID, EventType, Minute, Description)
        VALUES (@matchUUID, @playerUUID, @eventType, @minute, @description)`
     );
 };
@@ -42,7 +42,7 @@ export const getMatchEvents = async (matchUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
     .input("matchUUID", sql.UniqueIdentifier, matchUUID)
-    .query("SELECT * FROM MatchEvents WHERE MatchID = @matchUUID ORDER BY Minute");
+    .query("SELECT * FROM MatchEvents WHERE MatchUUID = @matchUUID ORDER BY Minute");
   return result.recordset;
 };
 
@@ -63,19 +63,19 @@ export const updatePlayerStatistics = async (playerUUID, goals, assists, yellowC
     .input("assists", sql.Int, assists)
     .input("yellowCards", sql.Int, yellowCards)
     .input("redCards", sql.Int, redCards)
-    .query(`UPDATE Player_Statistics 
-            SET Goals = Goals + @goals, 
-                Assists = Assists + @assists, 
-                YellowCards = YellowCards + @yellowCards, 
-                RedCards = RedCards + @redCards 
-            WHERE PlayerID = @playerUUID`);
+    .query(`UPDATE PlayerStatistics 
+      SET Goals = Goals + @goals, 
+          Assists = Assists + @assists, 
+          YellowCards = YellowCards + @yellowCards, 
+          RedCards = RedCards + @redCards 
+      WHERE PlayerUUID = @playerUUID`);
 };
 
 export const resetMatchData = async (matchUUID) => {
   const pool = await connectDb();
   await pool.request()
     .input("matchUUID", sql.UniqueIdentifier, matchUUID)
-    .query("DELETE FROM MatchEvents WHERE MatchID = @matchUUID");
+    .query("DELETE FROM MatchEvents WHERE MatchUUID = @matchUUID");
   await pool.request()
     .input("matchUUID", sql.UniqueIdentifier, matchUUID)
     .query("UPDATE Matches SET HomeGoals = 0, AwayGoals = 0 WHERE MatchUUID = @matchUUID");
