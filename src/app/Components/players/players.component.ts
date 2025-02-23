@@ -37,19 +37,32 @@ export class PlayersComponent implements OnInit {
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
-    this.newPlayer.imageFile = file;
+    if (file) {
+      console.log('Fitxer seleccionat:', file);
+      this.newPlayer.imageFile = file;
+    } else {
+      console.error('No s\'ha seleccionat cap fitxer');
+    }
+  }  
+
+addPlayer(): void {
+  if (!this.newPlayer.isValid()) {
+    alert('Si us plau, omple tots els camps obligatoris.');
+    return;
   }
 
-  addPlayer(): void {
-    const formData = this.newPlayer.toFormData();
-    this.playerService.addPlayer(formData).subscribe({
-      next: () => {
-        this.loadData();
-        this.newPlayer = new Player();
-      },
-      error: (err) => console.error('Error afegint jugador:', err)
-    });
-  }
+  const formData = this.newPlayer.toFormData();
+  this.playerService.addPlayer(formData).subscribe({
+    next: () => {
+      this.loadData();
+      this.newPlayer = new Player();
+    },
+    error: (err) => {
+      console.error('Error del servidor:', err);
+      alert(`Error al crear el jugador: ${err.error?.error || 'Error desconegut'}`);
+    }
+  });
+}
 
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({

@@ -56,8 +56,7 @@ export class Player {
     const formData = new FormData();
     formData.append('playerName', this._playerName);
     formData.append('position', this._position);
-    // Ara s'envia "teamUUID" en lloc de "teamID"
-    formData.append('teamUUID', this._teamUUID);
+    formData.append('teamID', this._teamUUID.trim());
     formData.append('isActive', this._isActive ? '1' : '0');
     formData.append('isForSale', this._isForSale ? '1' : '0');
     formData.append('price', String(this._price));
@@ -65,10 +64,54 @@ export class Player {
     formData.append('speed', String(this._speed));
     formData.append('shooting', String(this._shooting));
     if (this._imageFile) {
-      formData.append('image', this._imageFile);
+      formData.append('image', this._imageFile); // 🚨 Nom del camp canviat a 'image'
     }
     return formData;
   }
+
+  public isValid(): boolean {
+    // Validació de text
+    if (this._playerName.trim() === '') {
+      console.error('Validació: Falta el nom del jugador');
+      return false;
+    }
+    if (this._position.trim() === '') {
+      console.error('Validació: Falta la posició');
+      return false;
+    }
+    if (this._teamUUID.trim() === '') {
+      console.error('Validació: Falta l’identificador de l’equip');
+      return false;
+    }
+  
+    // Validació numèrica
+    const numericFields = [
+      { value: this._price, name: 'preu' },
+      { value: this._height, name: 'alçada' },
+      { value: this._speed, name: 'velocitat' },
+      { value: this._shooting, name: 'dispar' }
+    ];
+  
+    for (const field of numericFields) {
+      if (field.value === null || field.value === undefined) {
+        console.error(`Validació: Falta el ${field.name}`);
+        return false;
+      }
+      if (isNaN(field.value)) {
+        console.error(`Validació: El ${field.name} no és un número vàlid`);
+        return false;
+      }
+    }
+  
+    // Validació d'imatge
+    if (!this._imageFile) {
+      console.error('Validació: Falta la imatge');
+      return false;
+    }
+  
+    return true;
+  }
+  
 
   static fromApi(data: any): Player {
     return new Player(

@@ -4,39 +4,59 @@ import connectDb from "../config/db.js";
 export const createPlayer = async (req, res) => {
   const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
   
+  // Validació d'imatge obligatòria
   if (!req.file) {
     return res.status(400).send({ error: "Cal pujar una imatge." });
   }
-  
-  if (!playerName || !position || !teamID) {
-    return res.status(400).send({ error: "Falten camps obligatoris." });
+
+  // Validació de camps buits amb missatges detallats
+  const missingFields = [];
+  if (!playerName?.trim()) missingFields.push('playerName');
+  if (!position?.trim()) missingFields.push('position');
+  if (!teamID?.trim()) missingFields.push('teamID');
+  if (missingFields.length > 0) {
+    return res.status(400).send({ 
+      error: `Falten camps obligatoris: ${missingFields.join(', ')}`,
+      campsRebuts: req.body 
+    });
   }
-  
+
+  // Convertir imatge a Base64
   const imageBase64 = req.file.buffer.toString('base64');
-  
+
   try {
     const pool = await connectDb();
     const query = `
-      INSERT INTO Players (PlayerName, Position, TeamUUID, IsActive, IsForSale, Price, Height, Speed, Shooting, PlayerImage)
-      VALUES (@playerName, @position, @teamUUID, @isActive, @isForSale, @price, @height, @speed, @shooting, @playerImage)
+      INSERT INTO Players (
+        PlayerName, Position, TeamUUID, IsActive, 
+        IsForSale, Price, Height, Speed, Shooting, PlayerImage
+      ) VALUES (
+        @playerName, @position, @teamUUID, 
+        @isActive, @isForSale, @price, @height, 
+        @speed, @shooting, @playerImage
+      )
     `;
-    await pool
-      .request()
+    
+    await pool.request()
       .input("playerName", sql.VarChar, playerName)
       .input("position", sql.VarChar, position)
       .input("teamUUID", sql.UniqueIdentifier, teamID)
-      .input("isActive", sql.Bit, isActive)
-      .input("isForSale", sql.Bit, isForSale)
-      .input("price", sql.Decimal(10, 2), price)
-      .input("height", sql.Int, height)
-      .input("speed", sql.Int, speed)
-      .input("shooting", sql.Int, shooting)
+      .input("isActive", sql.Bit, isActive === '1' ? 1 : 0)
+      .input("isForSale", sql.Bit, isForSale === '1' ? 1 : 0)
+      .input("price", sql.Decimal(10, 2), parseFloat(price))
+      .input("height", sql.Int, parseInt(height))
+      .input("speed", sql.Int, parseInt(speed))
+      .input("shooting", sql.Int, parseInt(shooting))
       .input("playerImage", sql.VarChar(sql.MAX), imageBase64)
       .query(query);
-      
+
     res.status(201).send({ message: "Jugador creat correctament." });
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    res.status(500).send({ 
+      error: "Error al crear el jugador",
+      detalls: err.message,
+      query: err.query 
+    });
   }
 };
 
@@ -74,7 +94,7 @@ export const getPlayersForSale = async (req, res) => {
     const pool = await connectDb();
     let query = `
       SELECT * FROM Players 
-      WHERE IsForSale = 1 AND ReserveUserID IS NULL
+      WHERE IsForSale = 1 AND ReserveUserUUID IS NULL
     `;
 
     const { search, minPrice, maxPrice } = req.query;

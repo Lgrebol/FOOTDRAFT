@@ -140,13 +140,14 @@
       </div>
       
       <!-- Pujar imatge -->
-      <div class="form-group">
-        <label for="image">Imatge del jugador:</label>
-        <input id="image" type="file"
-               (change)="onFileSelected($event)"
-               required
-               aria-required="true" />
-      </div>
+<div class="form-group">
+  <label for="image">Imatge del jugador:</label>
+  <input id="image" type="file"
+         (change)="onFileSelected($event)"
+         name="image"
+         required
+         aria-required="true" />
+</div>
       <button type="submit">Afegir Jugador</button>
     </form>
   </div>
