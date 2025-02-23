@@ -42,13 +42,18 @@ export class Team {
     return `${this._teamName} - ${this._shirtColor}`;
   }
 
-  toPayload(): { teamName: string; shirtColor: string; userUUID: string } {
+  toPayload(): { 
+    teamName: string; 
+    shirtColor: string; 
+    userID: string  // 🚨 Canviar userUUID per userID 
+  } {
     return {
       teamName: this._teamName,
       shirtColor: this._shirtColor,
-      userUUID: this._userUUID
+      userID: this._userUUID // Map correcte del camp
     };
   }
+
 
   static fromApi(data: any): Team {
     return new Team(

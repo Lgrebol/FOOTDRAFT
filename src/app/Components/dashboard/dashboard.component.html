@@ -1,35 +1,36 @@
+<h2 class="dashboard-title">🏆 Dashboard Global</h2>
 <div class="dashboard-container">
-  <h2 class="dashboard-title">🏆 Dashboard Global</h2>
-  
-  <div *ngIf="dashboardStats?.loading">Loading...</div>
+
+
+  <div *ngIf="dashboardStats?.loading" class="loading">Carregant...</div>
   <div *ngIf="dashboardStats?.error" class="error">{{ dashboardStats.error }}</div>
-  
-  <div class="stats-grid" *ngIf="!dashboardStats?.loading && !dashboardStats?.error">
-    <div class="stat-card">
+
+  <div class="football-field" *ngIf="!dashboardStats?.loading && !dashboardStats?.error">
+    <div class="stat-card top-left">
       <div class="stat-icon">⚽</div>
       <h3 class="stat-title">Equips</h3>
       <p class="stat-value">{{ dashboardStats.totalTeams }}</p>
     </div>
 
-    <div class="stat-card">
+    <div class="stat-card top-right">
       <div class="stat-icon">👤</div>
       <h3 class="stat-title">Jugadors</h3>
       <p class="stat-value">{{ dashboardStats.totalPlayers }}</p>
     </div>
 
-    <div class="stat-card">
+    <div class="stat-card center">
       <div class="stat-icon">🏟️</div>
       <h3 class="stat-title">Torneigs</h3>
       <p class="stat-value">{{ dashboardStats.totalTournaments }}</p>
     </div>
 
-    <div class="stat-card">
+    <div class="stat-card bottom-left">
       <div class="stat-icon">🥅</div>
       <h3 class="stat-title">Gols</h3>
       <p class="stat-value">{{ dashboardStats.totalGoals }}</p>
     </div>
 
-    <div class="stat-card">
+    <div class="stat-card bottom-right">
       <div class="stat-icon">⏱️</div>
       <h3 class="stat-title">Partits</h3>
       <p class="stat-value">{{ dashboardStats.totalMatches }}</p>

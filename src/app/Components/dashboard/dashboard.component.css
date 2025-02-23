@@ -1,51 +1,78 @@
-.dashboard {
+.dashboard-container {
+  max-width: 800px;
+  margin: 30px auto;
   padding: 20px;
-  background: #eaeaea;
-  border-radius: 8px;
-  margin: 20px auto;
-  max-width: 500px;
   text-align: center;
+  font-family: 'Roboto', sans-serif;
+  background: #2c3e50;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.dashboard h2 {
+.dashboard-title {
+  font-size: 28px;
   margin-bottom: 20px;
 }
 
-.dashboard p {
-  font-size: 1.1rem;
-  margin: 10px 0;
+/* Camp de futbol centrat */
+.football-field {
+  background: #006400;
+  border: 5px solid white;
+  border-radius: 10px;
+  padding: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
 }
 
-/* dashboard.component.css */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
-}
-
+/* Targetes de les estadístiques */
 .stat-card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
-.stat-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+.stat-icon {
+  font-size: 40px;
+}
+
+.stat-title {
+  font-size: 18px;
+  margin-top: 10px;
+  color: #333;
 }
 
 .stat-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #27ae60;
+}
+
+/* Distribució més espaiada */
+.top-left, .top-right, .center, .bottom-left, .bottom-right {
+  position: relative;
+  margin: 10px;
+}
+
+/* Animació de càrrega */
+.loading {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffeb3b;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
 }

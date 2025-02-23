@@ -73,13 +73,28 @@ export const loginUsers = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const pool = await connectDb();
-    const result = await pool
-      .request()
-      .query("SELECT UserUUID, Name AS UserName FROM Users");
+    const result = await pool.request().query(`
+      SELECT 
+        UserUUID,
+        COALESCE(Name, Email) AS username,
+        Email,
+        Footcoins
+      FROM Users
+    `);
+    
+    const users = result.recordset.map(user => ({
+      UserUUID: user.UserUUID,
+      username: user.username,
+      Email: user.Email,
+      Footcoins: user.Footcoins
+    }));
 
-    res.status(200).json(result.recordset);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Error fetching users" });
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).send({ 
+      error: "Error obtenint usuaris",
+      detalls: err.message 
+    });
   }
 };
+

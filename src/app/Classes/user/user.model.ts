@@ -23,6 +23,19 @@ export class User {
   set password(value: string | undefined) { this._password = value; }
   set confirmPassword(value: string | undefined) { this._confirmPassword = value; }
 
+  displayLabel(): string {
+    return `${this._username} (${this._email})`;
+  }
+
+static fromApi(data: any): User {
+  return new User(
+    data.UserUUID,
+    data.username || data.Email?.split('@')[0] || 'Usuari', 
+    data.Email || 'Sense email',
+    data.Footcoins
+  );
+}
+
   // Validació d'email bàsica
   isValidEmail(): boolean {
     return this._email.includes('@');

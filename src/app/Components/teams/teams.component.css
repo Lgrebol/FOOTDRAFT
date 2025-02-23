@@ -1,6 +1,6 @@
 /* Contenidor principal */
 .teams-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 30px auto;
   padding: 20px;
   font-family: 'Roboto', sans-serif;
@@ -8,6 +8,7 @@
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
+
 /* Títols */
 h1, h2 {
   text-align: center;
@@ -15,11 +16,11 @@ h1, h2 {
   margin-bottom: 20px;
 }
 
-/* Llista d'equips en mode targeta */
+/* Contenidor de les targetes d'equips (mostra de costat) */
 .teams-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px;  /* Augmentem l'espai entre targetes */
+  gap: 30px;
   justify-content: center;
   margin-bottom: 30px;
 }
@@ -28,19 +29,20 @@ h1, h2 {
 .team-card {
   background: #fff;
   border-radius: 8px;
-  width: 280px;
+  width: 300px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
 }
 
 .team-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Capçalera de la targeta amb verds */
+/* Capçalera de la targeta */
 .team-header {
   background-color: #004D00;
   padding: 15px;
@@ -79,7 +81,7 @@ h1, h2 {
   background-color: #2e7d32;
 }
 
-/* Formularis (crear equip i assignar jugador) */
+/* Formularis per crear equip i assignar jugador */
 .team-form, .assign-section {
   background: #fff;
   padding: 20px;
@@ -88,6 +90,13 @@ h1, h2 {
   margin-bottom: 30px;
 }
 
+/* Títols dins dels formularis */
+.team-form h2, .assign-section h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+/* Grup de formulari */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -115,7 +124,7 @@ h1, h2 {
   outline: none;
 }
 
-/* Botons del formulari */
+/* Botons dels formularis */
 .team-form button,
 .assign-section button {
   width: 100%;
@@ -132,4 +141,14 @@ h1, h2 {
 .team-form button:hover,
 .assign-section button:hover {
   background-color: #43a047;
+}
+
+/* Aliniació dels selects en la secció d'assignació */
+.assign-group {
+  display: flex;
+  gap: 20px;
+}
+
+.assign-group select {
+  flex: 1;
 }

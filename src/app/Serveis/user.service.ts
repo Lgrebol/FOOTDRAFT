@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { User } from '../Classes/user/user.model';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class UserService {
   private apiUrl = 'http://localhost:3000/api/v1';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private footcoinsSubject = new BehaviorSubject<number>(0);
+  private usersSubject = new BehaviorSubject<User[]>([]);
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +29,10 @@ export class UserService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}/users`);
+    return this.http.get<any[]>(`${this.apiUrl}/users`).pipe(
+      map(users => users.map(u => User.fromApi(u))),
+      tap(users => this.usersSubject.next(users))
+    );
   }
   
   getFootcoinsUpdates(): Observable<number> {

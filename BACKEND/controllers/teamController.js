@@ -2,25 +2,33 @@ import sql from "mssql";
 import connectDb from "../config/db.js";
 
 export const createTeam = async (req, res) => {
-  const { teamName, shirtColor, userID } = req.body;
-
-  if (!teamName || !shirtColor || !userID) {
-    return res.status(400).send({ error: "Falten camps obligatoris." });
+  // Validació millorada
+  const requiredFields = ['teamName', 'shirtColor', 'userID'];
+  const missingFields = requiredFields.filter(field => !req.body[field]);
+  
+  if (missingFields.length > 0) {
+    return res.status(400).send({ 
+      error: `Falten camps: ${missingFields.join(', ')}`,
+      campsRebuts: req.body 
+    });
   }
 
   try {
     const pool = await connectDb();
-    await pool
-      .request()
-      .input("teamName", sql.VarChar, teamName)
-      .input("shirtColor", sql.VarChar, shirtColor)
-      .input("userID", sql.UniqueIdentifier, userID)
-      .query(
-        "INSERT INTO Teams (TeamName, ShirtColor, UserUUID) VALUES (@teamName, @shirtColor, @userID)"
-      );
+    await pool.request()
+      .input("teamName", sql.VarChar, req.body.teamName)
+      .input("shirtColor", sql.VarChar, req.body.shirtColor)
+      .input("userID", sql.UniqueIdentifier, req.body.userID)
+      .query("INSERT INTO Teams (TeamName, ShirtColor, UserUUID) VALUES (@teamName, @shirtColor, @userID)");
+    
     res.status(201).send({ message: "Equip creat correctament." });
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    console.error("Error creant equip:", {
+      query: err.query,
+      params: req.body,
+      error: err.message
+    });
+    res.status(500).send({ error: "Error intern del servidor" });
   }
 };
 
@@ -61,6 +69,13 @@ export const addPlayerFromReserve = async (req, res) => {
   
   if (!uuidRegex.test(teamId) || !uuidRegex.test(playerId) || !uuidRegex.test(userID)) {
     return res.status(400).send({ error: "IDs invàlids" });
+  }
+
+  if (![teamId, playerId, userID].every(id => uuidRegex.test(id))) {
+    return res.status(400).send({ 
+      error: "Format d'ID invàlid",
+      exempleValid: "123e4567-e89b-12d3-a456-426614174000"
+    });
   }
   
   if (!playerId || !userID) {

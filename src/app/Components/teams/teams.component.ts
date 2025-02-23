@@ -39,7 +39,12 @@ export class TeamsComponent implements OnInit {
 
   private loadData(): void {
     this.teamService.getTeams().subscribe(teams => this.teams = teams);
-    this.userService.getUsers().subscribe(users => this.users = users);
+    
+    this.userService.getUsers().subscribe({
+      next: users => this.users = users,
+      error: error => console.error('Error carregant usuaris:', error)
+    });
+  
     this.playerService.getReservedPlayers(this.currentUserId).subscribe(
       players => this.reservedPlayers = players
     );
