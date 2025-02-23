@@ -19,9 +19,8 @@ export class Match {
   ) {}
 
   get id(): string { return this._id; }
-  get homeTeamUUID(): string { return this._homeTeamUUID; } 
-  get awayTeamUUID(): string { return this._awayTeamUUID; } 
-  get matchUUID(): string { return this._id; }
+  get homeTeamUUID(): string { return this._homeTeamUUID; }
+  get awayTeamUUID(): string { return this._awayTeamUUID; }
   get homeGoals(): number { return this._homeGoals; }
   get awayGoals(): number { return this._awayGoals; }
   get currentMinute(): number { return this._currentMinute; }
@@ -59,7 +58,15 @@ export class Match {
     };
   }
 
+  // Crea una instància de Match a partir de les dades rebudes de l'API
   static fromApi(data: any): Match {
+    const events = (data.events || []).map((e: any) => ({
+      minute: e.minute || e.Minute,
+      eventType: e.eventType || e.EventType,
+      description: e.description || e.Description,
+      team: e.team || e.Team || ''
+    }));
+    
     return new Match(
       data.MatchUUID || data.id,
       data.HomeTeamUUID,
@@ -69,7 +76,56 @@ export class Match {
       data.CurrentMinute,
       data.TournamentUUID,
       data.MatchDate,
-      data.events || []
+      events
     );
+  }
+
+  // Crea una nova instància per enviar al servidor
+  static createNew(tournamentUUID: string, homeTeamUUID: string, awayTeamUUID: string, matchDate: Date): Match {
+    return new Match(
+      '', // L'id es generarà al servidor
+      homeTeamUUID,
+      awayTeamUUID,
+      0,
+      0,
+      0,
+      tournamentUUID,
+      matchDate.toISOString(),
+      []
+    );
+  }
+
+  // Objecte per la creació del partit
+  toApi(): any {
+    return {
+      tournamentUUID: this._tournamentUUID,
+      homeTeamUUID: this._homeTeamUUID,
+      awayTeamUUID: this._awayTeamUUID,
+      matchDate: this._matchDate
+    };
+  }
+
+  // Objecte per generar una aposta a partir del partit
+  toBetApi(betAmount: number, predictedWinner: string, homeTeamUUID: string, awayTeamUUID: string): any {
+    return {
+      matchUUID: this._id,
+      homeTeamUUID: homeTeamUUID,
+      awayTeamUUID: awayTeamUUID,
+      amount: betAmount,
+      predictedWinner: predictedWinner
+    };
+  }
+
+  // Actualitza l'estat del partit amb les dades rebudes de l'API
+  updateFromApi(data: any): void {
+    this._homeGoals = data.HomeGoals;
+    this._awayGoals = data.AwayGoals;
+    this._currentMinute = data.CurrentMinute;
+    this._events = (data.events || []).map((e: any) => ({
+      minute: e.minute || e.Minute,
+      eventType: e.eventType || e.EventType,
+      description: e.description || e.Description,
+      team: e.team || e.Team || ''
+    }));
   }
 }

@@ -43,6 +43,13 @@ export class MatchComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Accepta també undefined i retorna un valor per defecte
+  getTeamName(teamUUID: string | undefined): string {
+    if (!teamUUID) return 'Equip Desconegut';
+    const team = this.teams.find(t => t.teamUUID === teamUUID);
+    return team?.teamName || 'Equip Desconegut';
+  }
+
   canStartMatch(): boolean {
     return !!(
       this.selectedHomeTeam &&
@@ -55,32 +62,28 @@ export class MatchComponent implements OnInit, OnDestroy {
   startMatch(): void {
     if (!this.canStartMatch()) return;
 
-    const newMatch = {
-      tournamentUUID: '8',
-      homeTeamUUID: this.selectedHomeTeam!,
-      awayTeamUUID: this.selectedAwayTeam!,
-      matchDate: new Date()
-    };
+    // Creem una nova instància de Match
+    const newMatch = Match.createNew(
+      '7E405744-880B-4D33-84A1-FCEB95C076A5',
+      this.selectedHomeTeam!,
+      this.selectedAwayTeam!,
+      new Date()
+    );
 
     this.matchService.createMatch(newMatch).subscribe({
       next: (res: any) => {
-        const matchUUID = res.matchUUID;
+        const matchID = res.matchID;
         this.matchStarted = true;
-        this.startPolling(matchUUID);
-        this.simulateMatch(matchUUID);
+        this.startPolling(matchID);
+        this.simulateMatch(matchID);
       },
       error: (error) => console.error('Error creant partit:', error)
     });
   }
 
-  getTeamName(teamUUID: string): string {
-    const team = this.teams.find(t => t.teamUUID === teamUUID);
-    return team?.teamName || 'Equip Desconegut';
-  }
-
-  private startPolling(matchUUID: string): void {
+  private startPolling(matchID: string): void {
     this.pollingSubscription = interval(1000).subscribe(() => {
-      this.matchService.getMatch(matchUUID).subscribe({
+      this.matchService.getMatch(matchID).subscribe({
         next: (match) => {
           this.match = match;
           if (match.isMatchEnded()) {
@@ -98,8 +101,8 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.pollingSubscription?.unsubscribe();
   }
 
-  simulateMatch(matchUUID: string): void {
-    this.matchService.simulateMatch(matchUUID).subscribe({
+  simulateMatch(matchID: string): void {
+    this.matchService.simulateMatch(matchID).subscribe({
       next: () => console.log('Simulació completada'),
       error: (error) => console.error('Error en simulació:', error)
     });
@@ -108,7 +111,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   resetMatch(): void {
     if (!this.match) return;
 
-    this.matchService.resetMatch(this.match!.id).subscribe({
+    this.matchService.resetMatch(this.match.id).subscribe({
       next: () => {
         this.resetComponentState();
         this.loadTeams();
@@ -128,15 +131,15 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   placeBet(): void {
     if (!this.selectedHomeTeam || !this.selectedAwayTeam || !this.match) return;
-  
-    const betData = {
-      matchUUID: this.match!.id,
-      homeTeamUUID: this.selectedHomeTeam,
-      awayTeamUUID: this.selectedAwayTeam,
-      amount: this.betAmount,
-      predictedWinner: this.predictedWinner
-    };
-  
+
+    // Generem l'objecte d'aposta a partir de la instància de Match
+    const betData = this.match.toBetApi(
+      this.betAmount,
+      this.predictedWinner,
+      this.selectedHomeTeam,
+      this.selectedAwayTeam
+    );
+
     this.matchService.placeBet(betData).subscribe({
       next: () => alert('Aposta realitzada amb èxit!'),
       error: (error) => alert(error.error?.error || "Error en l'aposta")

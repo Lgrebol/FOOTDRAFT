@@ -1,3 +1,4 @@
+// matchModel.js
 import connectDb from "../config/db.js";
 import sql from "mssql";
 
@@ -20,15 +21,25 @@ export const getMatchById = async (matchUUID) => {
   const pool = await connectDb();
   const result = await pool.request()
     .input("matchUUID", sql.UniqueIdentifier, matchUUID)
-    .query("SELECT MatchUUID, HomeTeamUUID, AwayTeamUUID, HomeGoals, AwayGoals FROM Matches WHERE MatchUUID = @matchUUID");
+    .query("SELECT MatchUUID, TournamentUUID, HomeTeamUUID, AwayTeamUUID, HomeGoals, AwayGoals, MatchDate, CurrentMinute FROM Matches WHERE MatchUUID = @matchUUID");
   return result.recordset[0];
 };
 
 export const addMatchEvent = async (matchUUID, playerUUID, eventType, minute, description) => {
   const pool = await connectDb();
+  let validPlayerUUID = playerUUID;
+  if (eventType === "Break" && playerUUID === '00000000-0000-0000-0000-000000000000') {
+    const result = await pool.request()
+      .input("matchUUID", sql.UniqueIdentifier, matchUUID)
+      .query("SELECT TOP 1 PlayerUUID FROM Players WHERE IsActive = 1");
+    if (result.recordset.length > 0) {
+      validPlayerUUID = result.recordset[0].PlayerUUID;
+    }
+  }
+  
   await pool.request()
     .input("matchUUID", sql.UniqueIdentifier, matchUUID)
-    .input("playerUUID", sql.UniqueIdentifier, playerUUID)
+    .input("playerUUID", sql.UniqueIdentifier, validPlayerUUID)
     .input("eventType", sql.VarChar, eventType)
     .input("minute", sql.Int, minute)
     .input("description", sql.VarChar, description)
@@ -78,5 +89,5 @@ export const resetMatchData = async (matchUUID) => {
     .query("DELETE FROM MatchEvents WHERE MatchUUID = @matchUUID");
   await pool.request()
     .input("matchUUID", sql.UniqueIdentifier, matchUUID)
-    .query("UPDATE Matches SET HomeGoals = 0, AwayGoals = 0 WHERE MatchUUID = @matchUUID");
+    .query("UPDATE Matches SET HomeGoals = 0, AwayGoals = 0, CurrentMinute = 0 WHERE MatchUUID = @matchUUID");
 };

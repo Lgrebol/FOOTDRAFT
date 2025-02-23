@@ -54,38 +54,38 @@
   </div>
 
   <!-- Partit en curs -->
-  <div class="match-display" *ngIf="matchStarted && !matchSummary?.matchEnded">
+  <div class="match-display" *ngIf="matchStarted && match && !matchSummary?.matchEnded">
     <div class="scoreboard">
       <div class="team local">
-        <h3>{{ getTeamName(match!.homeTeamUUID) || 'Equip Local' }}</h3>
-        <div class="score">{{ match?.homeGoals || 0 }}</div>
+        <h3>{{ getTeamName(match.homeTeamUUID) || 'Equip Local' }}</h3>
+        <div class="score">{{ match.homeGoals || 0 }}</div>
       </div>
       
       <div class="match-info">
-        <div class="minute">{{ match?.currentMinute || 0 }}'</div>
+        <div class="minute">{{ match.currentMinute || 0 }}'</div>
         <div class="vs">VS</div>
       </div>
       
       <div class="team visitor">
-        <h3>{{ getTeamName(match!.awayTeamUUID) || 'Equip Visitant' }}</h3>
-        <div class="score">{{ match?.awayGoals || 0 }}</div>
+        <h3>{{ getTeamName(match.awayTeamUUID) || 'Equip Visitant' }}</h3>
+        <div class="score">{{ match.awayGoals || 0 }}</div>
       </div>
     </div>
 
     <div class="events-log">
       <h4>📝 Esdeveniments</h4>
-      <div class="event-card" *ngFor="let event of match?.events">
+      <div class="event-card" *ngFor="let event of match.events">
         <div class="event-time">{{ event.minute }}'</div>
         <div class="event-description">{{ event.description }}</div>
       </div>
-      <div *ngIf="!match?.events?.length" class="no-events">
+      <div *ngIf="!match.events?.length" class="no-events">
         Encara no hi ha esdeveniments
       </div>
     </div>
   </div>
 
   <!-- Resum final -->
-  <div class="match-summary" *ngIf="matchSummary?.matchEnded">
+  <div class="match-summary" *ngIf="match && matchSummary?.matchEnded">
     <h2>🏆 PARTIT FINALITZAT 🏆</h2>
     
     <div class="stats-container">
@@ -93,11 +93,11 @@
       <div class="stat-card main-score">
         <h3>Marcador Final</h3>
         <div class="final-score">
-          <span class="team">{{ getTeamName(match!.homeTeamUUID) }}</span>
+          <span class="team">{{ getTeamName(match.homeTeamUUID) }}</span>
           <span class="goals-spacer">{{ matchSummary.homeGoals }}</span>
           <span class="separator">-</span>
           <span class="goals-spacer">{{ matchSummary.awayGoals }}</span>
-          <span class="team">{{ getTeamName(match!.awayTeamUUID) }}</span>
+          <span class="team">{{ getTeamName(match.awayTeamUUID) }}</span>
         </div>
       </div>
   
