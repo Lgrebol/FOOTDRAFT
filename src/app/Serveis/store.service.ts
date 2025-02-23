@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import { Player } from '../Classes/players/player.model';
 
 @Injectable({
@@ -15,28 +15,21 @@ export class StoreService {
     this.fetchStorePlayers();
   }
 
+  private isValidUUID(uuid: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  }
+
   private fetchStorePlayers(params?: HttpParams): void {
     this.http.get<any[]>(`${this.apiUrl}/store`, { params }).pipe(
-      map((players: any[]) => players.map(p =>
-        new Player(
-          p.PlayerUUID,
-          p.PlayerName,
-          p.Position,
-          p.TeamUUID,
-          p.IsActive,
-          p.IsForSale,
-          p.Price,
-          p.Height,
-          p.Speed,
-          p.Shooting,
-          p.PlayerImage,
-          p.Points,
-          p.TeamName
-        )
-      ))
+      map(players => players.map(p => Player.fromApi(p))),
+      catchError(error => {
+        console.error('Error obtenint jugadors:', error);
+        return throwError(() => new Error('Error carregant jugadors'));
+      })
     ).subscribe({
-      next: (players: Player[]) => this.storePlayersSubject.next(players),
-      error: (error: any) => console.error('Error fetching store players:', error)
+      next: (players) => this.storePlayersSubject.next(players),
+      error: (error) => console.error(error)
     });
   }
 
@@ -46,16 +39,24 @@ export class StoreService {
 
   refreshStorePlayers(searchTerm?: string, minPrice?: number, maxPrice?: number): void {
     let params = new HttpParams();
-    if (searchTerm) { params = params.set('search', searchTerm); }
-    if (minPrice) { params = params.set('minPrice', minPrice); }
-    if (maxPrice) { params = params.set('maxPrice', maxPrice); }
+    if (searchTerm) params = params.set('search', searchTerm);
+    if (minPrice) params = params.set('minPrice', minPrice);
+    if (maxPrice) params = params.set('maxPrice', maxPrice);
     
     this.fetchStorePlayers(params);
   }
 
   buyPlayer(playerUUID: string, userUUID: string): Observable<any> {
+    if (!this.isValidUUID(playerUUID) || !this.isValidUUID(userUUID)) {
+      return throwError(() => new Error('ID invàlid'));
+    }
+
     return this.http.post(`${this.apiUrl}/buy/${playerUUID}`, { userID: userUUID }).pipe(
-      tap(() => this.fetchStorePlayers())
+      tap(() => this.refreshStorePlayers()),
+      catchError(error => {
+        console.error('Error en la compra:', error);
+        return throwError(() => error);
+      })
     );
   }
 }

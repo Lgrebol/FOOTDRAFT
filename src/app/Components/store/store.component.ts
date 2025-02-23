@@ -13,7 +13,7 @@ import { StoreModel } from '../../Classes/store/store.model';
 })
 export class StoreComponent implements OnInit {
   storeModel: StoreModel = new StoreModel();
-  currentUserUUID: string = '6';
+  currentUserUUID: string = '97C72798-B79D-4248-AC5C-11457F2E38AC';
 
   constructor(private storeService: StoreService) {}
 

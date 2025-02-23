@@ -29,7 +29,7 @@
            alt="{{ player.playerName }}">
       <div class="player-name">{{ player.playerName }}</div>
       <div class="player-info">Posició: {{ player.position }}</div>
-      <div class="player-info">Preu: {{ player.price }}€</div>
+      <div class="player-info">Preu: {{ player.price | currency:'EUR' }}</div>
       
       <div class="stats-container">
         <div class="stat">
@@ -45,14 +45,20 @@
           <div>Velocitat</div>
         </div>
       </div>
-      <button class="buy-button" (click)="buyPlayer(player.playerUUID)">Comprar</button>
+      <button 
+        class="buy-button" 
+        (click)="buyPlayer(player.playerUUID)"
+        [disabled]="storeModel.loading">
+        {{ storeModel.loading ? 'Processant...' : 'Comprar' }}
+      </button>
     </div>
   </div>
-  
+
   <div *ngIf="storeModel.error" class="alert alert-danger mt-2">
-    {{ storeModel.error }}
+    ⚠️ {{ storeModel.error }}
   </div>
+  
   <div *ngIf="storeModel.success" class="alert alert-success mt-2">
-    {{ storeModel.success }}
+    ✅ {{ storeModel.success }}
   </div>
 </div>
