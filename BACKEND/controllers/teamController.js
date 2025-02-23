@@ -57,6 +57,12 @@ export const addPlayerFromReserve = async (req, res) => {
   const { teamId } = req.params;
   const { playerId, userID } = req.body;
 
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  
+  if (!uuidRegex.test(teamId) || !uuidRegex.test(playerId) || !uuidRegex.test(userID)) {
+    return res.status(400).send({ error: "IDs invàlids" });
+  }
+  
   if (!playerId || !userID) {
     return res.status(400).send({ error: "Falten camps obligatoris: playerId i userID." });
   }

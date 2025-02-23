@@ -190,7 +190,7 @@ export const buyPlayer = async (req, res) => {
       await transaction.request()
         .input("userID", sql.UniqueIdentifier, userID)
         .input("amount", sql.Decimal(18,2), -playerPrice)
-        .query("UPDATE Users SET Footcoins += @amount WHERE UserUUID = @userID");
+        .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserUUID = @userID");
 
       await transaction.commit();
       res.status(200).send({ message: "Compra realitzada amb èxit" });

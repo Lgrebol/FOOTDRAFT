@@ -42,7 +42,7 @@
         required>
         <option value="" disabled selected>Selecciona un usuari</option>
         <option *ngFor="let user of users" [value]="user.userUUID">
-          {{ user.username }}
+          {{ user.username }} ({{ user.userUUID }})
         </option>
       </select>
     </div>

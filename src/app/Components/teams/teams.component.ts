@@ -23,7 +23,7 @@ export class TeamsComponent implements OnInit {
   selectedTeamId: string | null = null;
   selectedPlayerId: string | null = null;
   
-  currentUserId: string = '6';
+  currentUserId: string = '97C72798-B79D-4248-AC5C-11457F2E38AC';
 
   newTeam: Team = new Team();
 
