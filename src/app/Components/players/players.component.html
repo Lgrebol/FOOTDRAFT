@@ -25,10 +25,10 @@
     </div>
   </div>
 
+  <!-- Formulari per afegir jugador -->
   <div class="form-container">
     <h2>Afegir Jugador</h2>
     <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
-      <!-- Nom -->
       <div class="form-group">
         <label for="name">Nom:</label>
         <input id="name" type="text"
@@ -40,7 +40,6 @@
         <small id="name-desc">Introdueix el nom complet del jugador.</small>
       </div>
       
-      <!-- Posició -->
       <div class="form-group">
         <label for="position">Posició:</label>
         <select id="position"
@@ -55,7 +54,6 @@
         </select>
       </div>
       
-      <!-- Equip -->
       <div class="form-group">
         <label for="team">Equip:</label>
         <select id="team"
@@ -70,7 +68,6 @@
         </select>
       </div>
       
-      <!-- Preu --> 
       <div class="form-group">
         <label for="price">Preu (€):</label>
         <input id="price" type="number"
@@ -80,7 +77,6 @@
                aria-required="true" />
       </div>
       
-      <!-- Alçada -->
       <div class="form-group">
         <label for="height">Alçada (cm):</label>
         <input id="height" type="number"
@@ -90,7 +86,6 @@
                aria-required="true" />
       </div>
       
-      <!-- Velocitat -->
       <div class="form-group">
         <label for="speed">Velocitat:</label>
         <input id="speed" type="number"
@@ -100,7 +95,6 @@
                aria-required="true" />
       </div>
       
-      <!-- Dispar -->
       <div class="form-group">
         <label for="shooting">Dispar:</label>
         <input id="shooting" type="number"
@@ -110,7 +104,6 @@
                aria-required="true" />
       </div>
       
-      <!-- En venda (radio buttons) -->
       <fieldset class="form-group">
         <legend>En venda:</legend>
         <div>
@@ -131,7 +124,6 @@
         </div>
       </fieldset>
       
-      <!-- Està actiu (checkbox) -->
       <div class="form-group">
         <input id="isActive" type="checkbox"
                [(ngModel)]="newPlayer.isActive"
@@ -139,15 +131,14 @@
         <label for="isActive">Està actiu</label>
       </div>
       
-      <!-- Pujar imatge -->
-<div class="form-group">
-  <label for="image">Imatge del jugador:</label>
-  <input id="image" type="file"
-         (change)="onFileSelected($event)"
-         name="image"
-         required
-         aria-required="true" />
-</div>
+      <div class="form-group">
+        <label for="image">Imatge del jugador:</label>
+        <input id="image" type="file"
+               (change)="onFileSelected($event)"
+               name="image"
+               required
+               aria-required="true" />
+      </div>
       <button type="submit">Afegir Jugador</button>
     </form>
   </div>

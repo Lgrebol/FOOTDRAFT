@@ -4,6 +4,17 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { FormsModule } from '@angular/forms';
 import { interval } from 'rxjs';
 import { Match } from '../Classes/match/match.model';
+import { Team } from '../Classes/teams/team.model';
+
+const createMockTeam = (
+  teamUUID: string,
+  teamName: string,
+  shirtColor: string,
+  userUUID: string,
+  username: string
+): Team => {
+  return new Team(teamUUID, teamName, shirtColor, userUUID, username);
+};
 
 describe('MatchComponent', () => {
   let component: MatchComponent;
@@ -33,11 +44,11 @@ describe('MatchComponent', () => {
 
   it('should load teams on initialization', () => {
     fixture.detectChanges();
-    const mockTeams = [
-      { teamUUID: 'uuid1', teamName: 'Team A' },
-      { teamUUID: 'uuid2', teamName: 'Team B' }
+    const mockTeams: Team[] = [
+      createMockTeam('uuid1', 'Team A', 'red', 'user1', 'User1'),
+      createMockTeam('uuid2', 'Team B', 'blue', 'user2', 'User2')
     ];
-    // S'assumeix que el TeamService realitza una crida GET a `${baseUrl}/teams`
+    // Suposem que el TeamService fa una crida GET a `${baseUrl}/teams`
     const req = httpTestingController.expectOne(`${baseUrl}/teams`);
     req.flush(mockTeams);
     expect(component.teams).toEqual(mockTeams);
@@ -76,10 +87,10 @@ describe('MatchComponent', () => {
     
     component.startMatch();
     const createReq = httpTestingController.expectOne(`${baseUrl}/matches`);
-    // S'imul·la la resposta del servidor amb un matchID (ara com a string)
+    // Emulem la resposta del servidor amb un matchID (com a string)
     createReq.flush({ matchID: '123' });
     
-    // Simulem una petició de polling després d'1 segon
+    // Simulem la petició de polling després d'1 segon
     tick(1000);
     const pollReq = httpTestingController.expectOne(`${baseUrl}/matches/123`);
     const matchData = {
@@ -133,11 +144,12 @@ describe('MatchComponent', () => {
 
   it('should disable start button when teams are the same', () => {
     fixture.detectChanges();
+    const mockTeams: Team[] = [
+      createMockTeam('uuid1', 'Team A', 'red', 'user1', 'User1'),
+      createMockTeam('uuid2', 'Team B', 'blue', 'user2', 'User2')
+    ];
     const teamsReq = httpTestingController.expectOne(`${baseUrl}/teams`);
-    teamsReq.flush([
-      { teamUUID: 'uuid1', teamName: 'Team A' },
-      { teamUUID: 'uuid2', teamName: 'Team B' }
-    ]);
+    teamsReq.flush(mockTeams);
     
     fixture.detectChanges();
     component.selectedHomeTeam = 'uuid1';
@@ -150,7 +162,7 @@ describe('MatchComponent', () => {
 
   describe('placeBet()', () => {
     beforeEach(() => {
-      // Per a poder fer una aposta vàlida, assegurem que hi hagi un partit
+      // Per a poder fer una aposta vàlida, assegurem que hi hagi un partit definit
       component.match = new Match(
         '123',
         'uuid1',
@@ -169,7 +181,6 @@ describe('MatchComponent', () => {
     });
 
     it('should send bet and alert success when bet is valid', fakeAsync(() => {
-      // Utilitzem la clau 'token' (ara que al servei es busca aquest valor)
       localStorage.setItem('token', 'test-token');
       spyOn(window, 'alert');
 
@@ -184,7 +195,6 @@ describe('MatchComponent', () => {
         amount: 50,
         predictedWinner: 'home'
       });
-      // S'espera que l'header d'autenticació contingui el token
       expect(req.request.headers.get('Authorization')).toEqual('Bearer test-token');
 
       req.flush({});
@@ -201,7 +211,6 @@ describe('MatchComponent', () => {
 
       const req = httpTestingController.expectOne(`${baseUrl}/bets`);
       expect(req.request.method).toBe('POST');
-      // Sense token, el valor serà "Bearer " (cadena buida després de Bearer)
       expect(req.request.headers.get('Authorization')).toEqual('Bearer ');
 
       req.flush({});

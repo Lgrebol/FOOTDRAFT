@@ -29,8 +29,8 @@ export class PlayersComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
   }
-
-  private loadData(): void {
+  
+  loadData(): void {
     this.playerService.getPlayers().subscribe(players => this.players = players);
     this.teamService.getTeams().subscribe(teams => this.teams = teams);
   }
@@ -45,24 +45,24 @@ export class PlayersComponent implements OnInit {
     }
   }  
 
-addPlayer(): void {
-  if (!this.newPlayer.isValid()) {
-    alert('Si us plau, omple tots els camps obligatoris.');
-    return;
-  }
-
-  const formData = this.newPlayer.toFormData();
-  this.playerService.addPlayer(formData).subscribe({
-    next: () => {
-      this.loadData();
-      this.newPlayer = new Player();
-    },
-    error: (err) => {
-      console.error('Error del servidor:', err);
-      alert(`Error al crear el jugador: ${err.error?.error || 'Error desconegut'}`);
+  addPlayer(): void {
+    if (!this.newPlayer.isValid()) {
+      alert('Si us plau, omple tots els camps obligatoris.');
+      return;
     }
-  });
-}
+
+    const formData = this.newPlayer.toFormData();
+    this.playerService.addPlayer(formData).subscribe({
+      next: () => {
+        this.loadData();
+        this.newPlayer = new Player();
+      },
+      error: (err) => {
+        console.error('Error del servidor:', err);
+        alert(`Error al crear el jugador: ${err.error?.error || 'Error desconegut'}`);
+      }
+    });
+  }
 
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({

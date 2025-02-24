@@ -64,13 +64,13 @@ export class Player {
     formData.append('speed', String(this._speed));
     formData.append('shooting', String(this._shooting));
     if (this._imageFile) {
-      formData.append('image', this._imageFile); // 🚨 Nom del camp canviat a 'image'
+      // El nom del camp és "image"
+      formData.append('image', this._imageFile);
     }
     return formData;
   }
 
   public isValid(): boolean {
-    // Validació de text
     if (this._playerName.trim() === '') {
       console.error('Validació: Falta el nom del jugador');
       return false;
@@ -84,7 +84,6 @@ export class Player {
       return false;
     }
   
-    // Validació numèrica
     const numericFields = [
       { value: this._price, name: 'preu' },
       { value: this._height, name: 'alçada' },
@@ -103,7 +102,6 @@ export class Player {
       }
     }
   
-    // Validació d'imatge
     if (!this._imageFile) {
       console.error('Validació: Falta la imatge');
       return false;
@@ -112,7 +110,6 @@ export class Player {
     return true;
   }
   
-
   static fromApi(data: any): Player {
     return new Player(
       data.PlayerUUID || data.PlayerID,
