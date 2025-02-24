@@ -41,14 +41,18 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   }));
 
-  it('should display loading state initially', () => {
-    // Simulem l'estat de càrrega directament al servei
-    dashboardService['dashboardStats'].setLoading(true);
+  it('should display loading state initially', fakeAsync(() => {
     fixture.detectChanges();
     
     const loadingEl = fixture.debugElement.query(By.css('.loading'));
     expect(loadingEl).toBeTruthy();
-  });
+  
+    const req = httpTestingController.expectOne('http://localhost:3000/api/v1/dashboard');
+    req.flush({});
+    
+    tick();
+    fixture.detectChanges();
+  }));
 
   it('should display error state when API fails', fakeAsync(() => {
     fixture.detectChanges();
