@@ -32,7 +32,7 @@ export class DashboardService {
       },
       error: error => {
         console.error('Error fetching dashboard stats:', error);
-        this.dashboardStats.setError('Error fetching dashboard stats');
+        this.dashboardStats.setError('Error obtenint estadístiques');
         this.dashboardStats.setLoading(false);
         this.dashboardStatsSubject.next(this.dashboardStats);
       }

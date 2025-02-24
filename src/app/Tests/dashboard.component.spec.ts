@@ -4,7 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { DashboardService } from '../Serveis/dashboard.service';
 import { By } from '@angular/platform-browser';
 
-describe('DashboardComponent - TDD Phase 2', () => {
+describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let httpTestingController: HttpTestingController;
