@@ -81,4 +81,11 @@ export class TeamsComponent implements OnInit {
       error: err => console.error('Error eliminant equip:', err)
     });
   }
+
+  // Mètode per obtenir les reserves (si es necessita per actualitzar l'estat)
+  fetchReservedPlayers(): void {
+    this.playerService.getReservedPlayers(this.currentUserId).subscribe(
+      players => this.reservedPlayers = players
+    );
+  }
 }

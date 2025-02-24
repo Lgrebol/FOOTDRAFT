@@ -15,7 +15,6 @@ export class Store {
     this._availablePlayers.push(player);
   }
 
-  // Ara utilitzem player.playerUUID en lloc de player.id
   removePlayer(playerUUID: string): void {
     this._availablePlayers = this._availablePlayers.filter(player => player.playerUUID !== playerUUID);
   }
@@ -54,7 +53,6 @@ export class StoreFilterModel {
     this.maxPrice = null;
   }
 
-  // Genera els paràmetres per la petició al back-end
   toParams(): any {
     const params: any = {};
     if (this.searchTerm) params.search = this.searchTerm;
@@ -76,7 +74,6 @@ export class StoreModel {
     this.filter = new StoreFilterModel();
   }
 
-  // Actualitza la llista de jugadors disponibles
   setPlayers(players: Player[]): void {
     this.store.availablePlayers = players;
   }

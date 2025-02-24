@@ -15,6 +15,11 @@ export class StoreComponent implements OnInit {
   storeModel: StoreModel = new StoreModel();
   currentUserUUID: string = '97C72798-B79D-4248-AC5C-11457F2E38AC';
 
+  // Aquests atributs s'utilitzen per els filtres en els tests
+  searchTerm: string = '';
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
+
   constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
@@ -23,12 +28,21 @@ export class StoreComponent implements OnInit {
     );
   }
 
-  applyFilters(): void {
+  // Getter per facilitar l'accés als jugadors disponibles en els tests
+  get storePlayers() {
+    return this.storeModel.store.availablePlayers;
+  }
+
+  fetchStorePlayers(): void {
     this.storeService.refreshStorePlayers(
-      this.storeModel.filter.searchTerm,
-      this.storeModel.filter.minPrice || undefined,
-      this.storeModel.filter.maxPrice || undefined
+      this.searchTerm, 
+      this.minPrice ?? undefined, 
+      this.maxPrice ?? undefined
     );
+  }
+
+  applyFilters(): void {
+    this.fetchStorePlayers();
   }
 
   buyPlayer(playerUUID: string): void {

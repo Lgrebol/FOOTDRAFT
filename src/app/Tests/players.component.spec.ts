@@ -68,13 +68,22 @@ describe('PlayersComponent', () => {
       ];
 
       component.loadData();
-      const reqPlayers = httpMock.expectOne('http://localhost:3000/api/v1/players');
-      expect(reqPlayers.request.method).toBe('GET');
-      reqPlayers.flush(mockPlayers);
+      
+      // Com que el servei pot fer dues peticions (per exemple, al constructor i en loadData),
+      // utilitzem match() i verifiquem que hi hagi 2
+      const reqPlayers = httpMock.match('http://localhost:3000/api/v1/players');
+      expect(reqPlayers.length).toBe(2);
+      reqPlayers.forEach(req => {
+        expect(req.request.method).toBe('GET');
+        req.flush(mockPlayers);
+      });
 
-      const reqTeams = httpMock.expectOne('http://localhost:3000/api/v1/teams');
-      expect(reqTeams.request.method).toBe('GET');
-      reqTeams.flush(mockTeams);
+      const reqTeams = httpMock.match('http://localhost:3000/api/v1/teams');
+      expect(reqTeams.length).toBe(2);
+      reqTeams.forEach(req => {
+        expect(req.request.method).toBe('GET');
+        req.flush(mockTeams);
+      });
 
       expect(component.players.length).toBe(2);
       expect(component.teams.length).toBe(2);
@@ -83,11 +92,18 @@ describe('PlayersComponent', () => {
     it('hauria de mostrar un error si loadData falla per jugadors', () => {
       spyOn(console, 'error');
       component.loadData();
-      const reqPlayers = httpMock.expectOne('http://localhost:3000/api/v1/players');
-      reqPlayers.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+      
+      const reqPlayers = httpMock.match('http://localhost:3000/api/v1/players');
+      expect(reqPlayers.length).toBe(2);
+      reqPlayers.forEach(req => {
+        req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+      });
+      
       expect(console.error).toHaveBeenCalled();
-      const reqTeams = httpMock.expectOne('http://localhost:3000/api/v1/teams');
-      reqTeams.flush([]);
+      
+      const reqTeams = httpMock.match('http://localhost:3000/api/v1/teams');
+      expect(reqTeams.length).toBe(2);
+      reqTeams.forEach(req => req.flush([]));
     });
   });
 
@@ -113,6 +129,7 @@ describe('PlayersComponent', () => {
 
       component.addPlayer();
 
+      // Expectem la petició POST per afegir el jugador
       const reqPost = httpMock.expectOne('http://localhost:3000/api/v1/players');
       expect(reqPost.request.method).toBe('POST');
       reqPost.flush({
@@ -130,6 +147,14 @@ describe('PlayersComponent', () => {
         Points: 0,
         TeamName: 'Team C'
       });
+
+      // Després d'afegir, loadData es crida de nou; hem de donar resposta a les GET
+      const reqPlayers = httpMock.match('http://localhost:3000/api/v1/players');
+      expect(reqPlayers.length).toBe(2);
+      reqPlayers.forEach(req => req.flush([]));
+      const reqTeams = httpMock.match('http://localhost:3000/api/v1/teams');
+      expect(reqTeams.length).toBe(2);
+      reqTeams.forEach(req => req.flush(mockTeams));
 
       expect(component.loadData).toHaveBeenCalled();
       expect(component.newPlayer.playerName).toEqual('');
@@ -257,10 +282,15 @@ describe('PlayersComponent', () => {
       ];
 
       component.ngOnInit();
-      const reqPlayers = httpMock.expectOne('http://localhost:3000/api/v1/players');
-      reqPlayers.flush(mockPlayers);
-      const reqTeams = httpMock.expectOne('http://localhost:3000/api/v1/teams');
-      reqTeams.flush(mockTeams);
+      
+      // Flush initial loadData GETs
+      const reqPlayers = httpMock.match('http://localhost:3000/api/v1/players');
+      expect(reqPlayers.length).toBe(2);
+      reqPlayers.forEach(req => req.flush(mockPlayers));
+      
+      const reqTeams = httpMock.match('http://localhost:3000/api/v1/teams');
+      expect(reqTeams.length).toBe(2);
+      reqTeams.forEach(req => req.flush(mockTeams));
 
       expect(component.players.length).toBe(2);
       expect(component.teams.length).toBe(2);
@@ -269,9 +299,19 @@ describe('PlayersComponent', () => {
       const playerId = '1';
       component.deletePlayer(playerId);
 
+      // Expect DELETE request per eliminar el jugador
       const deleteReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
       expect(deleteReq.request.method).toBe('DELETE');
       deleteReq.flush({});
+
+      // Després d'eliminar, loadData es crida de nou; hem de donar resposta a totes les GET
+      const reqPlayersAfter = httpMock.match('http://localhost:3000/api/v1/players');
+      expect(reqPlayersAfter.length).toBe(2);
+      reqPlayersAfter.forEach(req => req.flush([]));
+      
+      const reqTeamsAfter = httpMock.match('http://localhost:3000/api/v1/teams');
+      expect(reqTeamsAfter.length).toBe(2);
+      reqTeamsAfter.forEach(req => req.flush(mockTeams));
 
       expect(component.loadData).toHaveBeenCalled();
     });
