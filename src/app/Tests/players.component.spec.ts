@@ -431,5 +431,13 @@ describe('PlayersComponent', () => {
       expect(window.alert).toHaveBeenCalled();
     });
 
+      
+    it('should handle image selection in edit mode', () => {
+      component.editPlayer(mockPlayer);
+      const file = new File([''], 'photo.jpg', { type: 'image/jpeg' });
+      const event = { target: { files: [file] } } as unknown as Event;
+      component.onFileSelected(event, true);
+      expect(component.editingPlayer?.imageFile).toBe(file);
+    });
   });
 });  
