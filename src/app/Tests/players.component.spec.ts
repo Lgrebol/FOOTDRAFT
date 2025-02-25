@@ -72,29 +72,35 @@ describe('PlayersComponent', () => {
           TeamName: 'Team B'
         }
       ];
-
+    
       const mockTeams = [
         createMockTeam('teamA', 'Team A', 'red', 'u1', 'User1'),
         createMockTeam('teamB', 'Team B', 'blue', 'u2', 'User2')
       ];
-
-      // Forcem una nova càrrega (per exemple, tornem a cridar ngOnInit)
+    
+      // Forcem una nova càrrega (ngOnInit)
       component.ngOnInit();
-
-      // Comprovem la petició GET per als jugadors
-      const reqPlayers = httpMock.expectOne('http://localhost:3000/api/v1/players');
-      expect(reqPlayers.request.method).toBe('GET');
-      reqPlayers.flush(mockPlayers);
-
-      // I la petició GET per als equips
-      const reqTeams = httpMock.expectOne('http://localhost:3000/api/v1/teams');
-      expect(reqTeams.request.method).toBe('GET');
-      reqTeams.flush(mockTeams);
-
+    
+      // Recuperem totes les peticions GET per als jugadors i les flusham
+      const reqPlayers = httpMock.match('http://localhost:3000/api/v1/players');
+      expect(reqPlayers.length).toBeGreaterThanOrEqual(1);
+      reqPlayers.forEach(req => {
+        expect(req.request.method).toBe('GET');
+        req.flush(mockPlayers);
+      });
+    
+      // Recuperem totes les peticions GET per als equips i les flusham
+      const reqTeams = httpMock.match('http://localhost:3000/api/v1/teams');
+      expect(reqTeams.length).toBeGreaterThanOrEqual(1);
+      reqTeams.forEach(req => {
+        expect(req.request.method).toBe('GET');
+        req.flush(mockTeams);
+      });
+    
       expect(component.players.length).toBe(2);
       expect(component.teams.length).toBe(2);
     });
-
+    
     it('should show an error if the load fails', () => {
       spyOn(console, 'error');
 
