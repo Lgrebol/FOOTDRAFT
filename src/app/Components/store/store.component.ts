@@ -42,8 +42,13 @@ export class StoreComponent implements OnInit {
   }
 
   applyFilters(): void {
-    this.fetchStorePlayers();
+    this.storeService.refreshStorePlayers(
+      this.storeModel.filter.searchTerm, 
+      this.storeModel.filter.minPrice ?? undefined, 
+      this.storeModel.filter.maxPrice ?? undefined
+    );
   }
+  
 
   buyPlayer(playerUUID: string): void {
     this.storeService.buyPlayer(playerUUID, this.currentUserUUID).subscribe({
