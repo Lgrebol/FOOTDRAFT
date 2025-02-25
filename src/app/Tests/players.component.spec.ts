@@ -368,6 +368,42 @@ describe('PlayersComponent', () => {
       expect(component.editingPlayer).not.toBe(mockPlayer); // Ensure it's a clone
     });
   
-
+    it('should update data correctly', () => {
+      component.editPlayer(mockPlayer);
+      const editedPlayer = component.editingPlayer!;
+      editedPlayer.playerName = 'New Name';
+      editedPlayer.position = 'Midfielder';
+      editedPlayer.price = 150;
+      editedPlayer.imageFile = new File([''], 'new-image.jpg');
+  
+      component.updatePlayer();
+  
+      const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${mockPlayer.playerUUID}`);
+      expect(req.request.method).toBe('PUT');
+      const formData = req.request.body as FormData;
+      expect(formData.get('playerName')).toBe('New Name');
+      expect(formData.get('position')).toBe('Midfielder');
+      expect(formData.get('price')).toBe('150');
+      expect(formData.has('image')).toBeTrue();
+  
+      req.flush({
+        PlayerID: mockPlayer.playerUUID,
+        PlayerName: 'New Name',
+        Position: 'Midfielder',
+        TeamID: mockPlayer.teamUUID,
+        IsActive: mockPlayer.isActive,
+        IsForSale: mockPlayer.isForSale,
+        Price: 150,
+        Height: mockPlayer.height,
+        Speed: mockPlayer.speed,
+        Shooting: mockPlayer.shooting,
+        PlayerImage: 'new-image.jpg',
+        Points: mockPlayer.points,
+        TeamName: 'Team A'
+      });
+  
+      expect(component.players[0].playerName).toBe('New Name');
+      expect(component.editingPlayer).toBeNull();
+    });
   });
 });  
