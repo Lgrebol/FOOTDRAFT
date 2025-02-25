@@ -32,14 +32,18 @@ export const createPlayer = async (req, res) => {
       INSERT INTO Players (
         PlayerName, Position, TeamUUID, IsActive, 
         IsForSale, Price, Height, Speed, Shooting, PlayerImage
-      ) VALUES (
+      )
+      OUTPUT INSERTED.PlayerUUID, INSERTED.PlayerName, INSERTED.Position, INSERTED.TeamUUID, 
+             INSERTED.IsActive, INSERTED.IsForSale, INSERTED.Price, INSERTED.Height, 
+             INSERTED.Speed, INSERTED.Shooting, INSERTED.PlayerImage
+      VALUES (
         @playerName, @position, @teamUUID, 
         @isActive, @isForSale, @price, @height, 
         @speed, @shooting, @playerImage
       )
     `;
     
-    await pool.request()
+    const result = await pool.request()
       .input("playerName", sql.VarChar, playerName)
       .input("position", sql.VarChar, position)
       .input("teamUUID", sql.UniqueIdentifier, teamID)
@@ -52,7 +56,8 @@ export const createPlayer = async (req, res) => {
       .input("playerImage", sql.VarChar(sql.MAX), imageBase64)
       .query(query);
 
-    res.status(201).send({ message: "Jugador creat correctament." });
+    const insertedPlayer = result.recordset[0];
+    res.status(201).send(insertedPlayer);
   } catch (err) {
     res.status(500).send({ 
       error: "Error al crear jugador",
@@ -61,6 +66,7 @@ export const createPlayer = async (req, res) => {
     });
   }
 };
+
 
 export const getPlayers = async (req, res) => {
   try {

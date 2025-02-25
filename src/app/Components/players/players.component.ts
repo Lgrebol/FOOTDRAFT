@@ -29,14 +29,11 @@ export class PlayersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadData();
-  }
-  
-  loadData(): void {
+    // Carreguem les dades una sola vegada a la inicialització
     this.playerService.getPlayers().subscribe(players => this.players = players);
     this.teamService.getTeams().subscribe(teams => this.teams = teams);
   }
-
+  
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
@@ -55,8 +52,8 @@ export class PlayersComponent implements OnInit {
 
     const formData = this.newPlayer.toFormData();
     this.playerService.addPlayer(formData).subscribe({
-      next: () => {
-        this.loadData();
+      next: (createdPlayer: Player) => {
+        this.players.push(createdPlayer);
         this.newPlayer = new Player();
       },
       error: (err) => {
@@ -69,9 +66,10 @@ export class PlayersComponent implements OnInit {
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({
       next: () => {
+        // Eliminem el jugador directament de l'array filtrant-lo
         this.players = this.players.filter(player => player.playerUUID !== playerUUID);
       },
       error: (err) => console.error('Error eliminant jugador:', err)
     });
   }
-}  
+}

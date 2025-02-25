@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Player } from '../Classes/players/player.model';
 
 @Injectable({
@@ -9,21 +9,8 @@ import { Player } from '../Classes/players/player.model';
 })
 export class PlayerService {
   private apiUrl = 'http://localhost:3000/api/v1/players';
-  private playersSubject = new BehaviorSubject<Player[]>([]);
   
-  constructor(private http: HttpClient) {
-    this.fetchPlayers();
-  }
-  
-  private fetchPlayers(): void {
-    this.http.get<any[]>(this.apiUrl).subscribe(
-      players => {
-        const playerInstances = players.map(p => Player.fromApi(p));
-        this.playersSubject.next(playerInstances);
-      },
-      error => console.error('Error fetching players:', error)
-    );
-  }
+  constructor(private http: HttpClient) { }
   
   getPlayers(): Observable<Player[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
@@ -33,15 +20,12 @@ export class PlayerService {
   
   addPlayer(playerData: FormData): Observable<Player> {
     return this.http.post<any>(this.apiUrl, playerData).pipe(
-      tap(() => this.fetchPlayers()),
       map(p => Player.fromApi(p))
     );
   }
   
   deletePlayer(playerUUID: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${playerUUID}`).pipe(
-      tap(() => this.fetchPlayers())
-    );
+    return this.http.delete(`${this.apiUrl}/${playerUUID}`);
   }
   
   getReservedPlayers(userUUID: string): Observable<Player[]> {
