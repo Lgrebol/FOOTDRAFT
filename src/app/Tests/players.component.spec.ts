@@ -322,15 +322,23 @@ describe('PlayersComponent', () => {
     });
     
 
-    it('hauria de mostrar un error si deletePlayer falla', () => {
+    it('should show an error if deletePlayer fails', () => {
       spyOn(console, 'error');
+    
+      // Flush les peticions GET pendents (de ngOnInit)
+      const reqPlayers = httpMock.match('http://localhost:3000/api/v1/players');
+      reqPlayers.forEach(req => req.flush([]));
+    
+      const reqTeams = httpMock.match('http://localhost:3000/api/v1/teams');
+      reqTeams.forEach(req => req.flush([]));
+    
       const playerId = '1';
       component.deletePlayer(playerId);
-
+    
       const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${playerId}`);
       req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
-
+    
       expect(console.error).toHaveBeenCalled();
-    });
+    });    
   });
 });
