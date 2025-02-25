@@ -1,4 +1,3 @@
-// teams.component.spec.ts
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { TeamsComponent } from '../Components/teams/teams.component';
 import { TeamService } from '../Serveis/team.service';
@@ -8,6 +7,7 @@ import { of, throwError } from 'rxjs';
 import { Team } from '../Classes/teams/team.model';
 import { User } from '../Classes/user/user.model';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Player } from '../Classes/players/player.model';
 
 describe('TeamsComponent', () => {
   let component: TeamsComponent;
@@ -56,10 +56,18 @@ describe('TeamsComponent', () => {
   // Test 3: Carregar equips correctament
   it('should load the teams correctly', () => {
     const teamsMock = [new Team('team-uuid-1', 'Team1', 'blue', 'user-uuid-1')];
+    const usersMock = [new User('user-uuid-1', 'User1', 'user@test.com', 100)];
+    const reservedPlayersMock = [{ playerUUID: 'p1', playerName: 'Player1' } as Player];
+  
+    // Configura tots els spies necessaris
     teamServiceSpy.getTeams.and.returnValue(of(teamsMock));
-
+    userServiceSpy.getUsers.and.returnValue(of(usersMock));
+    playerServiceSpy.getReservedPlayers.and.returnValue(of(reservedPlayersMock));
+  
     component.ngOnInit();
+    
     expect(component.teams).toEqual(teamsMock);
+    expect(teamServiceSpy.getTeams).toHaveBeenCalled();
   });
 
   // Test 4: Eliminar equip amb èxit
