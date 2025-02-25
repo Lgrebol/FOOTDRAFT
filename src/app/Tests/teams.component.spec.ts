@@ -46,11 +46,18 @@ describe('TeamsComponent', () => {
 
   // Test 2: Carregar usuaris correctament
   it('should load the users correctly', () => {
+    const teamsMock = [new Team('team-uuid-1', 'Team1', 'blue', 'user-uuid-1')];
     const usersMock = [new User('user-uuid-1', 'User1', 'user1@test.com', 100)];
+    const reservedPlayersMock = [new Player('p1', 'Player1')];
+  
+    teamServiceSpy.getTeams.and.returnValue(of(teamsMock));
     userServiceSpy.getUsers.and.returnValue(of(usersMock));
-
+    playerServiceSpy.getReservedPlayers.and.returnValue(of(reservedPlayersMock));
+  
     component.ngOnInit();
+
     expect(component.users).toEqual(usersMock);
+    expect(userServiceSpy.getUsers).toHaveBeenCalled();
   });
 
   // Test 3: Carregar equips correctament
