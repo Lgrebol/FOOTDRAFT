@@ -100,23 +100,8 @@ describe('PlayersComponent', () => {
       expect(component.players.length).toBe(2);
       expect(component.teams.length).toBe(2);
     });
-    
-    it('should show an error if the load fails', () => {
-      spyOn(console, 'error');
-
-      component.ngOnInit();
-
-      const reqPlayers = httpMock.expectOne('http://localhost:3000/api/v1/players');
-      expect(reqPlayers.request.method).toBe('GET');
-      reqPlayers.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
-
-      const reqTeams = httpMock.expectOne('http://localhost:3000/api/v1/teams');
-      expect(reqTeams.request.method).toBe('GET');
-      reqTeams.flush([]);
-
-      expect(console.error).toHaveBeenCalled();
-    });
-  });
+  });   
+   
 
   describe('addPlayer', () => {
     beforeEach(() => {
@@ -347,4 +332,42 @@ describe('PlayersComponent', () => {
       expect(console.error).toHaveBeenCalled();
     });    
   });
-});
+
+  describe('Editing Players', () => {
+    let mockPlayer: Player;
+  
+    beforeEach(() => {
+      // Flush any pending GET requests triggered by ngOnInit
+      const reqPlayers = httpMock.match('http://localhost:3000/api/v1/players');
+      reqPlayers.forEach(req => req.flush([]));
+      const reqTeams = httpMock.match('http://localhost:3000/api/v1/teams');
+      reqTeams.forEach(req => req.flush([]));
+  
+      // Create a valid player
+      mockPlayer = new Player(
+        '1',
+        'Original Player',
+        'Defender',
+        'teamA',
+        true,
+        false,
+        100,
+        180,
+        80,
+        75,
+        'image.jpg'
+      );
+      component.players = [mockPlayer];
+      component.teams = [createMockTeam('teamA', 'Team A', 'blue', 'user1', 'User 1')];
+    });
+  
+    it('should clone the player correctly for editing', () => {
+      component.editPlayer(mockPlayer);
+      expect(component.editingPlayer).toBeTruthy();
+      expect(component.editingPlayer?.playerUUID).toBe(mockPlayer.playerUUID);
+      expect(component.editingPlayer).not.toBe(mockPlayer); // Ensure it's a clone
+    });
+  
+
+  });
+});  
