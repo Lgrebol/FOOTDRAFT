@@ -17,14 +17,16 @@ export class PlayersComponent implements OnInit {
   players: Player[] = [];
   teams: Team[] = [];
   
-  newPlayer: Player = new Player();
+  newPlayer: Player;
 
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
   constructor(
     private playerService: PlayerService,
     private teamService: TeamService
-  ) {}
+  ) {
+    this.newPlayer = new Player();
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -66,8 +68,10 @@ export class PlayersComponent implements OnInit {
 
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({
-      next: () => this.loadData(),
+      next: () => {
+        this.players = this.players.filter(player => player.playerUUID !== playerUUID);
+      },
       error: (err) => console.error('Error eliminant jugador:', err)
     });
   }
-}
+}  

@@ -56,17 +56,33 @@ describe('LoginRegisterComponent', () => {
   });
 
   it('should set error flags when form is invalid', () => {
+    // Configuració del DOM necessària
+    const containerDiv = document.createElement('div');
+    const signUpBtn = document.createElement('button');
+    const signInBtn = document.createElement('button');
+    
+    component.container = new ElementRef(containerDiv);
+    component.signUpBtn = new ElementRef(signUpBtn);
+    component.signInBtn = new ElementRef(signInBtn);
+    
+    component.ngAfterViewInit();
+    signUpBtn.click(); // Canviem a mode registre
+  
+    // Dades invàlides
     component.userModel.username = '';
-    component.userModel.email = '';
-    component.userModel.password = '';
-    component.userModel.confirmPassword = '';
-
+    component.userModel.email = 'invalid-email';
+    component.userModel.password = 'short';
+    component.userModel.confirmPassword = 'mismatch';
+  
     component.onSubmit();
-
-    expect(component.errors.usernameError).toBeTrue();
-    expect(component.errors.emailError).toBeTrue();
-    expect(component.errors.passwordError).toBeTrue();
-    expect(component.errors.confirmPasswordMismatchError).toBeTrue();
+  
+    expect(component.errors).toEqual({
+      usernameError: true,
+      emailError: true,
+      passwordError: true,
+      confirmPasswordMismatchError: true,
+      passwordRegexError: true // Afegim aquest camp
+    });
   });
 
   it('should return true if passwords match', () => {

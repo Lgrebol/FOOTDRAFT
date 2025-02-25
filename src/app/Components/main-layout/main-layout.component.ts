@@ -23,6 +23,13 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadUserData();
     this.subscribeToFootcoins();
+    this.userService.getFootcoinsUpdates().subscribe({
+      next: (footcoins) => {
+      },
+      error: (err) => {
+        console.error('Error obtenint footcoins:', err);
+      }
+    });
   }
 
   private loadUserData(): void {

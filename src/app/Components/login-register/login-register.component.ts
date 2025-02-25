@@ -30,7 +30,7 @@ export class LoginRegisterComponent implements AfterViewInit {
     emailError: false,
     passwordError: false,
     confirmPasswordMismatchError: false,
-    passwordRegexError: false,
+    passwordRegexError: false
   };
 
   constructor(

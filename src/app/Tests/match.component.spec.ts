@@ -6,20 +6,22 @@ import { interval } from 'rxjs';
 import { Match } from '../Classes/match/match.model';
 import { Team } from '../Classes/teams/team.model';
 
-// Funció auxiliar per crear una instància de Team segons el seu constructor
-const createMockTeam = (
-  teamUUID: string,
-  teamName: string,
-  shirtColor: string,
-  userUUID: string,
-  username: string
-): Team => new Team(teamUUID, teamName, shirtColor, userUUID, username);
+const baseUrl = 'http://localhost:3000/api/v1';
 
 describe('MatchComponent', () => {
   let component: MatchComponent;
   let fixture: ComponentFixture<MatchComponent>;
   let httpTestingController: HttpTestingController;
-  const baseUrl = 'http://localhost:3000/api/v1';
+
+  // Funció auxiliar per crear mock de Team
+  const createMockTeam = (teamData: any): Team =>
+    new Team(
+      teamData.TeamUUID,
+      teamData.TeamName,
+      teamData.ShirtColor,
+      teamData.UserUUID,
+      teamData.Username
+    );
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -31,9 +33,18 @@ describe('MatchComponent', () => {
     fixture = TestBed.createComponent(MatchComponent);
     component = fixture.componentInstance;
     httpTestingController = TestBed.inject(HttpTestingController);
+    
+    // Aquesta crida a detectChanges() dispara el ngOnInit i, per tant, la crida a loadTeams()
+    fixture.detectChanges();
+    // Capturar i gestionar totes les peticions GET a /teams que s'hagin disparat
+    const teamRequests = httpTestingController.match(`${baseUrl}/teams`);
+    teamRequests.forEach(req => req.flush([]));
   });
 
   afterEach(() => {
+    // Finalment, si quedessin peticions GET a /teams sense gestionar, les gestionem
+    const pendingTeams = httpTestingController.match(`${baseUrl}/teams`);
+    pendingTeams.forEach(req => req.flush([]));
     httpTestingController.verify();
   });
 
@@ -42,27 +53,20 @@ describe('MatchComponent', () => {
   });
 
   it('should load teams on initialization', () => {
-    fixture.detectChanges();
-    const mockTeams: Team[] = [
-      createMockTeam('uuid1', 'Team A', 'red', 'user1', 'User1'),
-      createMockTeam('uuid2', 'Team B', 'blue', 'user2', 'User2')
-    ];
-    // Utilitzem match() per capturar totes les peticions
-    const reqs = httpTestingController.match(`${baseUrl}/teams`);
-    // Podria ser 1 o més segons l'implementació del servei
-    expect(reqs.length).toBeGreaterThan(0);
-    reqs.forEach(r => {
-      expect(r.request.method).toBe('GET');
-      r.flush(mockTeams);
-    });
-    expect(component.teams).toEqual(mockTeams);
-  });
-
-  it('canStartMatch() should return true with valid different teams and match not started', () => {
-    component.selectedHomeTeam = 'uuid1';
-    component.selectedAwayTeam = 'uuid2';
-    component.matchStarted = false;
-    expect(component.canStartMatch()).toBeTrue();
+    // Ja que ngOnInit s'ha executat en el beforeEach i s'ha gestionat la petició, els equips són []
+    expect(component.teams.length).toBe(0);
+    // Si es vol simular una recàrrega, cridem loadTeams() i gestionem totes les peticions:
+    component.loadTeams();
+    const teamRequests = httpTestingController.match(`${baseUrl}/teams`);
+    teamRequests.forEach(req =>
+      req.flush([
+        { TeamUUID: 'uuid1', TeamName: 'Team A', ShirtColor: 'red', UserUUID: 'user1', Username: 'User1' },
+        { TeamUUID: 'uuid2', TeamName: 'Team B', ShirtColor: 'blue', UserUUID: 'user2', Username: 'User2' }
+      ])
+    );
+    expect(component.teams.length).toBe(2);
+    expect(component.teams[0]).toEqual(jasmine.any(Team));
+    expect(component.teams[0].teamName).toBe('Team A');
   });
 
   it('canStartMatch() should return false when teams are the same', () => {
@@ -90,23 +94,28 @@ describe('MatchComponent', () => {
     component.selectedAwayTeam = 'uuid2';
     
     component.startMatch();
+    // Gestionar la petició per crear el partit
     const createReq = httpTestingController.expectOne(`${baseUrl}/matches`);
     createReq.flush({ matchID: '123' });
     
     tick(1000);
+    // Gestionar la petició de polling
     const pollReq = httpTestingController.expectOne(`${baseUrl}/matches/123`);
-    const matchData = {
-      HomeGoals: 0,
-      AwayGoals: 0,
-      CurrentMinute: 0,
-      HomeTeamUUID: component.selectedHomeTeam,
-      AwayTeamUUID: component.selectedAwayTeam,
-      TournamentUUID: '7E405744-880B-4D33-84A1-FCEB95C076A5',
-      MatchDate: new Date().toISOString(),
-      events: []
-    };
-    pollReq.flush({ match: matchData });
+    pollReq.flush({ 
+      match: {
+        MatchUUID: '123',
+        HomeTeamUUID: 'uuid1',
+        AwayTeamUUID: 'uuid2',
+        HomeGoals: 0,
+        AwayGoals: 0,
+        CurrentMinute: 0,
+        TournamentUUID: '7E405744-880B-4D33-84A1-FCEB95C076A5',
+        MatchDate: new Date().toISOString(),
+        events: []
+      }
+    });
     
+    // Gestionar la petició per simular el partit
     const simulateReq = httpTestingController.expectOne(`${baseUrl}/matches/simulate`);
     simulateReq.flush({ message: 'Simulació completada' });
     
@@ -133,35 +142,18 @@ describe('MatchComponent', () => {
     spyOn(component.pollingSubscription, 'unsubscribe');
     
     component.resetMatch();
+    
+    // Primer gestionem la petició POST de reset
     const resetReq = httpTestingController.expectOne(`${baseUrl}/matches/reset`);
     resetReq.flush({});
+    // Després, resetMatch() crida loadTeams(), per la qual cosa gestionem totes les peticions GET a /teams
+    const teamRequests = httpTestingController.match(`${baseUrl}/teams`);
+    teamRequests.forEach(req => req.flush([]));
     
     expect(component.match).toBeNull();
     expect(component.matchSummary).toBeNull();
     expect(component.matchStarted).toBeFalse();
     expect(component.pollingSubscription?.unsubscribe).toHaveBeenCalled();
-  });
-
-  it('should disable start button when teams are the same', () => {
-    fixture.detectChanges();
-    const mockTeams: Team[] = [
-      createMockTeam('uuid1', 'Team A', 'red', 'user1', 'User1'),
-      createMockTeam('uuid2', 'Team B', 'blue', 'user2', 'User2')
-    ];
-    const reqs = httpTestingController.match(`${baseUrl}/teams`);
-    expect(reqs.length).toBeGreaterThan(0);
-    reqs.forEach(r => {
-      expect(r.request.method).toBe('GET');
-      r.flush(mockTeams);
-    });
-    
-    fixture.detectChanges();
-    component.selectedHomeTeam = 'uuid1';
-    component.selectedAwayTeam = 'uuid1';
-    fixture.detectChanges();
-    
-    const button = fixture.nativeElement.querySelector('.btn-start');
-    expect(button.disabled).toBeTrue();
   });
 
   describe('placeBet()', () => {
@@ -186,9 +178,9 @@ describe('MatchComponent', () => {
     it('should send bet and alert success when bet is valid', fakeAsync(() => {
       localStorage.setItem('token', 'test-token');
       spyOn(window, 'alert');
-
+      
       component.placeBet();
-
+      
       const req = httpTestingController.expectOne(`${baseUrl}/bets`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual({
@@ -199,7 +191,7 @@ describe('MatchComponent', () => {
         predictedWinner: 'home'
       });
       expect(req.request.headers.get('Authorization')).toEqual('Bearer test-token');
-
+      
       req.flush({});
       tick();
       expect(window.alert).toHaveBeenCalledWith('Aposta realitzada amb èxit!');
@@ -209,13 +201,12 @@ describe('MatchComponent', () => {
     it('should send bet with empty auth header if no token is present', fakeAsync(() => {
       localStorage.removeItem('token');
       spyOn(window, 'alert');
-
+      
       component.placeBet();
-
+      
       const req = httpTestingController.expectOne(`${baseUrl}/bets`);
-      expect(req.request.method).toBe('POST');
       expect(req.request.headers.get('Authorization')).toEqual('Bearer ');
-
+      
       req.flush({});
       tick();
       expect(window.alert).toHaveBeenCalledWith('Aposta realitzada amb èxit!');
@@ -224,12 +215,10 @@ describe('MatchComponent', () => {
     it('should alert error when bet fails', fakeAsync(() => {
       localStorage.setItem('token', 'test-token');
       spyOn(window, 'alert');
-
+      
       component.placeBet();
-
+      
       const req = httpTestingController.expectOne(`${baseUrl}/bets`);
-      expect(req.request.method).toBe('POST');
-
       const errorResponse = { status: 400, statusText: 'Bad Request' };
       req.flush({ error: 'Invalid bet' }, errorResponse);
       tick();

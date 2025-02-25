@@ -30,10 +30,10 @@ describe('DashboardComponent', () => {
   });
 
   it('should create component correctly', fakeAsync(() => {
-    fixture.detectChanges(); // Dispara ngOnInit()
+    fixture.detectChanges();
     
     const req = httpTestingController.expectOne('http://localhost:3000/api/v1/dashboard');
-    req.flush({}); // Resposta buida per evitar errors
+    req.flush({}); 
     
     tick();
     fixture.detectChanges();
