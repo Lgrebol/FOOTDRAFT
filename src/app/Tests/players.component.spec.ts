@@ -417,6 +417,19 @@ describe('PlayersComponent', () => {
       expect(console.error).toHaveBeenCalled();
     });
   
+    it('should not update with invalid data', () => {
+      component.editPlayer(mockPlayer);
+      const editedPlayer = component.editingPlayer!;
+      
+      // Make the data invalid by clearing the player name
+      editedPlayer.playerName = '';
+      spyOn(window, 'alert');
+  
+      component.updatePlayer();
+      
+      httpMock.expectNone(`http://localhost:3000/api/v1/players/${mockPlayer.playerUUID}`);
+      expect(window.alert).toHaveBeenCalled();
+    });
 
   });
 });  
