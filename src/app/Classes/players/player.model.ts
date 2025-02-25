@@ -48,10 +48,12 @@ export class Player {
   set teamName(value: string | undefined) { this._teamName = value; }
   set imageFile(file: File | undefined) { this._imageFile = file; }
 
+  // Mètode de càlcul (exemple)
   calculateRating(): number {
     return (this._height + this._speed + this._shooting) / 3;
   }
 
+  // Converteix l'objecte a FormData per enviar-lo al backend
   toFormData(): FormData {
     const formData = new FormData();
     formData.append('playerName', this._playerName);
@@ -64,13 +66,13 @@ export class Player {
     formData.append('speed', String(this._speed));
     formData.append('shooting', String(this._shooting));
     if (this._imageFile) {
-      // El nom del camp és "image"
       formData.append('image', this._imageFile);
     }
     return formData;
   }
 
-  public isValid(): boolean {
+  // Validació dels camps obligatoris i numèrics
+  isValid(): boolean {
     if (this._playerName.trim() === '') {
       console.error('Validació: Falta el nom del jugador');
       return false;
@@ -102,14 +104,15 @@ export class Player {
       }
     }
   
-    if (!this._imageFile) {
+    if (!this._imageFile && !this._imageUrl) {
       console.error('Validació: Falta la imatge');
       return false;
     }
   
     return true;
   }
-  
+
+  // Crea una nova instància del model a partir de les dades de l'API
   static fromApi(data: any): Player {
     return new Player(
       data.PlayerUUID || data.PlayerID,
@@ -126,5 +129,40 @@ export class Player {
       data.Points,
       data.TeamName
     );
+  }
+
+  // Crea una còpia de l'objecte (per treballar amb un clon en l'edició)
+  static clone(player: Player): Player {
+    return new Player(
+      player.playerUUID,
+      player.playerName,
+      player.position,
+      player.teamUUID,
+      player.isActive,
+      player.isForSale,
+      player.price,
+      player.height,
+      player.speed,
+      player.shooting,
+      player.imageUrl,
+      player.points,
+      player.teamName
+    );
+  }
+
+  updateFromApi(data: any): void {
+    this._playerUUID = data.PlayerUUID || data.PlayerID || this._playerUUID;
+    this._playerName = data.PlayerName || this._playerName;
+    this._position = data.Position || this._position;
+    this._teamUUID = data.TeamUUID || data.TeamID || this._teamUUID;
+    this._isActive = data.IsActive ?? this._isActive;
+    this._isForSale = data.IsForSale ?? this._isForSale;
+    this._price = data.Price ?? this._price;
+    this._height = data.Height ?? this._height;
+    this._speed = data.Speed ?? this._speed;
+    this._shooting = data.Shooting ?? this._shooting;
+    this._imageUrl = data.PlayerImage || this._imageUrl;
+    this._points = data.Points ?? this._points;
+    this._teamName = data.TeamName || this._teamName;
   }
 }

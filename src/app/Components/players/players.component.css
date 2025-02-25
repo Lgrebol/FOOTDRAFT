@@ -22,7 +22,12 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 4px rgba(0, 77, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 77, 0, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.player-card:hover {
+  transform: scale(1.03);
 }
 
 /* Contenidor de la imatge de la carta */
@@ -32,12 +37,13 @@
   padding: 10px;
 }
 
-/* Estils per a la imatge: dimensió fixa i retallada */
+/* Estils per a la imatge: dimensions fixes i retallada */
 .player-image {
   width: 200px;
   height: 200px;
   object-fit: cover;
   border-radius: 50%;
+  border: 3px solid #004D00;
 }
 
 /* Cos de la carta */
@@ -64,31 +70,55 @@
   padding: 10px;
   border-top: 1px solid #004D00;
   text-align: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
 .card-actions button {
   background-color: #016F01;
   border: none;
   color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 10px 15px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .card-actions button:hover {
   background-color: #004D00;
 }
 
+/* Afegim més espai entre els botons */
+.card-actions button + button {
+  margin-left: 5px;
+}
+
 /* Contenidor principal del formulari */
 .form-container {
   max-width: 600px;
   margin: 2rem auto;
-  padding: 1.5rem;
+  padding: 2rem;
   background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #004d00;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Efecte quan el formulari apareix */
+.form-container.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Efecte quan el formulari està ocult */
+.form-container.hide {
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
 }
 
 /* Títol del formulari */
@@ -96,6 +126,7 @@
   text-align: center;
   color: #004d00;
   margin-bottom: 1.5rem;
+  font-size: 22px;
 }
 
 /* Grup d'elements del formulari */
@@ -118,7 +149,7 @@
 .form-group input[type="file"] {
   padding: 0.5rem;
   border: 1px solid #004d00;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
 }
 
@@ -128,7 +159,7 @@
   margin-right: 0.5rem;
 }
 
-/* Estil per als grups en línia (checkbox i radio) */
+/* Grups en línia per checkbox i radio */
 .inline-group {
   display: flex;
   flex-wrap: wrap;
@@ -149,7 +180,7 @@ button[type="submit"] {
   padding: 0.75rem;
   background-color: #016f01;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
@@ -161,7 +192,23 @@ button[type="submit"]:hover {
   background-color: #004d00;
 }
 
-/* Responsive: en pantalles més grans, posarem el label i l'input en fila */
+/* Botó de tancar formulari */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #004D00;
+}
+
+.close-btn:hover {
+  color: red;
+}
+
+/* Responsive: per pantalles més grans, posarem els labels i inputs en fila */
 @media (min-width: 600px) {
   .form-group {
     flex-direction: row;
@@ -180,32 +227,3 @@ button[type="submit"]:hover {
     flex: 1;
   }
 }
-
-/* Estils per al formulari de 'En venda' */
-.form-group div {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-/* Estils per a l'input de fitxer */
-.form-group input[type="file"] {
-  padding: 0.25rem;
-  border-radius: 4px;
-}
-
-button[type="submit"] {
-  background-color: #016f01;
-  color: white;
-  font-size: 1.1rem;
-  padding: 1rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-button[type="submit"]:hover {
-  background-color: #004d00;
-}
-

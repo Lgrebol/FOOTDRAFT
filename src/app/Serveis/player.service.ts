@@ -28,6 +28,12 @@ export class PlayerService {
     return this.http.delete(`${this.apiUrl}/${playerUUID}`);
   }
   
+  updatePlayer(playerUUID: string, playerData: FormData): Observable<Player> {
+    return this.http.put<any>(`${this.apiUrl}/${playerUUID}`, playerData).pipe(
+      map(p => Player.fromApi(p))
+    );
+  }
+  
   getReservedPlayers(userUUID: string): Observable<Player[]> {
     const reserveUrl = `http://localhost:3000/api/v1/reserve/${userUUID}`;
     return this.http.get<any[]>(reserveUrl).pipe(

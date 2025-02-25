@@ -20,15 +20,135 @@
         <p *ngIf="player.shooting"><strong>Dispar:</strong> {{ player.shooting }}</p>
       </div>
       <div class="card-actions">
+        <button (click)="editPlayer(player)">Editar</button>
         <button (click)="deletePlayer(player.playerUUID)">Eliminar</button>
       </div>
     </div>
+  </div>
+
+  
+  <!-- Formulari per editar jugador (mostrat només si hi ha editingPlayer) -->
+  <div class="form-container" *ngIf="editingPlayer">
+    <h2>Editar Jugador</h2>
+    <form (ngSubmit)="updatePlayer()" enctype="multipart/form-data">
+      <!-- Grup Nom -->
+      <div class="form-group">
+        <label for="editName">Nom:</label>
+        <input id="editName" type="text"
+               [(ngModel)]="editingPlayer.playerName"
+               name="editName"
+               required
+               aria-required="true" />
+      </div>
+      <!-- Grup Posició -->
+      <div class="form-group">
+        <label for="editPosition">Posició:</label>
+        <select id="editPosition"
+                [(ngModel)]="editingPlayer.position"
+                name="editPosition"
+                required
+                aria-required="true">
+          <option value="" disabled selected>Selecciona una posició</option>
+          <option *ngFor="let position of positions" [value]="position">
+            {{ position }}
+          </option>
+        </select>
+      </div>
+      <!-- Grup Equip -->
+      <div class="form-group">
+        <label for="editTeam">Equip:</label>
+        <select id="editTeam"
+                [(ngModel)]="editingPlayer.teamUUID"
+                name="editTeam"
+                required
+                aria-required="true">
+          <option value="" disabled selected>Selecciona un equip</option>
+          <option *ngFor="let team of teams" [value]="team.teamUUID">
+            {{ team.teamName }}
+          </option>
+        </select>
+      </div>
+      <!-- Grup Preu -->
+      <div class="form-group">
+        <label for="editPrice">Preu (€):</label>
+        <input id="editPrice" type="number"
+               [(ngModel)]="editingPlayer.price"
+               name="editPrice"
+               required
+               aria-required="true" />
+      </div>
+      <!-- Grup Alçada -->
+      <div class="form-group">
+        <label for="editHeight">Alçada (cm):</label>
+        <input id="editHeight" type="number"
+               [(ngModel)]="editingPlayer.height"
+               name="editHeight"
+               required
+               aria-required="true" />
+      </div>
+      <!-- Grup Velocitat -->
+      <div class="form-group">
+        <label for="editSpeed">Velocitat:</label>
+        <input id="editSpeed" type="number"
+               [(ngModel)]="editingPlayer.speed"
+               name="editSpeed"
+               required
+               aria-required="true" />
+      </div>
+      <!-- Grup Dispar -->
+      <div class="form-group">
+        <label for="editShooting">Dispar:</label>
+        <input id="editShooting" type="number"
+               [(ngModel)]="editingPlayer.shooting"
+               name="editShooting"
+               required
+               aria-required="true" />
+      </div>
+      <!-- Grup En venda -->
+      <fieldset class="form-group">
+        <legend>En venda:</legend>
+        <div>
+          <input type="radio"
+                 id="editIsForSaleYes"
+                 name="editIsForSale"
+                 [(ngModel)]="editingPlayer.isForSale"
+                 [value]="true" />
+          <label for="editIsForSaleYes">Sí</label>
+        </div>
+        <div>
+          <input type="radio"
+                 id="editIsForSaleNo"
+                 name="editIsForSale"
+                 [(ngModel)]="editingPlayer.isForSale"
+                 [value]="false" />
+          <label for="editIsForSaleNo">No</label>
+        </div>
+      </fieldset>
+      <!-- Grup Actiu -->
+      <div class="form-group">
+        <input id="editIsActive" type="checkbox"
+               [(ngModel)]="editingPlayer.isActive"
+               name="editIsActive" />
+        <label for="editIsActive">Està actiu</label>
+      </div>
+      <!-- Grup Imatge -->
+      <div class="form-group">
+        <label for="editImage">Imatge del jugador:</label>
+        <input id="editImage" type="file"
+               (change)="onFileSelected($event, true)"
+               name="editImage"
+               aria-required="false" />
+      </div>
+      <button type="submit">Actualitzar Jugador</button>
+      <button type="button" (click)="cancelEdit()">Cancel·lar</button>
+    </form>
   </div>
 
   <!-- Formulari per afegir jugador -->
   <div class="form-container">
     <h2>Afegir Jugador</h2>
     <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
+      <!-- Grup Nom -->
       <div class="form-group">
         <label for="name">Nom:</label>
         <input id="name" type="text"
@@ -39,7 +159,7 @@
                aria-describedby="name-desc" />
         <small id="name-desc">Introdueix el nom complet del jugador.</small>
       </div>
-      
+      <!-- Grup Posició -->
       <div class="form-group">
         <label for="position">Posició:</label>
         <select id="position"
@@ -53,7 +173,7 @@
           </option>
         </select>
       </div>
-      
+      <!-- Grup Equip -->
       <div class="form-group">
         <label for="team">Equip:</label>
         <select id="team"
@@ -67,7 +187,7 @@
           </option>
         </select>
       </div>
-      
+      <!-- Grup Preu -->
       <div class="form-group">
         <label for="price">Preu (€):</label>
         <input id="price" type="number"
@@ -76,7 +196,7 @@
                required
                aria-required="true" />
       </div>
-      
+      <!-- Grup Alçada -->
       <div class="form-group">
         <label for="height">Alçada (cm):</label>
         <input id="height" type="number"
@@ -85,7 +205,7 @@
                required
                aria-required="true" />
       </div>
-      
+      <!-- Grup Velocitat -->
       <div class="form-group">
         <label for="speed">Velocitat:</label>
         <input id="speed" type="number"
@@ -94,7 +214,7 @@
                required
                aria-required="true" />
       </div>
-      
+      <!-- Grup Dispar -->
       <div class="form-group">
         <label for="shooting">Dispar:</label>
         <input id="shooting" type="number"
@@ -103,7 +223,7 @@
                required
                aria-required="true" />
       </div>
-      
+      <!-- Grup En venda -->
       <fieldset class="form-group">
         <legend>En venda:</legend>
         <div>
@@ -123,14 +243,14 @@
           <label for="isForSaleNo">No</label>
         </div>
       </fieldset>
-      
+      <!-- Grup Actiu -->
       <div class="form-group">
         <input id="isActive" type="checkbox"
                [(ngModel)]="newPlayer.isActive"
                name="isActive" />
         <label for="isActive">Està actiu</label>
       </div>
-      
+      <!-- Grup Imatge -->
       <div class="form-group">
         <label for="image">Imatge del jugador:</label>
         <input id="image" type="file"
