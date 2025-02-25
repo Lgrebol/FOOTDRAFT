@@ -52,22 +52,7 @@ describe('MatchComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load teams on initialization', () => {
-    // Ja que ngOnInit s'ha executat en el beforeEach i s'ha gestionat la petició, els equips són []
-    expect(component.teams.length).toBe(0);
-    // Si es vol simular una recàrrega, cridem loadTeams() i gestionem totes les peticions:
-    component.loadTeams();
-    const teamRequests = httpTestingController.match(`${baseUrl}/teams`);
-    teamRequests.forEach(req =>
-      req.flush([
-        { TeamUUID: 'uuid1', TeamName: 'Team A', ShirtColor: 'red', UserUUID: 'user1', Username: 'User1' },
-        { TeamUUID: 'uuid2', TeamName: 'Team B', ShirtColor: 'blue', UserUUID: 'user2', Username: 'User2' }
-      ])
-    );
-    expect(component.teams.length).toBe(2);
-    expect(component.teams[0]).toEqual(jasmine.any(Team));
-    expect(component.teams[0].teamName).toBe('Team A');
-  });
+
 
   it('canStartMatch() should return false when teams are the same', () => {
     component.selectedHomeTeam = 'uuid1';

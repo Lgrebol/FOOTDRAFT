@@ -11,7 +11,6 @@ describe('TeamsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TeamsComponent],
       imports: [HttpClientTestingModule]
     }).compileComponents();
 
