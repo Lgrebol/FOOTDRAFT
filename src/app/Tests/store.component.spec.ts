@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreComponent } from '../Components/store/store.component';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { By } from '@angular/platform-browser';
 
 describe('StoreComponent', () => {
   let component: StoreComponent;
@@ -16,6 +15,12 @@ describe('StoreComponent', () => {
     fixture = TestBed.createComponent(StoreComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
+
+    // Flush the initial GET request triggered by the StoreService constructor.
+    const initialReq = httpMock.expectOne('http://localhost:3000/api/v1/players/store');
+    expect(initialReq.request.method).toBe('GET');
+    initialReq.flush([]);
+    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -27,10 +32,10 @@ describe('StoreComponent', () => {
   });
 
   it('should load the players in the store once is inicialitzated', () => {
-    // Utilitzem jugadors amb claus que espera Player.fromApi
+    // Use valid UUIDs in the mock players.
     const mockPlayers = [
       {
-        PlayerID: '11111111-1111-1111-1111-111111111111',
+        PlayerID: '11111111-1111-4111-8111-111111111111',
         PlayerName: 'Messi',
         Position: 'Forward',
         TeamID: 'team1',
@@ -45,7 +50,7 @@ describe('StoreComponent', () => {
         TeamName: 'FC Barcelona'
       },
       {
-        PlayerID: '22222222-2222-2222-2222-222222222222',
+        PlayerID: '22222222-2222-4222-9222-222222222222',
         PlayerName: 'Cristiano',
         Position: 'Forward',
         TeamID: 'team2',
@@ -61,48 +66,52 @@ describe('StoreComponent', () => {
       }
     ];
     
-    component.ngOnInit();
-    
+    // Trigger a new fetch (this could be triggered by ngOnInit or manually).
+    component.fetchStorePlayers();
     const req = httpMock.expectOne('http://localhost:3000/api/v1/players/store');
     expect(req.request.method).toBe('GET');
     req.flush(mockPlayers);
     
-    // Comprovem que el getter retorna els jugadors carregats
+    // Verify that the component’s getter returns the loaded players.
     expect(component.storePlayers.length).toBe(2);
     expect(component.storePlayers[0].playerName).toBe('Messi');
   });
 
   it('should buy a player and update the list', () => {
-    // Utilitzem un UUID vàlid per al jugador
-    const playerId = '11111111-1111-1111-1111-111111111111';
+    // Use a valid UUID for the player.
+    const playerId = '11111111-1111-4111-8111-111111111111';
     const successMessage = { message: 'Jugador comprat amb èxit' };
-    spyOn(component, 'fetchStorePlayers');
-    
+
     component.buyPlayer(playerId);
     
-    const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/buy/${playerId}`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ userID: component.currentUserUUID });
-    req.flush(successMessage);
-    
-    expect(component.fetchStorePlayers).toHaveBeenCalled();
+    // Expect the POST request to buy the player.
+    const postReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/buy/${playerId}`);
+    expect(postReq.request.method).toBe('POST');
+    expect(postReq.request.body).toEqual({ userID: component.currentUserUUID });
+    postReq.flush(successMessage);
+
+    // Because of the tap in the service, a GET request is triggered to refresh the list.
+    const getReq = httpMock.expectOne('http://localhost:3000/api/v1/players/store');
+    expect(getReq.request.method).toBe('GET');
+    getReq.flush([]);
+
+    expect(component.storeModel.success).toBe('Jugador comprat correctament!');
   });
 
   it('should show an error if the buy fails', () => {
-    const playerId = '11111111-1111-1111-1111-111111111111';
+    // Use a valid UUID for the player.
+    const playerId = '11111111-1111-4111-8111-111111111111';
     const errorMessage = { error: 'No tens prou diners' };
-    spyOn(window, 'alert');
-    
+
     component.buyPlayer(playerId);
     
-    const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/buy/${playerId}`);
-    expect(req.request.method).toBe('POST');
-    req.flush(errorMessage, { status: 400, statusText: 'Bad Request' });
+    const postReq = httpMock.expectOne(`http://localhost:3000/api/v1/players/buy/${playerId}`);
+    expect(postReq.request.method).toBe('POST');
+    postReq.flush(errorMessage, { status: 400, statusText: 'Bad Request' });
     
-    expect(window.alert).toHaveBeenCalledWith('No tens prou diners');
+    expect(component.storeModel.error).toBe('No tens prou diners');
   });
 
-  // Proves per als filtres: search, minPrice i maxPrice
   it('should include the search parameter in the GET request when searchTerm is provided', () => {
     component.searchTerm = 'Messi';
     component.fetchStorePlayers();
@@ -113,7 +122,7 @@ describe('StoreComponent', () => {
              request.params.get('search') === 'Messi';
     });
     expect(req.request.method).toBe('GET');
-    req.flush([]); // Simulem resposta buida
+    req.flush([]); // Simulate an empty response.
   });
 
   it('should include the minPrice parameter in the GET request when minPrice is provided', () => {

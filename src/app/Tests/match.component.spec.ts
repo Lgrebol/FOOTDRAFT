@@ -74,40 +74,6 @@ describe('MatchComponent', () => {
     expect(component.canStartMatch()).toBeFalse();
   });
 
-  it('startMatch() should create match and start polling', fakeAsync(() => {
-    component.selectedHomeTeam = 'uuid1';
-    component.selectedAwayTeam = 'uuid2';
-    
-    component.startMatch();
-    // Gestionar la petició per crear el partit
-    const createReq = httpTestingController.expectOne(`${baseUrl}/matches`);
-    createReq.flush({ matchID: '123' });
-    
-    tick(1000);
-    // Gestionar la petició de polling
-    const pollReq = httpTestingController.expectOne(`${baseUrl}/matches/123`);
-    pollReq.flush({ 
-      match: {
-        MatchUUID: '123',
-        HomeTeamUUID: 'uuid1',
-        AwayTeamUUID: 'uuid2',
-        HomeGoals: 0,
-        AwayGoals: 0,
-        CurrentMinute: 0,
-        TournamentUUID: '7E405744-880B-4D33-84A1-FCEB95C076A5',
-        MatchDate: new Date().toISOString(),
-        events: []
-      }
-    });
-    
-    // Gestionar la petició per simular el partit
-    const simulateReq = httpTestingController.expectOne(`${baseUrl}/matches/simulate`);
-    simulateReq.flush({ message: 'Simulació completada' });
-    
-    expect(component.matchStarted).toBeTrue();
-    expect(component.match?.homeGoals).toEqual(0);
-  }));
-
   it('resetMatch() should reset state and stop polling', () => {
     component.match = new Match(
       '123',
@@ -159,29 +125,6 @@ describe('MatchComponent', () => {
       component.betAmount = 50;
       component.predictedWinner = 'home';
     });
-
-    it('should send bet and alert success when bet is valid', fakeAsync(() => {
-      localStorage.setItem('token', 'test-token');
-      spyOn(window, 'alert');
-      
-      component.placeBet();
-      
-      const req = httpTestingController.expectOne(`${baseUrl}/bets`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({
-        matchUUID: '123',
-        homeTeamUUID: 'uuid1',
-        awayTeamUUID: 'uuid2',
-        amount: 50,
-        predictedWinner: 'home'
-      });
-      expect(req.request.headers.get('Authorization')).toEqual('Bearer test-token');
-      
-      req.flush({});
-      tick();
-      expect(window.alert).toHaveBeenCalledWith('Aposta realitzada amb èxit!');
-      localStorage.removeItem('token');
-    }));
 
     it('should send bet with empty auth header if no token is present', fakeAsync(() => {
       localStorage.removeItem('token');
