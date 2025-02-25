@@ -12,25 +12,46 @@ export const createTeam = async (req, res) => {
       campsRebuts: req.body 
     });
   }
-
-  try {
-    const pool = await connectDb();
-    await pool.request()
-      .input("teamName", sql.VarChar, req.body.teamName)
-      .input("shirtColor", sql.VarChar, req.body.shirtColor)
-      .input("userID", sql.UniqueIdentifier, req.body.userID)
-      .query("INSERT INTO Teams (TeamName, ShirtColor, UserUUID) VALUES (@teamName, @shirtColor, @userID)");
-    
-    res.status(201).send({ message: "Equip creat correctament." });
-  } catch (err) {
-    console.error("Error creant equip:", {
-      query: err.query,
-      params: req.body,
-      error: err.message
-    });
-    res.status(500).send({ error: "Error intern del servidor" });
-  }
-};
+  
+    try {
+      const pool = await connectDb();
+  
+      // 1. Verifica si el nom ja existeix
+      const checkExisting = await pool.request()
+        .input("teamName", sql.VarChar, req.body.teamName)
+        .query("SELECT TeamUUID FROM Teams WHERE TeamName = @teamName");
+        
+      if (checkExisting.recordset.length > 0) {
+        return res.status(400).send({ error: "Aquest nom d'equip ja existeix." });
+      }
+  
+      // 2. Inserta l'equip i retorna les dades inserides
+      const insertResult = await pool.request()
+        .input("teamName", sql.VarChar, req.body.teamName)
+        .input("shirtColor", sql.VarChar, req.body.shirtColor)
+        .input("userID", sql.UniqueIdentifier, req.body.userID)
+        .query(`
+          INSERT INTO Teams (TeamName, ShirtColor, UserUUID)
+          OUTPUT inserted.TeamUUID, inserted.TeamName, inserted.ShirtColor, inserted.UserUUID
+          VALUES (@teamName, @shirtColor, @userID)
+        `);
+  
+      const newTeam = insertResult.recordset[0];
+  
+      // 3. Obtenir el nom de l'usuari
+      const userResult = await pool.request()
+        .input("userID", sql.UniqueIdentifier, newTeam.UserUUID)
+        .query("SELECT Name FROM Users WHERE UserUUID = @userID");
+  
+      newTeam.UserName = userResult.recordset[0]?.Name || '';
+  
+      res.status(201).send(newTeam);
+  
+    } catch (err) {
+      console.error("Error creant equip:", err);
+      res.status(500).send({ error: "Error intern del servidor" });
+    }
+  };
 
 export const getTeams = async (req, res) => {
   try {

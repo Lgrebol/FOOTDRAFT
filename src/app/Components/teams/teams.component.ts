@@ -57,7 +57,11 @@ export class TeamsComponent implements OnInit {
         this.selectedPlayerId,
         this.currentUserId
       ).subscribe({
-        next: () => this.loadData(),
+        next: () => {
+          this.reservedPlayers = this.reservedPlayers.filter(p => p.playerUUID !== this.selectedPlayerId);
+          this.selectedTeamId = null;
+          this.selectedPlayerId = null;
+        },
         error: err => console.error('Error assignant jugador:', err)
       });
     }
@@ -66,26 +70,33 @@ export class TeamsComponent implements OnInit {
   addTeam(): void {
     if (this.newTeam.teamName && this.newTeam.shirtColor && this.newTeam.userUUID) {
       this.teamService.addTeam(this.newTeam).subscribe({
-        next: () => {
-          this.loadData();
+        next: (newTeamFromServer) => {
+          console.log("Equip creat:", newTeamFromServer);
+          this.teams = [...this.teams, Team.fromApi(newTeamFromServer)];
           this.newTeam = new Team();
         },
-        error: err => console.error('Error afegint equip:', err)
+        error: (err) => console.error("Error afegint equip:", err)
       });
     }
   }
 
   deleteTeam(teamUUID: string): void {
+    console.log("Intentant eliminar equip amb UUID:", teamUUID);
     this.teamService.deleteTeam(teamUUID).subscribe({
-      next: () => this.loadData(),
-      error: err => console.error('Error eliminant equip:', err)
+      next: () => {
+        this.teams = this.teams.filter(t => t.teamUUID !== teamUUID);
+      },
+      error: (err) => console.error("Error eliminant equip:", err) 
     });
   }
 
-  // Mètode per obtenir les reserves (si es necessita per actualitzar l'estat)
   fetchReservedPlayers(): void {
-    this.playerService.getReservedPlayers(this.currentUserId).subscribe(
-      players => this.reservedPlayers = players
-    );
+    this.playerService.getReservedPlayers(this.currentUserId).subscribe({
+      next: (players) => {
+        console.log("Jugadors reservats:", players);
+        this.reservedPlayers = players;
+      },
+      error: (err) => console.error("Error carregant reserves:", err)
+    });
   }
 }

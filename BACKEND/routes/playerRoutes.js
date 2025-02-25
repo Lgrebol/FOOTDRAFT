@@ -18,5 +18,7 @@ router.get("/", getPlayers);
 router.put("/:id", upload.single("image"), updatePlayer);
 router.delete("/:id", deletePlayer);
 router.post("/buy/:id", buyPlayer);
+router.get("/store", getPlayersForSale);
+
 
 export default router;

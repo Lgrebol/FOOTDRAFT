@@ -56,11 +56,11 @@ export class Team {
 
   static fromApi(data: any): Team {
     return new Team(
-      data.TeamUUID || data.id,
-      data.TeamName,
-      data.ShirtColor,
-      data.UserUUID || data.UserID,
-      data.UserName
+      data.TeamUUID || data.teamUUID,
+      data.TeamName || data.teamName,
+      data.ShirtColor || data.shirtColor,
+      data.UserUUID || data.userUUID || data.UserID,
+      data.UserName || data.username
     );
   }
 }

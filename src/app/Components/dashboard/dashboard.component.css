@@ -1,6 +1,7 @@
 .dashboard-container {
   max-width: 800px;
   margin: 30px auto;
+  height: 800px;
   padding: 20px;
   text-align: center;
   font-family: 'Roboto', sans-serif;

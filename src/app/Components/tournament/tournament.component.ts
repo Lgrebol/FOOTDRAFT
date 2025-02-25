@@ -32,8 +32,8 @@ export class TournamentComponent implements OnInit {
       this.tournamentForm.setLoading(true);
       this.tournamentService.addTournament(this.tournamentForm.toDTO()).subscribe({
         next: () => {
-          this.tournamentForm.setSuccess('Torneig afegit correctament');
           this.tournamentForm.resetForm();
+          this.tournamentForm.setSuccess('Torneig afegit correctament');
         },
         error: (error) => {
           console.error("Error adding tournament:", error);
@@ -43,6 +43,8 @@ export class TournamentComponent implements OnInit {
           this.tournamentForm.setLoading(false);
         }
       });
+    } else {
+      this.tournamentForm.setError('Error afegint torneig');
     }
   }
 
