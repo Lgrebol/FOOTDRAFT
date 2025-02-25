@@ -405,5 +405,18 @@ describe('PlayersComponent', () => {
       expect(component.players[0].playerName).toBe('New Name');
       expect(component.editingPlayer).toBeNull();
     });
+
+    it('should show an error on update failure', () => {
+      component.editPlayer(mockPlayer);
+      spyOn(console, 'error');
+  
+      component.updatePlayer();
+      const req = httpMock.expectOne(`http://localhost:3000/api/v1/players/${mockPlayer.playerUUID}`);
+      req.flush('Error', { status: 500, statusText: 'Server Error' });
+  
+      expect(console.error).toHaveBeenCalled();
+    });
+  
+
   });
 });  
