@@ -66,12 +66,13 @@ describe('MainLayoutComponent', () => {
   it('should log error if getFootcoinsUpdates fails', () => {
     const testError = new Error('Footcoins update error');
     spyOn(console, 'error');
-
+  
     userServiceSpy.getFootcoinsUpdates.and.returnValue(throwError(() => testError));
     userServiceSpy.refreshCurrentUserData.and.returnValue(of(new User('', '', '', 0)));
-
+  
     component.ngOnInit();
-
+  
+    expect(console.error).toHaveBeenCalledWith('Error updating footcoins:', testError);
     expect(console.error).toHaveBeenCalledWith('Error obtenint footcoins:', testError);
   });
 

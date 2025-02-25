@@ -44,9 +44,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToFootcoins(): void {
-    this.footcoinsSubscription = this.userService.getFootcoinsUpdates().subscribe(
-      (coins) => this.footcoins = coins ?? 0
-    );
+    this.footcoinsSubscription = this.userService.getFootcoinsUpdates().subscribe({
+      next: (coins) => this.footcoins = coins ?? 0,
+      error: (err) => console.error('Error updating footcoins:', err)
+    });
   }
 
   logout(): void {
