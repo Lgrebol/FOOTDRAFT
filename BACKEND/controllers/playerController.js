@@ -101,6 +101,71 @@ export const deletePlayer = async (req, res) => {
   }
 };
 
+export const updatePlayer = async (req, res) => {
+  const playerId = req.params.id;
+  const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
+
+  // Si s'envia una nova imatge, la convertim a base64
+  let imageBase64 = null;
+  if (req.file) {
+    imageBase64 = req.file.buffer.toString('base64');
+  }
+
+  // Validació bàsica dels camps obligatoris
+  if (!playerName?.trim() || !position?.trim() || !teamID?.trim()) {
+    return res.status(400).send({ error: "Falten camps obligatoris." });
+  }
+
+  try {
+    const pool = await connectDb();
+    let query = `
+      UPDATE Players
+      SET PlayerName = @playerName,
+          Position = @position,
+          TeamUUID = @teamUUID,
+          IsActive = @isActive,
+          IsForSale = @isForSale,
+          Price = @price,
+          Height = @height,
+          Speed = @speed,
+          Shooting = @shooting`;
+    if (imageBase64) {
+      query += `,
+          PlayerImage = @playerImage`;
+    }
+    query += `
+      WHERE PlayerUUID = @playerId;
+      SELECT p.*, t.TeamName FROM Players p
+      LEFT JOIN Teams t ON p.TeamUUID = t.TeamUUID
+      WHERE p.PlayerUUID = @playerId;
+    `;
+
+    let request = pool.request();
+    request.input("playerId", sql.UniqueIdentifier, playerId);
+    request.input("playerName", sql.VarChar, playerName);
+    request.input("position", sql.VarChar, position);
+    request.input("teamUUID", sql.UniqueIdentifier, teamID);
+    request.input("isActive", sql.Bit, isActive === '1' ? 1 : 0);
+    request.input("isForSale", sql.Bit, isForSale === '1' ? 1 : 0);
+    request.input("price", sql.Decimal(10, 2), parseFloat(price));
+    request.input("height", sql.Int, parseInt(height));
+    request.input("speed", sql.Int, parseInt(speed));
+    request.input("shooting", sql.Int, parseInt(shooting));
+    if (imageBase64) {
+      request.input("playerImage", sql.VarChar(sql.MAX), imageBase64);
+    }
+
+    const result = await request.query(query);
+    const updatedPlayer = result.recordset[0];
+    res.status(200).send(updatedPlayer);
+  } catch (err) {
+    res.status(500).send({
+      error: "Error al actualitzar el jugador",
+      detalls: err.message,
+    });
+  }
+};
+
 export const getPlayersForSale = async (req, res) => {
   try {
     const pool = await connectDb();
