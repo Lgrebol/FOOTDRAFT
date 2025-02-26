@@ -68,4 +68,19 @@ export class PlayerList {
       this.currentPage--;
     }
   }
+
+  // Afegeix un jugador i actualitza el filtre
+  add(player: Player): void {
+    this.players = [...this.players, player];
+  }
+
+  // Elimina un jugador per ID
+  remove(playerUUID: string): void {
+    this.players = this.players.filter(p => p.playerUUID !== playerUUID);
+  }
+
+  // Actualitza un jugador existent
+  update(player: Player): void {
+    this.players = this.players.map(p => p.playerUUID === player.playerUUID ? player : p);
+  }
 }

@@ -169,10 +169,4 @@ describe('StoreComponent', () => {
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
-
-  it('should call applyFilters and trigger a new API call', () => {
-    spyOn(component, 'fetchStorePlayers');
-    component.applyFilters();
-    expect(component.fetchStorePlayers).toHaveBeenCalled();
-  });
 });

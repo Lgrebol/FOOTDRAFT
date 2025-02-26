@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { PlayerService } from '../../Serveis/player.service';
 import { TeamService } from '../../Serveis/team.service';
 import { Player } from '../../Classes/players/player.model';
-import { Team } from '../../Classes/teams/team.model';
 import { PlayerList } from '../../Classes/players/player-list.model';
 import { TeamList } from '../../Classes/teams/team-list.model';
 
@@ -16,9 +15,9 @@ import { TeamList } from '../../Classes/teams/team-list.model';
   styleUrls: ['./players.component.css']
 })
 export class PlayersComponent implements OnInit {
-  // Encapsulate player logic in the model
+  // Tota la lògica de jugadors es gestiona amb el model PlayerList.
   playerList: PlayerList = new PlayerList();
-  // Encapsulate team logic in a dedicated model instead of a standalone array
+  // La gestió dels equips es fa a través del model TeamList.
   teamList: TeamList = new TeamList();
 
   editingPlayer: Player | null = null;
@@ -48,7 +47,7 @@ export class PlayersComponent implements OnInit {
     });
   }
 
-  // Public getter and setter for players, delegating to the PlayerList model
+  // Exposició dels jugadors: el getter i setter deleguen a PlayerList.
   get players(): Player[] {
     return this.playerList.players;
   }
@@ -56,34 +55,50 @@ export class PlayersComponent implements OnInit {
     this.playerList.players = players;
   }
 
-  // Public getter and setter for teams, delegating to the TeamList model
-  get teams(): Team[] {
+  // Exposició dels equips per a les proves i per a la plantilla.
+  // Les proves utilitzen la propietat 'teams' i la plantilla fa referència a 'availableTeams'.
+  get teams(): any[] {
     return this.teamList.teams;
   }
-  set teams(teams: Team[]) {
+  set teams(teams: any[]) {
     this.teamList.teams = teams;
   }
+  get availableTeams(): any[] {
+    return this.teamList.teams;
+  }
 
+  // Exposició dels jugadors paginats (per a la plantilla).
   get paginatedPlayers(): Player[] {
     return this.playerList.paginatedPlayers;
   }
 
+  // Delegació dels mètodes de paginació al model.
+  prevPage(): void {
+    this.playerList.prevPage();
+  }
+  nextPage(): void {
+    this.playerList.nextPage();
+  }
+  goToPage(page: number): void {
+    this.playerList.goToPage(page);
+  }
+
   addPlayer(): void {
-    // Block addition if no teams are available.
+    // Si no hi ha equips, bloqueja l'addició.
     if (!this.teams || this.teams.length === 0) {
       alert('No hi ha equips disponibles');
       return;
     }
-
     if (!this.newPlayer.isValid()) {
       alert('Si us plau, omple tots els camps obligatoris.');
       return;
     }
-
     const formData = this.newPlayer.toFormData();
     this.playerService.addPlayer(formData).subscribe({
       next: (createdPlayer: Player) => {
-        this.playerList.players = [...this.playerList.players, createdPlayer];
+        // Deleguem l'addició al model.
+        this.playerList.add(createdPlayer);
+        // Reinicialitzem el formulari (newPlayer).
         this.newPlayer = new Player();
       },
       error: (err) => {
@@ -96,13 +111,15 @@ export class PlayersComponent implements OnInit {
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({
       next: () => {
-        this.playerList.players = this.playerList.players.filter(p => p.playerUUID !== playerUUID);
+        // Deleguem l'eliminació al model.
+        this.playerList.remove(playerUUID);
       },
       error: (err) => console.error('Error eliminant jugador:', err)
     });
   }
 
   editPlayer(player: Player): void {
+    // Clonem el jugador per evitar modificar-lo directament mentre s'edita.
     this.editingPlayer = Player.clone(player);
   }
 
@@ -115,9 +132,8 @@ export class PlayersComponent implements OnInit {
     const formData = this.editingPlayer.toFormData();
     this.playerService.updatePlayer(this.editingPlayer.playerUUID, formData).subscribe({
       next: (updatedPlayer: Player) => {
-        this.playerList.players = this.playerList.players.map(p =>
-          p.playerUUID === updatedPlayer.playerUUID ? updatedPlayer : p
-        );
+        // Deleguem l'actualització al model.
+        this.playerList.update(updatedPlayer);
         this.editingPlayer = null;
       },
       error: (err) => {
