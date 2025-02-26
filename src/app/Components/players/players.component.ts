@@ -6,6 +6,7 @@ import { TeamService } from '../../Serveis/team.service';
 import { Player } from '../../Classes/players/player.model';
 import { Team } from '../../Classes/teams/team.model';
 import { PlayerList } from '../../Classes/players/player-list.model';
+import { TeamList } from '../../Classes/teams/team-list.model';
 
 @Component({
   selector: 'app-players',
@@ -15,12 +16,15 @@ import { PlayerList } from '../../Classes/players/player-list.model';
   styleUrls: ['./players.component.css']
 })
 export class PlayersComponent implements OnInit {
+  // Encapsulate player logic in the model
   playerList: PlayerList = new PlayerList();
+  // Encapsulate team logic in a dedicated model instead of a standalone array
+  teamList: TeamList = new TeamList();
+
   editingPlayer: Player | null = null;
   newPlayer: Player = new Player();
 
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
-  availableTeams: Team[] = [];
 
   constructor(
     private playerService: PlayerService,
@@ -40,33 +44,46 @@ export class PlayersComponent implements OnInit {
 
   private loadTeams(): void {
     this.teamService.getTeams().subscribe(teams => {
-      this.availableTeams = teams;
+      this.teamList.teams = teams;
     });
   }
 
-  prevPage(): void {
-    this.playerList.prevPage();
+  // Public getter and setter for players, delegating to the PlayerList model
+  get players(): Player[] {
+    return this.playerList.players;
+  }
+  set players(players: Player[]) {
+    this.playerList.players = players;
   }
 
-  nextPage(): void {
-    this.playerList.nextPage();
+  // Public getter and setter for teams, delegating to the TeamList model
+  get teams(): Team[] {
+    return this.teamList.teams;
+  }
+  set teams(teams: Team[]) {
+    this.teamList.teams = teams;
   }
 
-  goToPage(page: number): void {
-    this.playerList.goToPage(page);
+  get paginatedPlayers(): Player[] {
+    return this.playerList.paginatedPlayers;
   }
 
   addPlayer(): void {
+    // Block addition if no teams are available.
+    if (!this.teams || this.teams.length === 0) {
+      alert('No hi ha equips disponibles');
+      return;
+    }
+
     if (!this.newPlayer.isValid()) {
       alert('Si us plau, omple tots els camps obligatoris.');
       return;
     }
+
     const formData = this.newPlayer.toFormData();
     this.playerService.addPlayer(formData).subscribe({
       next: (createdPlayer: Player) => {
-        const players = this.playerList.players;
-        players.push(createdPlayer);
-        this.playerList.players = players;
+        this.playerList.players = [...this.playerList.players, createdPlayer];
         this.newPlayer = new Player();
       },
       error: (err) => {
@@ -79,8 +96,7 @@ export class PlayersComponent implements OnInit {
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({
       next: () => {
-        const players = this.playerList.players.filter(p => p.playerUUID !== playerUUID);
-        this.playerList.players = players;
+        this.playerList.players = this.playerList.players.filter(p => p.playerUUID !== playerUUID);
       },
       error: (err) => console.error('Error eliminant jugador:', err)
     });
@@ -91,9 +107,7 @@ export class PlayersComponent implements OnInit {
   }
 
   updatePlayer(): void {
-    if (!this.editingPlayer) {
-      return;
-    }
+    if (!this.editingPlayer) return;
     if (!this.editingPlayer.isValid()) {
       alert('Si us plau, omple tots els camps obligatoris.');
       return;
@@ -101,12 +115,9 @@ export class PlayersComponent implements OnInit {
     const formData = this.editingPlayer.toFormData();
     this.playerService.updatePlayer(this.editingPlayer.playerUUID, formData).subscribe({
       next: (updatedPlayer: Player) => {
-        const index = this.playerList.players.findIndex(p => p.playerUUID === updatedPlayer.playerUUID);
-        if (index !== -1) {
-          const players = this.playerList.players;
-          players[index] = updatedPlayer;
-          this.playerList.players = players;
-        }
+        this.playerList.players = this.playerList.players.map(p =>
+          p.playerUUID === updatedPlayer.playerUUID ? updatedPlayer : p
+        );
         this.editingPlayer = null;
       },
       error: (err) => {
