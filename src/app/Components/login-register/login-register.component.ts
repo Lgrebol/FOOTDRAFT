@@ -22,7 +22,8 @@ export class LoginRegisterComponent implements AfterViewInit {
   @ViewChild('signInBtn') signInBtn!: ElementRef<HTMLButtonElement>;
   @ViewChild('signUpBtn') signUpBtn!: ElementRef<HTMLButtonElement>;
   @ViewChild('container') container!: ElementRef<HTMLElement>;
-
+  
+  loginErrorMessage: string = '';
   userModel: User = new User();
 
   errors = {
@@ -94,8 +95,10 @@ export class LoginRegisterComponent implements AfterViewInit {
   }
 
   handleSignIn(): void {
+    this.loginErrorMessage = '';
+
     if (!this.userModel.isValidForLogin()) {
-      alert('Si us plau, omple tots els camps correctament');
+      this.loginErrorMessage = 'Si us plau, omple tots els camps correctament';
       return;
     }
 
@@ -107,7 +110,7 @@ export class LoginRegisterComponent implements AfterViewInit {
       },
       error: (error) => {
         console.error("Error d'inici de sessió:", error);
-        alert(error.error?.error || 'Credencials incorrectes');
+        this.loginErrorMessage = error.error?.error || 'Credencials incorrectes';
       }
     });
   }

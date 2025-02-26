@@ -32,6 +32,12 @@
             Contrasenya obligatòria
           </div>
         </div>
+        
+        <!-- Missatge d'error integrat al formulari d'inici de sessió -->
+        <div *ngIf="loginErrorMessage" class="error-message" role="alert">
+          {{ loginErrorMessage }}
+        </div>
+        
         <button class="btn solid" type="submit" aria-label="Iniciar sessió">
           Inicieu Sessió
         </button>
@@ -118,18 +124,18 @@
     <!-- Left Panel -->
     <div class="panel left-panel" role="region" aria-label="Panell de benvinguda">
       <div class="content">
-          <h1 class="service-title">FOOTDRAFT</h1>
-          <p>Gestió d'equips, competicions i molt més!!!</p>
-          <button class="btn transparent" 
-                  id="sign-up-btn" 
-                  #signUpBtn
-                  aria-label="Mostrar formulari de registre"
-                  aria-controls="sign-up-form">
-            Registra't
-          </button>
-        </div>
-        <img src="/player2.png" class="image" alt="Il·lustració d'un jugador de futbol amb la pilota"> 
+        <h1 class="service-title">FOOTDRAFT</h1>
+        <p>Gestió d'equips, competicions i molt més!!!</p>
+        <button class="btn transparent" 
+                id="sign-up-btn" 
+                #signUpBtn
+                aria-label="Mostrar formulari de registre"
+                aria-controls="sign-up-form">
+          Registra't
+        </button>
       </div>
+      <img src="/player2.png" class="image" alt="Il·lustració d'un jugador de futbol amb la pilota"> 
+    </div>
   
     <!-- Right Panel -->
     <div class="panel right-panel" role="region" aria-label="Panell de benvinguda per a usuaris registrats">
