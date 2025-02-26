@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DashboardStats } from '../Classes/dashboard/dashboard-stats.model';
 
@@ -15,9 +15,17 @@ export class DashboardService {
     this.fetchDashboardStats();
   }
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
+
   private fetchDashboardStats(): void {
     this.dashboardStats.setLoading(true);
-    this.http.get<any>(this.apiUrl).subscribe({
+    this.http.get<any>(this.apiUrl, { headers: this.getAuthHeaders() }).subscribe({
       next: data => {
         this.dashboardStats.updateStats({
           totalTeams: data.totalTeams,
