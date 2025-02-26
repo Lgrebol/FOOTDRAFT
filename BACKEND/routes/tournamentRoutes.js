@@ -1,4 +1,5 @@
 import express from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 import {
     createTournamentController,
     getTournamentsController,
@@ -8,7 +9,7 @@ import {
 } from "../controllers/tournamentController.js";
 
 const router = express.Router();
-
+router.use(authMiddleware);
 router.post("/", createTournamentController);
 router.get("/", getTournamentsController);
 router.get("/:id", getTournamentByIdController);
