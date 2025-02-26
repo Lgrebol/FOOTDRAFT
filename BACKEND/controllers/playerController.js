@@ -59,6 +59,9 @@ export const createPlayer = async (req, res) => {
     const insertedPlayer = result.recordset[0];
     res.status(201).send(insertedPlayer);
   } catch (err) {
+    if (err.message && (err.message.includes("overflow") || err.message.includes("Arithmetic overflow"))) {
+      return res.status(400).send({ error: "Preu del jugador excedit" });
+    }
     res.status(500).send({ 
       error: "Error al crear jugador",
       detalls: err.message,
@@ -74,7 +77,7 @@ export const getPlayers = async (req, res) => {
     const result = await pool.request().query(`
       SELECT p.*, t.TeamName 
       FROM Players p
-      LEFT JOIN Teams t ON p.TeamUUID = t.TeamUUID
+      INNER JOIN Teams t ON p.TeamUUID = t.TeamUUID
     `);
     res.status(200).json(result.recordset);
   } catch (err) {
@@ -105,13 +108,11 @@ export const updatePlayer = async (req, res) => {
   const playerId = req.params.id;
   const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
 
-  // Si s'envia una nova imatge, la convertim a base64
   let imageBase64 = null;
   if (req.file) {
     imageBase64 = req.file.buffer.toString('base64');
   }
 
-  // Validació bàsica dels camps obligatoris
   if (!playerName?.trim() || !position?.trim() || !teamID?.trim()) {
     return res.status(400).send({ error: "Falten camps obligatoris." });
   }
@@ -136,7 +137,7 @@ export const updatePlayer = async (req, res) => {
     query += `
       WHERE PlayerUUID = @playerId;
       SELECT p.*, t.TeamName FROM Players p
-      LEFT JOIN Teams t ON p.TeamUUID = t.TeamUUID
+      INNER JOIN Teams t ON p.TeamUUID = t.TeamUUID
       WHERE p.PlayerUUID = @playerId;
     `;
 

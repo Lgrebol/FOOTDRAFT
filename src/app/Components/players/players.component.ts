@@ -16,9 +16,8 @@ import { Team } from '../../Classes/teams/team.model';
 export class PlayersComponent implements OnInit {
   players: Player[] = [];
   teams: Team[] = [];
-  
   newPlayer: Player;
-  editingPlayer: Player | null = null; // Utilitzem objectes del model
+  editingPlayer: Player | null = null;
 
   positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
