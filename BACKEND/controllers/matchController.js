@@ -84,10 +84,10 @@ export const startMatchSimulationController = async (req, res) => {
     const homePlayers = homePlayersResult.recordset;
     const awayPlayers = awayPlayersResult.recordset;
 
-    if (homePlayers.length !== 5) {
+    if (homePlayers.length < 5) {
       return res.status(400).json({ error: "L'equip local ha de tenir exactament 5 jugadors actius." });
     }
-    if (awayPlayers.length !== 5) {
+    if (awayPlayers.length < 5) {
       return res.status(400).json({ error: "L'equip visitant ha de tenir exactament 5 jugadors actius." });
     }
 
