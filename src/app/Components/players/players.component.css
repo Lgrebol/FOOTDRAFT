@@ -208,6 +208,98 @@ button[type="submit"]:hover {
   color: red;
 }
 
+/* Contenidor del filtre */
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  background: #f0f5f0;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 77, 0, 0.2);
+  margin-bottom: 20px;
+}
+
+/* Inputs del filtre */
+.filter-container input[type="text"],
+.filter-container select {
+  padding: 8px;
+  border: 1px solid #004D00;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 200px;
+}
+
+/* Botó del filtre */
+.filter-container button {
+  background-color: #016F01;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.filter-container button:hover {
+  background-color: #004D00;
+}
+
+/* Contenidor de la paginació */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Botons de paginació */
+.pagination button {
+  background-color: #e6f2e6;
+  border: 1px solid #004D00;
+  color: #004D00;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease-in-out;
+}
+
+.pagination button:hover {
+  background-color: #016F01;
+  color: white;
+}
+
+/* Pàgina actual destacada */
+.pagination .current-page {
+  background-color: #004D00;
+  color: white;
+  font-weight: bold;
+}
+
+/* Desactivar botons quan no hi ha més pàgines */
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive per filtres */
+@media (max-width: 600px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-container input,
+  .filter-container select,
+  .filter-container button {
+    width: 100%;
+  }
+}
+
+
 /* Responsive: per pantalles més grans, posarem els labels i inputs en fila */
 @media (min-width: 600px) {
   .form-group {
