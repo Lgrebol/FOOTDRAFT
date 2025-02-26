@@ -69,7 +69,7 @@
                 name="editPosition"
                 required
                 aria-required="true">
-          <option value="" disabled selected>Selecciona una posició</option>
+          <option value="" disabled>Selecciona una posició</option>
           <option *ngFor="let position of positions" [value]="position">
             {{ position }}
           </option>
@@ -83,7 +83,7 @@
                 name="editTeam"
                 required
                 aria-required="true">
-          <option value="" disabled selected>Selecciona un equip</option>
+          <option value="" disabled>Selecciona un equip</option>
           <option *ngFor="let team of availableTeams" [value]="team.teamUUID">
             {{ team.teamName }}
           </option>
@@ -187,7 +187,7 @@
                 name="position"
                 required
                 aria-required="true">
-          <option value="" disabled selected>Selecciona una posició</option>
+          <option value="" disabled>Selecciona una posició</option>
           <option *ngFor="let position of positions" [value]="position">
             {{ position }}
           </option>
@@ -201,7 +201,7 @@
                 name="team"
                 required
                 aria-required="true">
-          <option value="" disabled selected>Selecciona un equip</option>
+          <option value="" disabled>Selecciona un equip</option>
           <option *ngFor="let team of availableTeams" [value]="team.teamUUID">
             {{ team.teamName }}
           </option>

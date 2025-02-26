@@ -76,7 +76,6 @@ export class PlayersComponent implements OnInit {
     });
   }
 
-
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({
       next: () => {
@@ -86,7 +85,6 @@ export class PlayersComponent implements OnInit {
       error: (err) => console.error('Error eliminant jugador:', err)
     });
   }
-
 
   editPlayer(player: Player): void {
     this.editingPlayer = Player.clone(player);

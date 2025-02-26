@@ -11,50 +11,44 @@ export class MatchService {
   private apiUrl = 'http://localhost:3000/api/v1/matches';
   private betsUrl = 'http://localhost:3000/api/v1/bets';
 
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.getToken()}`
-    })
-  };
-
   constructor(private http: HttpClient) {}
 
-  private getToken(): string {
-    return localStorage.getItem('token') || '';
+  // Helper function to get auth headers from localStorage
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken') || '';
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
   }
 
   createMatch(match: Match): Observable<any> {
-    return this.http.post(this.apiUrl, match.toApi(), this.httpOptions);
+    return this.http.post(this.apiUrl, match.toApi(), { headers: this.getAuthHeaders() });
   }
 
   getMatch(matchUUID: string): Observable<Match> {
-    return this.http.get<any>(`${this.apiUrl}/${matchUUID}`, this.httpOptions).pipe(
+    return this.http.get<any>(`${this.apiUrl}/${matchUUID}`, { headers: this.getAuthHeaders() }).pipe(
       map(response => Match.fromApi(response.match))
     );
   }
 
   simulateMatch(matchUUID: string): Observable<any> {
     return this.http.post(
-      `${this.apiUrl}/simulate`, 
-      { matchID: matchUUID }, 
-      this.httpOptions
+      `${this.apiUrl}/simulate`,
+      { matchID: matchUUID },
+      { headers: this.getAuthHeaders() }
     );
   }
 
   resetMatch(matchUUID: string): Observable<any> {
     return this.http.post(
-      `${this.apiUrl}/reset`, 
-      { matchID: matchUUID }, 
-      this.httpOptions
+      `${this.apiUrl}/reset`,
+      { matchID: matchUUID },
+      { headers: this.getAuthHeaders() }
     );
   }
 
   placeBet(betData: any): Observable<any> {
-    return this.http.post(
-      this.betsUrl, 
-      betData, 
-      this.httpOptions
-    );
+    return this.http.post(this.betsUrl, betData, { headers: this.getAuthHeaders() });
   }
 }

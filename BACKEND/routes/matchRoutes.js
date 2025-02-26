@@ -1,4 +1,5 @@
 import express from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 import {
   createMatchController,
   getMatchController,
@@ -8,9 +9,9 @@ import {
 
 const router = express.Router();
 
-router.post("/", createMatchController);
-router.get("/:matchID", getMatchController);
-router.post("/simulate", startMatchSimulationController);
-router.post("/reset", resetMatchController);
+router.post("/", authMiddleware, createMatchController);
+router.get("/:matchID", authMiddleware, getMatchController);
+router.post("/simulate", authMiddleware, startMatchSimulationController);
+router.post("/reset", authMiddleware, resetMatchController);
 
 export default router;
