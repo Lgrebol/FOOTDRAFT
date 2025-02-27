@@ -1,18 +1,9 @@
-import { validationResult, body } from "express-validator";
+import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import connectDb from "../config/db.js";
 import sql from "mssql";
-
-export const validateRegister = [
-  body("name").notEmpty().withMessage("El nom és obligatori"),
-  body("email").isEmail().withMessage("El correu electrònic no és vàlid"),
-  body("password")
-    .isLength({ min: 8 }).withMessage("La contrasenya ha de tenir almenys 8 caràcters")
-    .matches(/[A-Z]/).withMessage("La contrasenya ha de contenir almenys una lletra majúscula")
-    .matches(/[0-9]/).withMessage("La contrasenya ha de contenir almenys un número"),
-];
 
 export const registerUsers = async (req, res) => {
   const errors = validationResult(req);
@@ -22,26 +13,16 @@ export const registerUsers = async (req, res) => {
 
   const { name, email, password } = req.body;
 
-  let pool;
   try {
-    pool = await connectDb();
-    const existingUser = await pool
-      .request()
-      .input("email", sql.NVarChar, email)
-      .query("SELECT Email FROM Users WHERE Email = @email");
-
-    if (existingUser.recordset.length > 0) {
-      return res.status(400).json({ error: "Aquest correu ja està registrat" });
-    }
-
+    const pool = await connectDb();
     const hashedPassword = await bcrypt.hash(password, 10);
     const userUUID = uuidv4();
 
     await pool
       .request()
-      .input("name", sql.NVarChar, name)
-      .input("email", sql.NVarChar, email)
-      .input("password", sql.NVarChar, hashedPassword)
+      .input("name", sql.VarChar, name)
+      .input("email", sql.VarChar, email)
+      .input("password", sql.VarChar, hashedPassword)
       .input("footcoins", sql.Decimal(18, 2), 100000)
       .input("userUUID", sql.UniqueIdentifier, userUUID)
       .query(
@@ -52,20 +33,18 @@ export const registerUsers = async (req, res) => {
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).json({ error: "Error registering user" });
-  } finally {
-    if (pool) pool.close(); //Here we grant that the connection is closed
   }
 };
 
 export const loginUsers = async (req, res) => {
   const { email, password } = req.body;
-  let pool;
+
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     const result = await pool
       .request()
-      .input("email", sql.NVarChar, email)
-      .query("SELECT UserUUID, Name, PasswordHash FROM Users WHERE Email = @email");
+      .input("email", sql.VarChar, email)
+      .query("SELECT * FROM Users WHERE Email = @email");
 
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -88,15 +67,12 @@ export const loginUsers = async (req, res) => {
   } catch (error) {
     console.error("Error logging in:", error);
     res.status(500).json({ error: "Error logging in" });
-  } finally {
-    if (pool) pool.close();
   }
 };
 
 export const getUsers = async (req, res) => {
-  let pool;
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     const result = await pool.request().query(`
       SELECT 
         UserUUID,
@@ -119,7 +95,5 @@ export const getUsers = async (req, res) => {
       error: "Error obtenint usuaris",
       detalls: err.message 
     });
-  } finally {
-    if (pool) pool.close();
   }
 };

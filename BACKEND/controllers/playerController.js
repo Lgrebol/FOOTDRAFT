@@ -1,52 +1,33 @@
 import sql from "mssql";
 import connectDb from "../config/db.js";
-import { validationResult, body } from "express-validator";
 
 const isValidUUID = (uuid) => {
   const uuidRegex = /^[{}]?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}[{}]?$/i;
   return uuidRegex.test(uuid);
 };
 
-export const validateCreatePlayer = [
-  body("playerName")
-    .notEmpty().withMessage("El nom del jugador és obligatori"),
-  body("position")
-    .notEmpty().withMessage("La posició és obligatòria"),
-  body("teamID")
-    .notEmpty().withMessage("L'identificador de l'equip és obligatori")
-    .isUUID().withMessage("teamID ha de ser un UUID vàlid"),
-  body("isActive")
-    .optional().isBoolean().withMessage("isActive ha de ser booleà"),
-  body("isForSale")
-    .optional().isBoolean().withMessage("isForSale ha de ser booleà"),
-  body("price")
-    .optional().isFloat({ min: 0 }).withMessage("El preu ha de ser un número positiu"),
-  body("height")
-    .optional().isInt({ min: 0 }).withMessage("L'altura ha de ser un enter positiu"),
-  body("speed")
-    .optional().isInt({ min: 0 }).withMessage("La velocitat ha de ser un enter positiu"),
-  body("shooting")
-    .optional().isInt({ min: 0 }).withMessage("La potència de tir ha de ser un enter positiu"),
-];
-
 export const createPlayer = async (req, res) => {
-  // Validem els camps rebuts
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ error: errors.array() });
-  }
-
-  // Comprovem que s'ha pujat una imatge
+  const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
+  
   if (!req.file) {
     return res.status(400).send({ error: "Cal pujar una imatge." });
   }
 
-  const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
+  const missingFields = [];
+  if (!playerName?.trim()) missingFields.push('playerName');
+  if (!position?.trim()) missingFields.push('position');
+  if (!teamID?.trim()) missingFields.push('teamID');
+  if (missingFields.length > 0) {
+    return res.status(400).send({ 
+      error: `Falten camps: ${missingFields.join(', ')}`,
+      campsRebuts: req.body 
+    });
+  }
+
   const imageBase64 = req.file.buffer.toString('base64');
 
-  let pool;
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     const query = `
       INSERT INTO Players (
         PlayerName, Position, TeamUUID, IsActive, 
@@ -66,8 +47,8 @@ export const createPlayer = async (req, res) => {
       .input("playerName", sql.VarChar, playerName)
       .input("position", sql.VarChar, position)
       .input("teamUUID", sql.UniqueIdentifier, teamID)
-      .input("isActive", sql.Bit, isActive === '1' || isActive === true ? 1 : 0)
-      .input("isForSale", sql.Bit, isForSale === '1' || isForSale === true ? 1 : 0)
+      .input("isActive", sql.Bit, isActive === '1' ? 1 : 0)
+      .input("isForSale", sql.Bit, isForSale === '1' ? 1 : 0)
       .input("price", sql.Decimal(10, 2), parseFloat(price))
       .input("height", sql.Int, parseInt(height))
       .input("speed", sql.Int, parseInt(speed))
@@ -86,15 +67,13 @@ export const createPlayer = async (req, res) => {
       detalls: err.message,
       query: err.query 
     });
-  } finally {
-    if (pool) pool.close();
   }
 };
 
+
 export const getPlayers = async (req, res) => {
-  let pool;
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     const result = await pool.request().query(`
       SELECT p.*, t.TeamName 
       FROM Players p
@@ -103,8 +82,6 @@ export const getPlayers = async (req, res) => {
     res.status(200).json(result.recordset);
   } catch (err) {
     res.status(500).send({ error: err.message });
-  } finally {
-    if (pool) pool.close();
   }
 };
 
@@ -115,9 +92,8 @@ export const deletePlayer = async (req, res) => {
     return res.status(400).send({ error: "ID de jugador invàlid" });
   }
 
-  let pool;
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     await pool
       .request()
       .input("playerId", sql.UniqueIdentifier, playerId)
@@ -125,8 +101,6 @@ export const deletePlayer = async (req, res) => {
     res.status(200).send({ message: "Jugador eliminat correctament." });
   } catch (err) {
     res.status(500).send({ error: err.message });
-  } finally {
-    if (pool) pool.close();
   }
 };
 
@@ -134,18 +108,17 @@ export const updatePlayer = async (req, res) => {
   const playerId = req.params.id;
   const { playerName, position, teamID, isActive, isForSale, price, height, speed, shooting } = req.body;
 
-  if (!playerName?.trim() || !position?.trim() || !teamID?.trim()) {
-    return res.status(400).send({ error: "Falten camps obligatoris." });
-  }
-
   let imageBase64 = null;
   if (req.file) {
     imageBase64 = req.file.buffer.toString('base64');
   }
 
-  let pool;
+  if (!playerName?.trim() || !position?.trim() || !teamID?.trim()) {
+    return res.status(400).send({ error: "Falten camps obligatoris." });
+  }
+
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     let query = `
       UPDATE Players
       SET PlayerName = @playerName,
@@ -173,8 +146,8 @@ export const updatePlayer = async (req, res) => {
     request.input("playerName", sql.VarChar, playerName);
     request.input("position", sql.VarChar, position);
     request.input("teamUUID", sql.UniqueIdentifier, teamID);
-    request.input("isActive", sql.Bit, isActive === '1' || isActive === true ? 1 : 0);
-    request.input("isForSale", sql.Bit, isForSale === '1' || isForSale === true ? 1 : 0);
+    request.input("isActive", sql.Bit, isActive === '1' ? 1 : 0);
+    request.input("isForSale", sql.Bit, isForSale === '1' ? 1 : 0);
     request.input("price", sql.Decimal(10, 2), parseFloat(price));
     request.input("height", sql.Int, parseInt(height));
     request.input("speed", sql.Int, parseInt(speed));
@@ -191,19 +164,17 @@ export const updatePlayer = async (req, res) => {
       error: "Error al actualitzar el jugador",
       detalls: err.message,
     });
-  } finally {
-    if (pool) pool.close();
   }
 };
 
 export const getPlayersForSale = async (req, res) => {
-  let pool;
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     let query = `
       SELECT * FROM Players 
       WHERE IsForSale = 1 AND ReserveUserUUID IS NULL
     `;
+
     const { search, minPrice, maxPrice } = req.query;
     const request = pool.request();
 
@@ -224,8 +195,6 @@ export const getPlayersForSale = async (req, res) => {
     res.status(200).json(result.recordset);
   } catch (err) {
     res.status(500).send({ error: err.message });
-  } finally {
-    if (pool) pool.close();
   }
 };
 
@@ -244,11 +213,10 @@ export const buyPlayer = async (req, res) => {
     return res.status(400).send({ error: "ID jugador invàlid" });
   }
 
-  let pool;
   try {
-    pool = await connectDb();
+    const pool = await connectDb();
     
-    // Verificar disponibilitat del jugador
+    // Verificar disponibilitat jugador
     const playerResult = await pool.request()
       .input("playerId", sql.UniqueIdentifier, playerId)
       .query(`
@@ -261,7 +229,7 @@ export const buyPlayer = async (req, res) => {
       return res.status(400).send({ error: "Jugador no disponible" });
     }
 
-    // Verificar saldo de l'usuari
+    // Verificar saldo usuari
     const userResult = await pool.request()
       .input("userID", sql.UniqueIdentifier, userID)
       .query("SELECT Footcoins FROM Users WHERE UserUUID = @userID");
@@ -293,22 +261,22 @@ export const buyPlayer = async (req, res) => {
 
       await transaction.request()
         .input("userID", sql.UniqueIdentifier, userID)
-        .input("amount", sql.Decimal(18, 2), -playerPrice)
+        .input("amount", sql.Decimal(18,2), -playerPrice)
         .query("UPDATE Users SET Footcoins = Footcoins + @amount WHERE UserUUID = @userID");
 
       await transaction.commit();
       res.status(200).send({ message: "Compra realitzada amb èxit" });
+
     } catch (transactionError) {
       await transaction.rollback();
       throw transactionError;
     }
+
   } catch (err) {
     res.status(500).send({
       error: "Error en la transacció",
       detalls: err.message,
       codiError: err.code
     });
-  } finally {
-    if (pool) pool.close();
   }
 };
