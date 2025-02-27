@@ -2,24 +2,29 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow-x: hidden;
 }
 
 header {
   background-color: #004d00;
   color: white;
-  padding: 10px;
+  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 }
 
 header h1 {
   margin: 0;
+  font-size: 1.8rem;
 }
 
 .user-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .user-info {
@@ -40,6 +45,7 @@ header h1 {
   padding: 10px;
   cursor: pointer;
   border-radius: 5px;
+  transition: background-color 0.3s;
 }
 
 .user-menu:hover {
@@ -49,34 +55,44 @@ header h1 {
 .content {
   display: flex;
   flex: 1;
+  overflow: hidden;
 }
 
 aside {
-  width: 200px;
+  width: 220px;
   background-color: #f4f4f4;
   padding: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
 main {
   flex: 1;
   padding: 20px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
 }
 
 nav a {
   display: block;
   color: #333;
   text-decoration: none;
-  padding: 10px;
+  padding: 12px 15px;
   margin: 5px 0;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
 nav a:hover {
-  background-color: #ddd;
+  background-color: #e0e0e0;
+  transform: translateX(5px);
 }
 
 .logout-button {
   margin-left: 20px;
-  background-color: #cc0000; /* Vermell intens per destacar */
+  background-color: #cc0000;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -87,11 +103,116 @@ nav a:hover {
 }
 
 .logout-button:hover {
-  background-color: #a30000; /* To més fosc en passar el cursor */
-  transform: scale(1.05); /* Petit efecte de creixement */
+  background-color: #a30000;
+  transform: scale(1.05);
 }
 
 .logout-button:active {
-  background-color: #800000; /* Encara més fosc en ser clicat */
-  transform: scale(0.95); /* Lleuger efecte de contracció */
+  background-color: #800000;
+  transform: scale(0.95);
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+    margin-right: 15px;
+  }
+  
+  header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .content {
+    position: relative;
+  }
+  
+  aside {
+    position: absolute;
+    left: -220px;
+    height: 100%;
+    z-index: 5;
+  }
+  
+  aside.open {
+    left: 0;
+  }
+  
+  main {
+    width: 100%;
+  }
+  
+  .user-header {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .user-info {
+    margin-top: 5px;
+    margin-left: 0;
+  }
+  
+  .logout-button {
+    margin-left: 10px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .user-header {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+  }
+  
+  .user-menu {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .user-info {
+    font-size: 0.9rem;
+  }
+  
+  .user-info i {
+    font-size: 20px;
+  }
+  
+  main {
+    padding: 15px 10px;
+  }
+}
+
+/* Overlay for mobile menu */
+.menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 4;
+}
+
+.menu-overlay.active {
+  display: block;
 }

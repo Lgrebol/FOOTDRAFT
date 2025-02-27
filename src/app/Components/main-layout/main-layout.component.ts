@@ -13,6 +13,7 @@ import { UserService } from '../../Serveis/user.service';
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   footcoins: number = 0;
+  menuOpen: boolean = false;
   private footcoinsSubscription!: Subscription;
 
   constructor(
@@ -48,6 +49,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       next: (coins) => this.footcoins = coins ?? 0,
       error: (err) => console.error('Error updating footcoins:', err)
     });
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
   }
 
   logout(): void {

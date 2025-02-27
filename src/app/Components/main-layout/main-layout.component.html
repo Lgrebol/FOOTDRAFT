@@ -1,28 +1,31 @@
 <div class="main-layout">
   <header>
-    <h1>FOOTDRAFT ⚽</h1>
-    <!-- Visualització dels footcoins al costat del menú d'usuari -->
+    <div style="display: flex; align-items: center;">
+      <button class="menu-toggle" (click)="toggleMenu()">
+        <i class="material-icons">menu</i>
+      </button>
+      <h1>FOOTDRAFT ⚽</h1>
+    </div>
     <div class="user-header">
       <button class="user-menu">User Menu</button>
       <div class="user-info">
-        <!-- Icona de footcoins -->
         <i class="material-icons">account_balance_wallet</i>
         <span>{{ footcoins | number }}</span>
-        <!-- Botó de logout -->
         <button class="logout-button" (click)="logout()">Logout</button>
       </div>
     </div>
   </header>
 
   <div class="content">
-    <aside>
+    <div class="menu-overlay" [class.active]="menuOpen" (click)="closeMenu()"></div>
+    <aside [class.open]="menuOpen">
       <nav>
-        <a routerLink="/dashboard">Dashboard</a>
-        <a routerLink="/store">Tenda</a>
-        <a routerLink="/players">Players</a>
-        <a routerLink="/teams">Teams</a>
-        <a routerLink="/tournaments">Tournament</a>
-        <a routerLink="/match">JUGAR!!!</a>
+        <a routerLink="/dashboard" (click)="closeMenu()">Dashboard</a>
+        <a routerLink="/store" (click)="closeMenu()">Tenda</a>
+        <a routerLink="/players" (click)="closeMenu()">Players</a>
+        <a routerLink="/teams" (click)="closeMenu()">Teams</a>
+        <a routerLink="/tournaments" (click)="closeMenu()">Tournament</a>
+        <a routerLink="/match" (click)="closeMenu()">JUGAR!!!</a>
       </nav>
     </aside>
     <main>
