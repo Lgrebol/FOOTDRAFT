@@ -2,7 +2,7 @@
   <div class="forms-container">
     <div class="signin-signup">
       <!-- Sign In Form -->
-      <form class="sign-in-form" aria-labelledby="signin-title" (ngSubmit)="handleSignIn()">
+      <form class="sign-in-form" role="form" aria-labelledby="signin-title" (ngSubmit)="handleSignIn()">
         <h2 class="title" id="signin-title">Entreu al terreny de joc</h2>
         <div class="input-field-2" [class.input-error]="errors.emailError">
           <label for="signin-email" class="visually-hidden">Email</label>
@@ -14,7 +14,7 @@
                  aria-required="true"
                  [attr.aria-invalid]="errors.emailError"
                  aria-describedby="signin-email-error">
-          <div *ngIf="errors.emailError" class="error-message" id="signin-email-error" role="alert">
+          <div *ngIf="errors.emailError" class="error-message" id="signin-email-error" role="alert" aria-live="assertive">
             Email obligatori
           </div>
         </div>
@@ -28,13 +28,13 @@
                  aria-required="true"
                  [attr.aria-invalid]="errors.passwordError"
                  aria-describedby="signin-password-error">
-          <div *ngIf="errors.passwordError" class="error-message" id="signin-password-error" role="alert">
+          <div *ngIf="errors.passwordError" class="error-message" id="signin-password-error" role="alert" aria-live="assertive">
             Contrasenya obligatòria
           </div>
         </div>
         
         <!-- Missatge d'error integrat al formulari d'inici de sessió -->
-        <div *ngIf="loginErrorMessage" class="error-message" role="alert">
+        <div *ngIf="loginErrorMessage" class="error-message" role="alert" aria-live="assertive">
           {{ loginErrorMessage }}
         </div>
         
@@ -44,7 +44,7 @@
       </form>
 
       <!-- Sign Up Form -->
-      <form class="sign-up-form" aria-labelledby="signup-title" (ngSubmit)="onSubmit()">
+      <form class="sign-up-form" role="form" aria-labelledby="signup-title" (ngSubmit)="onSubmit()">
         <h2 class="title" id="signup-title">Registreu-vos a FOOTDRAFT</h2>
         <div class="input-field" [class.input-error]="errors.usernameError">
           <label for="signup-username" class="visually-hidden">Usuari</label>
