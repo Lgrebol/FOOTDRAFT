@@ -1,10 +1,10 @@
-<div class="players-container">
+<div class="players-container" role="main">
   <h1>Llista de Jugadors</h1>
 
   <!-- Filtre per equip -->
   <div class="filter-container">
     <label for="teamFilter">Filtra per Equip:</label>
-    <select id="teamFilter" [(ngModel)]="playerList.selectedTeam">
+    <select id="teamFilter" [(ngModel)]="playerList.selectedTeam" aria-label="Filtra per Equip">
       <option value="">Tots els equips</option>
       <option *ngFor="let team of availableTeams" [value]="team.teamUUID">
         {{ team.teamName }}
@@ -13,8 +13,8 @@
   </div>
 
   <!-- Llista de jugadors (cards) amb paginació -->
-  <div class="cards">
-    <div class="player-card" *ngFor="let player of playerList.paginatedPlayers">
+  <div class="cards" role="list">
+    <div class="player-card" *ngFor="let player of playerList.paginatedPlayers" role="listitem">
       <div class="card-image">
         <img [src]="player.imageUrl ? 'data:image/png;base64,' + player.imageUrl : 'assets/soccer-player.png'" 
              class="player-image"
@@ -31,14 +31,14 @@
         <p *ngIf="player.shooting"><strong>Dispar:</strong> {{ player.shooting }}</p>
       </div>
       <div class="card-actions">
-        <button (click)="editPlayer(player)">Editar</button>
-        <button (click)="deletePlayer(player.playerUUID)">Eliminar</button>
+        <button (click)="editPlayer(player)" [attr.aria-label]="'Editar ' + player.playerName">Editar</button>
+        <button (click)="deletePlayer(player.playerUUID)" [attr.aria-label]="'Eliminar ' + player.playerName">Eliminar</button>
       </div>
     </div>
   </div>
 
-  <!-- Controls de paginació (només si hi ha més de 12 jugadors filtrats) -->
-  <div class="pagination" *ngIf="playerList.filteredPlayers.length > playerList.itemsPerPage">
+  <!-- Controls de paginació -->
+  <div class="pagination" *ngIf="playerList.filteredPlayers.length > playerList.itemsPerPage" role="navigation" aria-label="Paginació">
     <button (click)="prevPage()" [disabled]="playerList.currentPage === 1">Anterior</button>
     <ng-container *ngFor="let page of [].constructor(playerList.totalPages); let i = index">
       <button (click)="goToPage(i + 1)" [class.active]="playerList.currentPage === (i + 1)">
@@ -48,9 +48,9 @@
     <button (click)="nextPage()" [disabled]="playerList.currentPage === playerList.totalPages">Següent</button>
   </div>
 
-  <!-- Formulari per editar jugador (es mostra si hi ha editingPlayer) -->
-  <div class="form-container" *ngIf="editingPlayer">
-    <h2>Editar Jugador</h2>
+  <!-- Formulari per editar jugador -->
+  <div class="form-container" *ngIf="editingPlayer" role="form" aria-labelledby="edit-player-title">
+    <h2 id="edit-player-title">Editar Jugador</h2>
     <form (ngSubmit)="updatePlayer()" enctype="multipart/form-data">
       <!-- Grup Nom -->
       <div class="form-group">
@@ -165,8 +165,8 @@
   </div>
 
   <!-- Formulari per afegir jugador -->
-  <div class="form-container">
-    <h2>Afegir Jugador</h2>
+  <div class="form-container" role="form" aria-labelledby="add-player-title">
+    <h2 id="add-player-title">Afegir Jugador</h2>
     <form (ngSubmit)="addPlayer()" enctype="multipart/form-data">
       <!-- Grup Nom -->
       <div class="form-group">
