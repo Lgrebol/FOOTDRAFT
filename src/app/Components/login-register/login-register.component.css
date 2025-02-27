@@ -451,6 +451,41 @@ form.sign-in-form {
     bottom: 28%;
     left: 50%;
   }
+  
+  .input-field,
+  .input-field-2 {
+    max-width: 100%;
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 385px) {
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .input-field input,
+  .input-field-2 input {
+    font-size: 0.9rem;
+  }
+  
+  .btn {
+    height: 45px;
+    font-size: 0.8rem;
+  }
+  
+  .panel h1 {
+    font-size: 1.5rem;
+  }
 }
 
 .visually-hidden {
