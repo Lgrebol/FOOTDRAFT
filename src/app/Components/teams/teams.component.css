@@ -1,34 +1,140 @@
-/* Títols dins dels formularis */
-.team-form h2, .assign-section h2 {
-  margin-top: 0;
+/* Reinicialització bàsica */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Variables globals per facilitar modificacions */
+:root {
+  --primary-color: #1E88E5; /* Blau principal */
+  --primary-color-hover: #1976D2; /* Blau fosc per a l'hover */
+  --secondary-color: #F4511E; /* Taronja per botons secundaris */
+  --secondary-color-hover: #E64A19; /* Taronja fosc per a l'hover */
+  --text-color: #333;
+  --subtext-color: #555;
+  --background-color: #ECEFF1; /* Fons general suau */
+  --card-bg: #ffffff;
+}
+
+/* Estil global */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Gradient suau en tons de blau */
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Contenidor principal */
+.teams-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: var(--background-color);
+}
+
+/* Títol principal */
+.teams-container h1 {
   text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: var(--text-color);
+}
+
+/* Llista d'equips amb disseny grid */
+.teams-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+/* Targeta d'equip */
+.team-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.team-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Capçalera de la targeta amb gradient */
+.team-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
+  padding: 20px;
+  text-align: center;
+  background-color: #006400;
+}
+.team-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+/* Cos de la targeta */
+.team-body {
+  padding: 20px;
+}
+.team-body p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: var(--subtext-color);
+}
+.team-body button {
+  background: var(--secondary-color);
+  color: #fff;
+  background-color: red;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.team-body button:hover {
+  background: var(--secondary-color-hover);
+  background-color: rgb(214, 0, 0);
+}
+
+/* Formulari i secció d'assignació */
+.team-form, .assign-section {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+.team-form h2, .assign-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--text-color);
 }
 
 /* Grup de formulari */
 .form-group {
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
 }
-
 .form-group label {
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #555;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: var(--text-color);
 }
-
 .form-group input,
 .form-group select {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  transition: border-color 0.3s ease;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: border 0.3s ease;
 }
-
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #4caf50;
+  border-color: var(--primary-color);
   outline: none;
 }
 
@@ -36,108 +142,60 @@
 .team-form button,
 .assign-section button {
   width: 100%;
-  background-color: #4caf50;
+  background: var(--primary-color);
   color: #fff;
   border: none;
   padding: 12px;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
-
 .team-form button:hover,
 .assign-section button:hover {
-  background-color: #43a047;
+  background: var(--primary-color-hover);
 }
 
-/* Aliniació dels selects en la secció d'assignació */
+/* Grup d'assignació amb dos selects */
 .assign-group {
   display: flex;
   gap: 20px;
+  margin-bottom: 20px;
 }
-
 .assign-group select {
   flex: 1;
 }
 
-/* Responsive styles */
+/* Estils responsive */
 @media (max-width: 768px) {
   .teams-container {
-    padding: 15px;
-    margin: 15px auto;
+    padding: 20px;
   }
-  
   .teams-list {
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
-  
-  .team-card {
-    width: 100%;
-    max-width: 300px;
-  }
-  
-  .team-header h3 {
-    font-size: 18px;
-  }
-  
-  .team-body p {
-    font-size: 14px;
-  }
-  
-  .team-form, .assign-section {
-    padding: 15px;
-  }
-  
-  .form-group input,
-  .form-group select {
-    padding: 8px;
-    font-size: 14px;
-  }
-  
-  .team-form button,
-  .assign-section button {
-    padding: 10px;
-    font-size: 14px;
-  }
-  
   .assign-group {
     flex-direction: column;
-    gap: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .teams-container {
-    padding: 10px;
-    margin: 10px auto;
+  .teams-container h1 {
+    font-size: 2rem;
   }
-  
-  h1, h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  
   .team-header h3 {
-    font-size: 16px;
+    font-size: 1.3rem;
   }
-  
   .team-body p {
-    font-size: 13px;
+    font-size: 0.9rem;
   }
-  
-  .team-body button {
-    padding: 6px 10px;
-    font-size: 13px;
-  }
-  
-  .form-group label {
-    font-size: 14px;
-  }
-  
+  .form-group label,
   .form-group input,
   .form-group select {
-    padding: 8px;
-    font-size: 13px;
+    font-size: 0.9rem;
+  }
+  .team-form button,
+  .assign-section button {
+    font-size: 0.9rem;
   }
 }
