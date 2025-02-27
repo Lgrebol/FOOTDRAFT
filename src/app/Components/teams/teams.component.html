@@ -1,22 +1,22 @@
-<div class="teams-container">
+<div class="teams-container" role="main">
   <h1>Llista d'Equips</h1>
   
-  <div class="teams-list">
-    <div *ngFor="let team of teams" class="team-card">
+  <div class="teams-list" role="list">
+    <div *ngFor="let team of teams" class="team-card" role="listitem">
       <div class="team-header">
         <h3>{{ team.teamName }}</h3>
       </div>
       <div class="team-body">
         <p><strong>Usuari:</strong> {{ team.username }}</p>
         <p><strong>Color de la Samarreta:</strong> {{ team.shirtColor }}</p>
-        <button (click)="deleteTeam(team.teamUUID)">Eliminar</button>
+        <button (click)="deleteTeam(team.teamUUID)" [attr.aria-label]="'Eliminar equip ' + team.teamName">Eliminar</button>
       </div>
     </div>
   </div>
 
   <!-- Formulari per afegir un nou equip -->
-  <form (ngSubmit)="addTeam()" class="team-form">
-    <h2>Afegir Nou Equip</h2>
+  <form (ngSubmit)="addTeam()" class="team-form" role="form" aria-labelledby="add-team-title">
+    <h2 id="add-team-title">Afegir Nou Equip</h2>
     <div class="form-group">
       <label for="name">Nom de l'Equip:</label>
       <input
@@ -39,33 +39,33 @@
     </div>
     <div class="form-group">
       <label for="user">Usuari:</label>
-      <select [(ngModel)]="newTeam.userUUID" name="userID" required>
+      <select id="user" [(ngModel)]="newTeam.userUUID" name="userID" required aria-label="Selecciona un usuari">
         <option value="" disabled selected>Selecciona un usuari</option>
         <option *ngFor="let user of users" [value]="user.userUUID">
           {{ user.displayLabel() }}
         </option>
       </select>
     </div>
-    <button type="submit">Afegir Equip</button>
+    <button type="submit" aria-label="Afegir Equip">Afegir Equip</button>
   </form>
 
   <!-- Secció per assignar un jugador a un equip -->
-  <div class="assign-section">
-    <h2>Assignar Jugador a Equip</h2>
+  <div class="assign-section" role="region" aria-labelledby="assign-player-title">
+    <h2 id="assign-player-title">Assignar Jugador a Equip</h2>
     <div class="form-group assign-group">
-      <select [(ngModel)]="selectedTeamId" name="selectedTeamId" required>
+      <select [(ngModel)]="selectedTeamId" name="selectedTeamId" required aria-label="Selecciona un equip">
         <option value="" disabled selected>Selecciona un equip</option>
         <option *ngFor="let team of teams" [value]="team.teamUUID">
           {{ team.teamName }}
         </option>
       </select>
-      <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId" required>
+      <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId" required aria-label="Selecciona un jugador">
         <option value="" disabled selected>Selecciona un jugador</option>
         <option *ngFor="let player of reservedPlayers" [value]="player.playerUUID">
           {{ player.playerName }}
         </option>
       </select>
     </div>
-    <button (click)="assignPlayerToTeam()">Assignar Jugador</button>
+    <button (click)="assignPlayerToTeam()" aria-label="Assignar jugador a equip">Assignar Jugador</button>
   </div>
 </div>
