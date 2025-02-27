@@ -5,6 +5,7 @@
   font-family: 'Arial', sans-serif;
   background-color: #0f2e13;
   color: white;
+  border-radius: 10px;
 }
 
 .store-title {
@@ -127,4 +128,94 @@
 
 .buy-button:hover {
   background: #e6c200;
+}
+
+.alert {
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+.alert-success {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+  border: 1px solid #28a745;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .store-title {
+    font-size: 1.5rem;
+  }
+  
+  .filter-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .filter-input {
+    width: 100%;
+  }
+  
+  .players-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+  }
+  
+  .player-image {
+    height: 160px;
+  }
+  
+  .player-name {
+    font-size: 1.1rem;
+  }
+  
+  .player-info {
+    font-size: 0.9rem;
+  }
+  
+  .stats-container {
+    padding: 8px;
+  }
+  
+  .stat {
+    font-size: 0.8rem;
+  }
+  
+  .stat-value {
+    font-size: 1rem;
+  }
+  
+  .buy-button {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .store-container {
+    padding: 10px;
+  }
+  
+  .store-title {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+  
+  .players-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .player-card {
+    max-width: 280px;
+    margin: 0 auto;
+  }
 }
