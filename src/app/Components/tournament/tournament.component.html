@@ -1,13 +1,14 @@
-<div class="container mt-4">
+<div class="container mt-4" role="main">
   <h1 class="mb-3">Torneigs</h1>
-  <table class="table table-bordered">
+  <table class="table table-bordered" role="table" aria-label="Llista de Torneigs">
+    <caption class="visually-hidden">Torneigs disponibles</caption>
     <thead>
       <tr>
-        <th>Nom</th>
-        <th>Tipus</th>
-        <th>Data Inici</th>
-        <th>Data Fi</th>
-        <th>Accions</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Tipus</th>
+        <th scope="col">Data Inici</th>
+        <th scope="col">Data Fi</th>
+        <th scope="col">Accions</th>
       </tr>
     </thead>
     <tbody>
@@ -17,7 +18,7 @@
         <td>{{ tournament.startDate }}</td>
         <td>{{ tournament.endDate }}</td>
         <td>
-          <button class="btn btn-danger btn-sm" (click)="deleteTournament(tournament.tournamentUUID)">
+          <button class="btn btn-danger btn-sm" (click)="deleteTournament(tournament.tournamentUUID)" [attr.aria-label]="'Esborrar torneig ' + tournament.tournamentName">
             Esborrar
           </button>
         </td>
@@ -26,7 +27,7 @@
   </table>
 
   <h2>Afegir Torneig</h2>
-  <form (ngSubmit)="addTournament()">
+  <form (ngSubmit)="addTournament()" role="form" aria-labelledby="add-tournament-title">
     <div class="mb-2">
       <input
         type="text"
@@ -34,10 +35,12 @@
         placeholder="Nom del torneig"
         [(ngModel)]="tournamentForm.tournament.tournamentName"
         name="name"
-        required />
+        required
+        aria-required="true"
+        aria-label="Nom del torneig" />
     </div>
     <div class="mb-2">
-      <select class="form-control" [(ngModel)]="tournamentForm.tournament.tournamentType" name="type">
+      <select class="form-control" [(ngModel)]="tournamentForm.tournament.tournamentType" name="type" aria-label="Tipus de torneig">
         <option value="Knockout">Knockout</option>
         <option value="League">Lliga</option>
       </select>
@@ -48,23 +51,26 @@
         class="form-control"
         [(ngModel)]="tournamentForm.tournament.startDate"
         name="startDate"
-        required />
+        required
+        aria-required="true"
+        aria-label="Data d'inici" />
     </div>
     <div class="mb-2">
       <input
         type="date"
         class="form-control"
         [(ngModel)]="tournamentForm.tournament.endDate"
-        name="endDate" />
+        name="endDate"
+        aria-label="Data de finalització" />
     </div>
-    <button type="submit" class="btn btn-success" [disabled]="tournamentForm.loading">
+    <button type="submit" class="btn btn-success" [disabled]="tournamentForm.loading" aria-label="Afegir Torneig">
       Afegir Torneig
     </button>
   </form>
-  <div *ngIf="tournamentForm.error" class="alert alert-danger mt-2">
+  <div *ngIf="tournamentForm.error" class="alert alert-danger mt-2" role="alert">
     {{ tournamentForm.error }}
   </div>
-  <div *ngIf="tournamentForm.success" class="alert alert-success mt-2">
+  <div *ngIf="tournamentForm.success" class="alert alert-success mt-2" role="alert">
     {{ tournamentForm.success }}
   </div>
 </div>
