@@ -144,6 +144,7 @@ body {
   width: 100%;
   background: var(--primary-color);
   color: #fff;
+  background-color: #006400;
   border: none;
   padding: 12px;
   border-radius: 8px;
@@ -154,6 +155,7 @@ body {
 .team-form button:hover,
 .assign-section button:hover {
   background: var(--primary-color-hover);
+  background-color: #017b01;
 }
 
 /* Grup d'assignació amb dos selects */

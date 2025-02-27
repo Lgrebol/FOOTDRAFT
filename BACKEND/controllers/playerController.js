@@ -24,6 +24,11 @@ export const createPlayer = async (req, res) => {
     });
   }
 
+  const parsedPrice = parseFloat(price);
+  if (isNaN(parsedPrice) || parsedPrice > 9999999999.99) {
+    return res.status(400).send({ error: "Preu del jugador excedit" });
+  }
+
   const imageBase64 = req.file.buffer.toString('base64');
 
   try {
@@ -49,7 +54,7 @@ export const createPlayer = async (req, res) => {
       .input("teamUUID", sql.UniqueIdentifier, teamID)
       .input("isActive", sql.Bit, isActive === '1' ? 1 : 0)
       .input("isForSale", sql.Bit, isForSale === '1' ? 1 : 0)
-      .input("price", sql.Decimal(10, 2), parseFloat(price))
+      .input("price", sql.Decimal(10, 2), parsedPrice)
       .input("height", sql.Int, parseInt(height))
       .input("speed", sql.Int, parseInt(speed))
       .input("shooting", sql.Int, parseInt(shooting))
@@ -59,9 +64,6 @@ export const createPlayer = async (req, res) => {
     const insertedPlayer = result.recordset[0];
     res.status(201).send(insertedPlayer);
   } catch (err) {
-    if (err.message && (err.message.includes("overflow") || err.message.includes("Arithmetic overflow"))) {
-      return res.status(400).send({ error: "Preu del jugador excedit" });
-    }
     res.status(500).send({ 
       error: "Error al crear jugador",
       detalls: err.message,
@@ -69,6 +71,7 @@ export const createPlayer = async (req, res) => {
     });
   }
 };
+
 
 
 export const getPlayers = async (req, res) => {
@@ -117,6 +120,12 @@ export const updatePlayer = async (req, res) => {
     return res.status(400).send({ error: "Falten camps obligatoris." });
   }
 
+  const numericPrice = parseFloat(price);
+  const maxPrice = 99999999.99;
+  if (numericPrice > maxPrice) {
+    return res.status(400).send({ error: "Preu del jugador excedit" });
+  }
+
   try {
     const pool = await connectDb();
     let query = `
@@ -148,7 +157,7 @@ export const updatePlayer = async (req, res) => {
     request.input("teamUUID", sql.UniqueIdentifier, teamID);
     request.input("isActive", sql.Bit, isActive === '1' ? 1 : 0);
     request.input("isForSale", sql.Bit, isForSale === '1' ? 1 : 0);
-    request.input("price", sql.Decimal(10, 2), parseFloat(price));
+    request.input("price", sql.Decimal(10, 2), numericPrice);
     request.input("height", sql.Int, parseInt(height));
     request.input("speed", sql.Int, parseInt(speed));
     request.input("shooting", sql.Int, parseInt(shooting));
@@ -166,6 +175,7 @@ export const updatePlayer = async (req, res) => {
     });
   }
 };
+
 
 export const getPlayersForSale = async (req, res) => {
   try {
