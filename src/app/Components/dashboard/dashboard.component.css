@@ -1,7 +1,6 @@
 .dashboard-container {
-  max-width: 800px;
-  margin: 30px auto;
-  height: 800px;
+  max-width: 100%;
+  margin: 20px auto;
   padding: 20px;
   text-align: center;
   font-family: 'Roboto', sans-serif;
@@ -21,11 +20,11 @@
   background: #006400;
   border: 5px solid white;
   border-radius: 10px;
-  padding: 40px;
+  padding: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px;
+  gap: 20px;
 }
 
 /* Targetes de les estadístiques */
@@ -76,4 +75,72 @@
   font-size: 28px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .dashboard-container {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  .football-field {
+    padding: 15px;
+    gap: 15px;
+  }
+  
+  .stat-card {
+    width: calc(50% - 20px);
+    min-width: 140px;
+    padding: 15px;
+  }
+  
+  .stat-icon {
+    font-size: 32px;
+  }
+  
+  .stat-title {
+    font-size: 16px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  .dashboard-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    margin: 5px;
+    padding: 10px;
+  }
+  
+  .football-field {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .stat-card {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .stat-icon {
+    font-size: 28px;
+  }
+  
+  .stat-title {
+    font-size: 14px;
+  }
+  
+  .stat-value {
+    font-size: 18px;
+  }
+  
+  .dashboard-title {
+    font-size: 20px;
+  }
 }
