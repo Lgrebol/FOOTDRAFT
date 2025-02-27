@@ -1,24 +1,24 @@
 <div class="main-layout">
   <header>
     <div style="display: flex; align-items: center;">
-      <button class="menu-toggle" (click)="toggleMenu()">
+      <button class="menu-toggle" (click)="toggleMenu()" aria-label="Obrir menú" [attr.aria-expanded]="menuOpen">
         <i class="material-icons">menu</i>
       </button>
       <h1>FOOTDRAFT ⚽</h1>
     </div>
     <div class="user-header">
-      <button class="user-menu">User Menu</button>
+      <button class="user-menu" aria-label="Menú d'usuari">User Menu</button>
       <div class="user-info">
-        <i class="material-icons">account_balance_wallet</i>
+        <i class="material-icons" aria-hidden="true">account_balance_wallet</i>
         <span>{{ footcoins | number }}</span>
-        <button class="logout-button" (click)="logout()">Logout</button>
+        <button class="logout-button" (click)="logout()" aria-label="Tancar sessió">Logout</button>
       </div>
     </div>
   </header>
 
   <div class="content">
     <div class="menu-overlay" [class.active]="menuOpen" (click)="closeMenu()"></div>
-    <aside [class.open]="menuOpen">
+    <aside [class.open]="menuOpen" role="navigation" aria-label="Navegació principal">
       <nav>
         <a routerLink="/dashboard" (click)="closeMenu()">Dashboard</a>
         <a routerLink="/store" (click)="closeMenu()">Tenda</a>
@@ -28,7 +28,7 @@
         <a routerLink="/match" (click)="closeMenu()">JUGAR!!!</a>
       </nav>
     </aside>
-    <main>
+    <main role="main">
       <router-outlet></router-outlet>
     </main>
   </div>
