@@ -296,6 +296,41 @@
 }
 
 /* Adaptació per mòbils */
+@media (max-width: 768px) {
+  .match-page {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  .team-selectors {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .betting-section form {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .controls button {
+    width: 100%;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .goals-spacer {
+    margin: 0 1rem;
+    font-size: 2em;
+  }
+}
+
 @media (max-width: 600px) {
   .stats-grid {
     grid-template-columns: 1fr;
@@ -308,5 +343,67 @@
   
   .goals-spacer {
     margin: 0 0.5rem;
+    font-size: 1.8em;
+  }
+  
+  .team {
+    min-width: 100px;
+    font-size: 1em;
+  }
+  
+  .stat-value {
+    font-size: 1.8em;
+  }
+  
+  .event-card {
+    padding: 8px;
+    gap: 10px;
+  }
+  
+  .event-time {
+    padding: 3px 8px;
+    font-size: 0.9em;
+  }
+  
+  .match-message {
+    font-size: 1em;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .match-page {
+    padding: 10px;
+  }
+  
+  .betting-section {
+    padding: 10px;
+  }
+  
+  .betting-section h3 {
+    font-size: 1rem;
+  }
+  
+  .betting-section input[type="number"],
+  .betting-section select {
+    font-size: 0.9rem;
+  }
+  
+  .betting-section button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+  
+  .controls button {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+  
+  .goals-spacer {
+    font-size: 1.5em;
+  }
+  
+  .stat-value {
+    font-size: 1.5em;
   }
 }
