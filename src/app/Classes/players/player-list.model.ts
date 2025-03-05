@@ -9,32 +9,24 @@ export class PlayerList {
   public currentPage: number = 1;
   public totalPages: number = 1;
 
-  constructor(players: Player[] = []) {
-    this.players = players;
-  }
+  constructor() {}
 
   set players(players: Player[]) {
     this._allPlayers = players;
     this.applyFilter();
   }
 
-  get players(): Player[] {
-    return this._allPlayers;
-  }
+  get players(): Player[] { return this._allPlayers; }
 
   set selectedTeam(teamUUID: string) {
     this._selectedTeam = teamUUID;
-    this.currentPage = 1; // reiniciem la pàgina
+    this.currentPage = 1;
     this.applyFilter();
   }
 
-  get selectedTeam(): string {
-    return this._selectedTeam;
-  }
+  get selectedTeam(): string { return this._selectedTeam; }
 
-  get filteredPlayers(): Player[] {
-    return this._filteredPlayers;
-  }
+  get filteredPlayers(): Player[] { return this._filteredPlayers; }
 
   get paginatedPlayers(): Player[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -52,35 +44,12 @@ export class PlayerList {
   }
 
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
+    if (page >= 1 && page <= this.totalPages) { this.currentPage = page; }
   }
+  nextPage(): void { if (this.currentPage < this.totalPages) this.currentPage++; }
+  prevPage(): void { if (this.currentPage > 1) this.currentPage--; }
 
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
-
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  // Afegeix un jugador i actualitza el filtre
-  add(player: Player): void {
-    this.players = [...this.players, player];
-  }
-
-  // Elimina un jugador per ID
-  remove(playerUUID: string): void {
-    this.players = this.players.filter(p => p.playerUUID !== playerUUID);
-  }
-
-  // Actualitza un jugador existent
-  update(player: Player): void {
-    this.players = this.players.map(p => p.playerUUID === player.playerUUID ? player : p);
-  }
+  add(player: Player): void { this.players = [...this.players, player]; }
+  remove(playerUUID: string): void { this.players = this.players.filter(p => p.playerUUID !== playerUUID); }
+  update(player: Player): void { this.players = this.players.map(p => p.playerUUID === player.playerUUID ? player : p); }
 }
