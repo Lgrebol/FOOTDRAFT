@@ -7,6 +7,7 @@ import { PlayerService } from '../../Serveis/player.service';
 import { Team } from '../../Classes/teams/team.model';
 import { User } from '../../Classes/user/user.model';
 import { Player } from '../../Classes/players/player.model';
+import { UserList } from '../../Classes/user/user-list.model';
 
 @Component({
   selector: 'app-teams',
@@ -17,14 +18,13 @@ import { Player } from '../../Classes/players/player.model';
 })
 export class TeamsComponent implements OnInit {
   teams: Team[] = [];
-  users: User[] = [];
+  userList: UserList = new UserList();
   reservedPlayers: Player[] = [];
   
   selectedTeamId: string | null = null;
   selectedPlayerId: string | null = null;
   
-  currentUserId: string = '97C72798-B79D-4248-AC5C-11457F2E38AC';
-
+  currentUserId: string = '';
   newTeam: Team = new Team();
 
   constructor(
@@ -34,29 +34,52 @@ export class TeamsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.userService.getCurrentUser().subscribe({
+      next: (user) => {
+        if (user) {
+          this.currentUserId = user.userUUID;
+          console.log('Usuari actual:', user);
+          this.fetchReservedPlayers();
+        } else {
+          console.warn('No s\'ha obtingut l\'usuari actual.');
+        }
+      },
+      error: (err) => console.error('Error obtenint l\'usuari:', err)
+    });
+
     this.loadData();
   }
 
   private loadData(): void {
-    this.teamService.getTeams().subscribe(teams => this.teams = teams);
-    
-    this.userService.getUsers().subscribe({
-      next: users => this.users = users,
-      error: error => console.error('Error carregant usuaris:', error)
+    // Carrega els equips
+    this.teamService.getTeams().subscribe({
+      next: (teams: Team[]) => { this.teams = teams; },
+      error: (err) => console.error('Error carregant equips:', err)
     });
-  
-    this.playerService.getReservedPlayers(this.currentUserId).subscribe(
-      players => this.reservedPlayers = players
-    );
+    // Carrega els usuaris i assigna al model UserList
+    this.userService.getUsers().subscribe({
+      next: (users: User[]) => { this.userList.users = users; },
+      error: (err) => console.error('Error carregant usuaris:', err)
+    });
+  }
+
+  fetchReservedPlayers(): void {
+    if (!this.currentUserId) {
+      console.warn('currentUserId és buit, no es poden carregar reserves.');
+      return;
+    }
+    this.playerService.getReservedPlayers(this.currentUserId).subscribe({
+      next: (players: Player[]) => {
+        console.log('Jugadors reservats:', players);
+        this.reservedPlayers = players;
+      },
+      error: (err) => console.error('Error carregant reserves:', err)
+    });
   }
 
   assignPlayerToTeam(): void {
     if (this.selectedTeamId && this.selectedPlayerId) {
-      this.teamService.assignPlayerToTeam(
-        this.selectedTeamId,
-        this.selectedPlayerId,
-        this.currentUserId
-      ).subscribe({
+      this.teamService.assignPlayerToTeam(this.selectedTeamId, this.selectedPlayerId, this.currentUserId).subscribe({
         next: () => {
           this.reservedPlayers = this.reservedPlayers.filter(p => p.playerUUID !== this.selectedPlayerId);
           this.selectedTeamId = null;
@@ -83,20 +106,8 @@ export class TeamsComponent implements OnInit {
   deleteTeam(teamUUID: string): void {
     console.log("Intentant eliminar equip amb UUID:", teamUUID);
     this.teamService.deleteTeam(teamUUID).subscribe({
-      next: () => {
-        this.teams = this.teams.filter(t => t.teamUUID !== teamUUID);
-      },
-      error: (err) => console.error("Error eliminant equip:", err) 
-    });
-  }
-
-  fetchReservedPlayers(): void {
-    this.playerService.getReservedPlayers(this.currentUserId).subscribe({
-      next: (players) => {
-        console.log("Jugadors reservats:", players);
-        this.reservedPlayers = players;
-      },
-      error: (err) => console.error("Error carregant reserves:", err)
+      next: () => { this.teams = this.teams.filter(t => t.teamUUID !== teamUUID); },
+      error: (err) => console.error("Error eliminant equip:", err)
     });
   }
 }
