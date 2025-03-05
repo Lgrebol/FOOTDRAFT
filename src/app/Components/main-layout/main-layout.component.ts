@@ -16,27 +16,17 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   menuOpen: boolean = false;
   private footcoinsSubscription!: Subscription;
 
-  constructor(
-    private userService: UserService,
-    private router: Router
-  ) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadUserData();
     this.subscribeToFootcoins();
-    this.userService.getFootcoinsUpdates().subscribe({
-      next: (footcoins) => {
-      },
-      error: (err) => {
-        console.error('Error obtenint footcoins:', err);
-      }
-    });
   }
 
   private loadUserData(): void {
     this.userService.refreshCurrentUserData().subscribe({
-      next: (user) => {
-        if (user) {
+      next: (user) => { 
+        if (user) { 
           this.userService.updateFootcoins(user.footcoins);
         }
       },
@@ -46,29 +36,20 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   private subscribeToFootcoins(): void {
     this.footcoinsSubscription = this.userService.getFootcoinsUpdates().subscribe({
-      next: (coins) => this.footcoins = coins ?? 0,
-      error: (err) => console.error('Error updating footcoins:', err)
+      next: (coins) => {
+        console.log('Footcoins actuals:', coins);
+        this.footcoins = coins ?? 0;
+      },
+      error: (err: unknown) => console.error('Error updating footcoins:', err)
     });
   }
-
-  toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
-  }
-
-  closeMenu(): void {
-    this.menuOpen = false;
-  }
-
-  logout(): void {
-    this.userService.logoutUser();
+  
+  toggleMenu(): void { this.menuOpen = !this.menuOpen; }
+  closeMenu(): void { this.menuOpen = false; }
+  logout(): void { 
+    this.userService.logoutUser(); 
     this.redirectToLogin();
   }
-
-  private redirectToLogin(): void {
-    this.router.navigate(['/login']);
-  }
-
-  ngOnDestroy(): void {
-    this.footcoinsSubscription?.unsubscribe();
-  }
+  private redirectToLogin(): void { this.router.navigate(['/login']); }
+  ngOnDestroy(): void { this.footcoinsSubscription?.unsubscribe(); }
 }
