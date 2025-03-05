@@ -1,4 +1,6 @@
 import { createTournament, getAllTournaments, getTournamentById, deleteTournament, registerTeamToTournament } from "../models/tournamentModel.js";
+import connectDb from "../config/db.js";
+import sql from "mssql";
 
 export const createTournamentController = async (req, res) => {
     const { tournamentName, tournamentType, startDate, endDate } = req.body;
@@ -39,14 +41,37 @@ export const getTournamentByIdController = async (req, res) => {
 
 export const deleteTournamentController = async (req, res) => {
     const { id } = req.params;
-
+  
     try {
-        await deleteTournament(id);
-        res.status(200).send({ message: "Torneig eliminat correctament." });
+      const pool = await connectDb();
+      
+      // Iniciem una transacció
+      const transaction = new sql.Transaction(pool);
+      await transaction.begin();
+  
+      try {
+        await transaction.request()
+          .input("tournamentUUID", sql.UniqueIdentifier, id)
+          .query("DELETE FROM Matches WHERE TournamentUUID = @tournamentUUID");
+  
+        await transaction.request()
+          .input("tournamentUUID", sql.UniqueIdentifier, id)
+          .query("DELETE FROM Tournaments WHERE TournamentUUID = @tournamentUUID");
+  
+        await transaction.commit();
+        res.status(200).send({ message: "Torneig i els partits associats eliminats correctament." });
+      } catch (transactionError) {
+        await transaction.rollback();
+        console.error("Error en la transacció d'eliminació:", transactionError);
+        res.status(500).send({ error: "Error eliminant torneig (rollback)." });
+      }
+      
     } catch (err) {
-        res.status(500).send({ error: err.message });
+      console.error("Error eliminant torneig:", err);
+      res.status(500).send({ error: err.message });
     }
-};
+  };
+  
 
 export const registerTeamToTournamentController = async (req, res) => {
     const { teamId, tournamentId } = req.body;

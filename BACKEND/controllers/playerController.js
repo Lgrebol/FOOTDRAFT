@@ -72,8 +72,6 @@ export const createPlayer = async (req, res) => {
   }
 };
 
-
-
 export const getPlayers = async (req, res) => {
   try {
     const pool = await connectDb();
@@ -176,7 +174,6 @@ export const updatePlayer = async (req, res) => {
   }
 };
 
-
 export const getPlayersForSale = async (req, res) => {
   try {
     const pool = await connectDb();
@@ -212,13 +209,13 @@ export const buyPlayer = async (req, res) => {
   const playerId = req.params.id;
   const { userID } = req.body;
 
-  if (!isValidUUID(userID)) {
+  // Comprovem que el userID existeix i és vàlid
+  if (!userID || !isValidUUID(userID)) {
     return res.status(400).send({
       error: "ID usuari invàlid",
       exempleValid: "123e4567-e89b-12d3-a456-426614174000"
     });
   }
-
   if (!isValidUUID(playerId)) {
     return res.status(400).send({ error: "ID jugador invàlid" });
   }
@@ -226,7 +223,7 @@ export const buyPlayer = async (req, res) => {
   try {
     const pool = await connectDb();
     
-    // Verificar disponibilitat jugador
+    // Comprovem que el jugador està disponible (no ha estat reservat)
     const playerResult = await pool.request()
       .input("playerId", sql.UniqueIdentifier, playerId)
       .query(`
@@ -239,7 +236,7 @@ export const buyPlayer = async (req, res) => {
       return res.status(400).send({ error: "Jugador no disponible" });
     }
 
-    // Verificar saldo usuari
+    // Comprovem el saldo de l'usuari
     const userResult = await pool.request()
       .input("userID", sql.UniqueIdentifier, userID)
       .query("SELECT Footcoins FROM Users WHERE UserUUID = @userID");
@@ -255,7 +252,7 @@ export const buyPlayer = async (req, res) => {
       return res.status(400).send({ error: "Saldo insuficient" });
     }
 
-    // Realitzar transacció
+    // Realitzem la transacció
     const transaction = new sql.Transaction(pool);
     await transaction.begin();
 

@@ -46,14 +46,12 @@ export const getMatchController = async (req, res) => {
     const { matchID } = req.params;
     const match = await getMatchById(matchID);
     if (!match) return res.status(404).send({ error: "Partida no trobada" });
-    
-    // Mapeja els esdeveniments per tenir els noms correctes (minúscules)
     const eventsFromDB = await getMatchEvents(matchID);
     const events = eventsFromDB.map(event => ({
-      minute: event.Minute,
-      eventType: event.EventType,
-      description: event.Description,
-      team: ''
+      minute: event.minute || event.Minute || 0,
+      eventType: event.eventType || event.EventType || '',
+      description: event.description || event.Description || '',
+      team: event.team || event.Team || ''
     }));
     match.events = events;
     res.status(200).json({ match });
@@ -61,6 +59,7 @@ export const getMatchController = async (req, res) => {
     res.status(500).send({ error: err.message });
   }
 };
+
 
 export const startMatchSimulationController = async (req, res) => {
   const { matchID } = req.body;
