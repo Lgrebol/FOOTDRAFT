@@ -1,15 +1,11 @@
 export class MainLayout {
-  constructor(
-    private _title: string,
-    private _navigationItems: Array<{ label: string; route: string }>
-  ) {}
+  private _title: string = '';
+  private _navigationItems: Array<{ label: string; route: string }> = [];
 
-  get title(): string {
-    return this._title;
-  }
-  get navigationItems(): Array<{ label: string; route: string }> {
-    return this._navigationItems;
-  }
+  constructor() {}
+
+  get title(): string { return this._title; }
+  get navigationItems(): Array<{ label: string; route: string }> { return this._navigationItems; }
 
   addNavigationItem(item: { label: string; route: string }): void {
     this._navigationItems.push(item);
