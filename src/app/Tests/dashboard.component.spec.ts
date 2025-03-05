@@ -31,38 +31,31 @@ describe('DashboardComponent', () => {
 
   it('should create component correctly', fakeAsync(() => {
     fixture.detectChanges();
-    
     const req = httpTestingController.expectOne('http://localhost:3000/api/v1/dashboard');
-    req.flush({}); 
-    
+    req.flush({});
     tick();
     fixture.detectChanges();
-    
     expect(component).toBeTruthy();
   }));
 
   it('should display loading state initially', fakeAsync(() => {
     fixture.detectChanges();
-    
     const loadingEl = fixture.debugElement.query(By.css('.loading'));
     expect(loadingEl).toBeTruthy();
-  
+
+    // Simulem resposta de l'API (tot vaci)
     const req = httpTestingController.expectOne('http://localhost:3000/api/v1/dashboard');
     req.flush({});
-    
     tick();
     fixture.detectChanges();
   }));
 
   it('should display error state when API fails', fakeAsync(() => {
     fixture.detectChanges();
-    
     const req = httpTestingController.expectOne('http://localhost:3000/api/v1/dashboard');
     req.flush(null, { status: 500, statusText: 'Server Error' });
-    
     tick();
     fixture.detectChanges();
-    
     const errorEl = fixture.debugElement.query(By.css('.error'));
     expect(errorEl.nativeElement.textContent).toContain('Error obtenint estadístiques');
   }));
@@ -73,21 +66,20 @@ describe('DashboardComponent', () => {
       totalPlayers: 120,
       totalTournaments: 8,
       totalGoals: 75,
-      totalMatches: 32
+      totalMatches: 32,
+      loading: false,
+      error: null
     };
 
     fixture.detectChanges();
     const req = httpTestingController.expectOne('http://localhost:3000/api/v1/dashboard');
     req.flush(mockApiResponse);
-
     tick();
     fixture.detectChanges();
 
-    // Cerquem el contenidor principal de les estadístiques
     const statsContainer = fixture.debugElement.query(By.css('.football-field'));
     const statsCards = statsContainer.queryAll(By.css('.stat-card'));
-    
-    // Comprovem cada targeta (assegura't de mantenir l'ordre definit a la plantilla)
+
     expect(statsCards[0].nativeElement.textContent).toContain('Equips');
     expect(statsCards[0].nativeElement.textContent).toContain('15');
 
@@ -106,17 +98,15 @@ describe('DashboardComponent', () => {
 
   it('should handle unexpected API response format', fakeAsync(() => {
     fixture.detectChanges();
-    
     const req = httpTestingController.expectOne('http://localhost:3000/api/v1/dashboard');
-    req.flush({ invalidData: true }); // Resposta amb format incorrecte
-    
+    req.flush({ invalidData: true }); // resposta en format incorrecte
     tick();
     fixture.detectChanges();
 
     const statsContainer = fixture.debugElement.query(By.css('.football-field'));
     const statsCards = statsContainer.queryAll(By.css('.stat-card'));
     
-    // Verifiquem que, en absència de dades vàlides, es mantinguin els valors per defecte (0)
+    // Si no es rep un format vàlid, s'hauria de mostrar els valors per defecte (0)
     expect(statsCards[0].nativeElement.textContent).toContain('Equips');
     expect(statsCards[0].nativeElement.textContent).toContain('0');
 

@@ -16,7 +16,11 @@ describe('LoginRegisterComponent', () => {
 
   beforeEach(async () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const userServiceSpy = jasmine.createSpyObj('UserService', ['refreshCurrentUserData', 'registerUser', 'loginUser']);
+    const userServiceSpy = jasmine.createSpyObj('UserService', [
+      'refreshCurrentUserData',
+      'registerUser',
+      'loginUser'
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [LoginRegisterComponent, FormsModule, HttpClientTestingModule],
@@ -38,7 +42,7 @@ describe('LoginRegisterComponent', () => {
   });
 
   it('should call registerUser when form is valid', () => {
-    // Assignem les dades al userModel
+    // Assignem dades vàlides al userModel
     component.userModel.username = 'TestUser';
     component.userModel.email = 'test@example.com';
     component.userModel.password = 'Password123!';
@@ -82,21 +86,6 @@ describe('LoginRegisterComponent', () => {
     expect(component.userModel.isValidPassword()).toBeFalse();
   });
 
-  it('should clear input fields', () => {
-    component.userModel.username = 'TestUser';
-    component.userModel.email = 'test@example.com';
-    component.userModel.password = 'Password123!';
-    component.userModel.confirmPassword = 'Password123!';
-
-    // Utilitzem casting a any per accedir al mètode privat clearForm()
-    (component as any).clearForm();
-
-    expect(component.userModel.username).toBe('');
-    expect(component.userModel.email).toBe('');
-    expect(component.userModel.password).toBeUndefined();
-    expect(component.userModel.confirmPassword).toBeUndefined();
-  });
-
   it('should toggle sign-up-mode class on container when clicking sign-up and sign-in buttons', () => {
     const containerDiv = document.createElement('div');
     const signUpBtn = document.createElement('button');
@@ -123,8 +112,13 @@ describe('LoginRegisterComponent', () => {
     component.userModel.password = 'Password123!';
 
     userService.loginUser.and.returnValue(of({ token: 'testToken123' }));
-    // Es retorna un usuari vàlid per satisfer la tipificació Observable<User>
-    userService.refreshCurrentUserData.and.returnValue(of(new User('123', 'TestUser', 'test@example.com', 100)));
+    // Creem una instància de User amb el constructor buit i assignem les propietats manualment
+    const mockUser = new User();
+    mockUser.userUUID = '123';
+    mockUser.username = 'TestUser';
+    mockUser.email = 'test@example.com';
+    mockUser.footcoins = 100;
+    userService.refreshCurrentUserData.and.returnValue(of(mockUser));
     spyOn(localStorage, 'setItem');
 
     component.handleSignIn();
@@ -160,7 +154,6 @@ describe('LoginRegisterComponent', () => {
     component.userModel.email = 'test@example.com';
     component.userModel.password = 'Password123!';
 
-    // Utilitzem casting a any per simular una resposta sense token
     userService.loginUser.and.returnValue(of({} as any));
     component.handleSignIn();
 

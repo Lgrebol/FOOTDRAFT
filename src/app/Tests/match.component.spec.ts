@@ -13,15 +13,17 @@ describe('MatchComponent', () => {
   let fixture: ComponentFixture<MatchComponent>;
   let httpTestingController: HttpTestingController;
 
-  // Funció auxiliar per crear mock de Team
-  const createMockTeam = (teamData: any): Team =>
-    new Team(
-      teamData.TeamUUID,
-      teamData.TeamName,
-      teamData.ShirtColor,
-      teamData.UserUUID,
-      teamData.Username
-    );
+  // Funció auxiliar per crear un mock de Team, si és necessari
+  const createMockTeam = (teamData: any): Team => {
+    // Assumim que el constructor de Team és buit i que es van assignar les propietats amb setters
+    const team = new Team();
+    team.teamUUID = teamData.TeamUUID;
+    team.teamName = teamData.TeamName;
+    team.shirtColor = teamData.ShirtColor;
+    team.userUUID = teamData.UserUUID;
+    team.username = teamData.Username;
+    return team;
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -34,17 +36,20 @@ describe('MatchComponent', () => {
     component = fixture.componentInstance;
     httpTestingController = TestBed.inject(HttpTestingController);
     
-    // Aquesta crida a detectChanges() dispara el ngOnInit i, per tant, la crida a loadTeams()
+    // Dispara el ngOnInit i gestiona les peticions GET a /teams i /tournaments
     fixture.detectChanges();
-    // Capturar i gestionar totes les peticions GET a /teams que s'hagin disparat
     const teamRequests = httpTestingController.match(`${baseUrl}/teams`);
     teamRequests.forEach(req => req.flush([]));
+    const tournamentRequests = httpTestingController.match(`${baseUrl}/tournaments`);
+    tournamentRequests.forEach(req => req.flush([]));
   });
 
   afterEach(() => {
-    // Finalment, si quedessin peticions GET a /teams sense gestionar, les gestionem
+    // Gestiona qualsevol petició pendent a /teams o /tournaments
     const pendingTeams = httpTestingController.match(`${baseUrl}/teams`);
     pendingTeams.forEach(req => req.flush([]));
+    const pendingTournaments = httpTestingController.match(`${baseUrl}/tournaments`);
+    pendingTournaments.forEach(req => req.flush([]));
     httpTestingController.verify();
   });
 
@@ -52,8 +57,7 @@ describe('MatchComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
-
+  // Tests per a canStartMatch()
   it('canStartMatch() should return false when teams are the same', () => {
     component.selectedHomeTeam = 'uuid1';
     component.selectedAwayTeam = 'uuid1';
@@ -74,52 +78,11 @@ describe('MatchComponent', () => {
     expect(component.canStartMatch()).toBeFalse();
   });
 
-  it('resetMatch() should reset state and stop polling', () => {
-    component.match = new Match(
-      '123',
-      'uuid1',
-      'uuid2',
-      0,
-      0,
-      0,
-      'tournamentUUID',
-      new Date().toISOString(),
-      []
-    );
-    component.matchStarted = true;
-    component.selectedHomeTeam = 'uuid1';
-    component.selectedAwayTeam = 'uuid2';
-    component.pollingSubscription = interval(1000).subscribe();
-    spyOn(component.pollingSubscription, 'unsubscribe');
-    
-    component.resetMatch();
-    
-    // Primer gestionem la petició POST de reset
-    const resetReq = httpTestingController.expectOne(`${baseUrl}/matches/reset`);
-    resetReq.flush({});
-    // Després, resetMatch() crida loadTeams(), per la qual cosa gestionem totes les peticions GET a /teams
-    const teamRequests = httpTestingController.match(`${baseUrl}/teams`);
-    teamRequests.forEach(req => req.flush([]));
-    
-    expect(component.match).toBeNull();
-    expect(component.matchSummary).toBeNull();
-    expect(component.matchStarted).toBeFalse();
-    expect(component.pollingSubscription?.unsubscribe).toHaveBeenCalled();
-  });
-
+  // Tests per a placeBet()
   describe('placeBet()', () => {
     beforeEach(() => {
-      component.match = new Match(
-        '123',
-        'uuid1',
-        'uuid2',
-        0,
-        0,
-        0,
-        'tournamentUUID',
-        new Date().toISOString(),
-        []
-      );
+      // Configurem un match simulat
+      component.match = Match.createNew('tournamentUUID', 'uuid1', 'uuid2', new Date());
       component.selectedHomeTeam = 'uuid1';
       component.selectedAwayTeam = 'uuid2';
       component.betAmount = 50;

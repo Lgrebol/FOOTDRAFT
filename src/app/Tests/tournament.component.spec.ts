@@ -21,7 +21,7 @@ describe('TournamentComponent', () => {
     component = fixture.componentInstance;
     httpTestingController = TestBed.inject(HttpTestingController);
 
-    // Handle the initial GET request triggered by the service constructor.
+    // La petició GET inicial del servei per carregar els tornejos
     const req = httpTestingController.expectOne(`${API_URL}/tournaments`);
     req.flush([]);
     fixture.detectChanges();
@@ -36,21 +36,30 @@ describe('TournamentComponent', () => {
   });
 
   it('should load tournaments', () => {
-    const mockTournaments = [
-      new Tournament('uuid1', 'Test1', 'Knockout', '2024-06-01', '2024-06-10'),
-      new Tournament('uuid2', 'Test2', 'League', '2024-07-01', '2024-07-15')
-    ];
+    // Creem dues instàncies de Tournament assignant les propietats amb els setters
+    const mockTournament1 = new Tournament();
+    mockTournament1.tournamentUUID = 'uuid1';
+    mockTournament1.tournamentName = 'Test1';
+    mockTournament1.tournamentType = 'Knockout';
+    mockTournament1.startDate = '2024-06-01';
+    mockTournament1.endDate = '2024-06-10';
 
-    // Instead of calling ngOnInit() again (it was already called),
-    // simulate a change in the service by pushing new data into its BehaviorSubject.
-    (component['tournamentService'] as any).tournamentsSubject.next(mockTournaments);
+    const mockTournament2 = new Tournament();
+    mockTournament2.tournamentUUID = 'uuid2';
+    mockTournament2.tournamentName = 'Test2';
+    mockTournament2.tournamentType = 'League';
+    mockTournament2.startDate = '2024-07-01';
+    mockTournament2.endDate = '2024-07-15';
+
+    // Simulem una nova actualització en el servei (per exemple, via un BehaviorSubject)
+    (component['tournamentService'] as any).tournamentsSubject.next([mockTournament1, mockTournament2]);
     fixture.detectChanges();
 
-    expect(component.tournaments).toEqual(mockTournaments);
+    expect(component.tournaments).toEqual([mockTournament1, mockTournament2]);
   });
 
   it('should add a tournament and reset the form', fakeAsync(() => {
-    // Set form values.
+    // Assignem valors al formulari
     component.tournamentForm.tournament.tournamentName = 'New Tournament';
     component.tournamentForm.tournament.tournamentType = 'Knockout';
     component.tournamentForm.tournament.startDate = '2024-08-01';
@@ -58,7 +67,7 @@ describe('TournamentComponent', () => {
 
     component.addTournament();
 
-    // Verify the POST request.
+    // Verifiquem la petició POST
     const postReq = httpTestingController.expectOne(`${API_URL}/tournaments`);
     expect(postReq.request.body).toEqual({
       tournamentName: 'New Tournament',
@@ -74,9 +83,9 @@ describe('TournamentComponent', () => {
       EndDate: '2024-08-10'
     });
 
-    // The service calls fetchTournaments after adding so expect a GET.
+    // El servei torna a carregar els tornejos després d'afegir, per tant s'espera una petició GET
     const getReq = httpTestingController.expectOne(`${API_URL}/tournaments`);
-    // Simulate that the new tournament is now in the list.
+    // Simulem que la nova llista inclou el torneig afegit
     getReq.flush([{
       TournamentUUID: 'new-uuid',
       TournamentName: 'New Tournament',
@@ -85,10 +94,10 @@ describe('TournamentComponent', () => {
       EndDate: '2024-08-10'
     }]);
 
-    // Use tick to ensure any pending microtasks (like setTimeout) are processed.
     tick(0);
+    fixture.detectChanges();
 
-    // Verify the form was reset.
+    // Comprovem que el formulari s'ha reinicialitzat
     expect(component.tournamentForm.tournament.tournamentName).toBe('');
     expect(component.tournamentForm.tournament.tournamentType).toBe('Knockout');
     expect(component.tournamentForm.tournament.startDate).toBe('');
@@ -97,27 +106,30 @@ describe('TournamentComponent', () => {
   }));
 
   it('should delete a tournament', () => {
-    // Pre-populate tournaments.
-    component.tournaments = [
-      new Tournament('uuid1', 'Test Tournament', 'Knockout', '2024-06-01', '2024-06-10')
-    ];
+    // Pre-populem el component amb un torneig
+    const tournament = new Tournament();
+    tournament.tournamentUUID = 'uuid1';
+    tournament.tournamentName = 'Test Tournament';
+    tournament.tournamentType = 'Knockout';
+    tournament.startDate = '2024-06-01';
+    tournament.endDate = '2024-06-10';
+    component.tournaments = [tournament];
     fixture.detectChanges();
 
     const tournamentUUID = 'uuid1';
     
     component.deleteTournament(tournamentUUID);
 
-    // Verify the DELETE request.
+    // Verifiquem la petició DELETE
     const deleteReq = httpTestingController.expectOne(`${API_URL}/tournaments/${tournamentUUID}`);
     expect(deleteReq.request.method).toBe('DELETE');
     deleteReq.flush({});
 
-    // The service calls fetchTournaments after deletion, so expect a GET.
+    // Després s'actualitza la llista via GET
     const getReq = httpTestingController.expectOne(`${API_URL}/tournaments`);
-    // Simulate that the tournament list is now empty.
+    // Simulem que la llista és ara buida
     getReq.flush([]);
 
-    // Verify that the UI no longer shows the deleted tournament.
     expect(component.tournaments.some(t => t.tournamentUUID === tournamentUUID)).toBeFalse();
   });
 
@@ -127,7 +139,7 @@ describe('TournamentComponent', () => {
 
     component.addTournament();
 
-    // Since the name is missing no HTTP call should be made.
+    // Com que el nom està buit, no s'ha de fer cap POST
     httpTestingController.expectNone(`${API_URL}/tournaments`);
     expect(component.tournamentForm.error).toBe('Error afegint torneig');
   });

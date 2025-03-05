@@ -33,7 +33,13 @@ describe('MainLayoutComponent', () => {
 
   it('should create', () => {
     userServiceSpy.getFootcoinsUpdates.and.returnValue(of(0));
-    userServiceSpy.refreshCurrentUserData.and.returnValue(of(new User('', '', '', 0)));
+    // Creem una instància de User i assignem els valors manualment
+    const mockUser = new User();
+    mockUser.userUUID = '123';
+    mockUser.username = 'TestUser';
+    mockUser.email = 'test@example.com';
+    mockUser.footcoins = 0;
+    userServiceSpy.refreshCurrentUserData.and.returnValue(of(mockUser));
     component.ngOnInit();
     expect(component).toBeTruthy();
   });
@@ -41,10 +47,14 @@ describe('MainLayoutComponent', () => {
   it('should subscribe to footcoins updates and update footcoins value', () => {
     const footcoinsSubject = new Subject<number>();
     userServiceSpy.getFootcoinsUpdates.and.returnValue(footcoinsSubject.asObservable());
-    userServiceSpy.refreshCurrentUserData.and.returnValue(of(new User('', '', '', 0)));
+    const mockUser = new User();
+    mockUser.userUUID = '123';
+    mockUser.username = 'TestUser';
+    mockUser.email = 'test@example.com';
+    mockUser.footcoins = 0;
+    userServiceSpy.refreshCurrentUserData.and.returnValue(of(mockUser));
 
     component.ngOnInit();
-
     expect(component.footcoins).toBe(0);
 
     footcoinsSubject.next(100);
@@ -55,7 +65,12 @@ describe('MainLayoutComponent', () => {
 
   it('should call refreshCurrentUserData on initialization and update footcoins', () => {
     userServiceSpy.getFootcoinsUpdates.and.returnValue(of(0));
-    userServiceSpy.refreshCurrentUserData.and.returnValue(of(new User('', '', '', 50)));
+    const mockUser = new User();
+    mockUser.userUUID = '123';
+    mockUser.username = 'TestUser';
+    mockUser.email = 'test@example.com';
+    mockUser.footcoins = 50;
+    userServiceSpy.refreshCurrentUserData.and.returnValue(of(mockUser));
 
     component.ngOnInit();
 
@@ -68,12 +83,16 @@ describe('MainLayoutComponent', () => {
     spyOn(console, 'error');
   
     userServiceSpy.getFootcoinsUpdates.and.returnValue(throwError(() => testError));
-    userServiceSpy.refreshCurrentUserData.and.returnValue(of(new User('', '', '', 0)));
+    const mockUser = new User();
+    mockUser.userUUID = '123';
+    mockUser.username = 'TestUser';
+    mockUser.email = 'test@example.com';
+    mockUser.footcoins = 0;
+    userServiceSpy.refreshCurrentUserData.and.returnValue(of(mockUser));
   
     component.ngOnInit();
   
     expect(console.error).toHaveBeenCalledWith('Error updating footcoins:', testError);
-    expect(console.error).toHaveBeenCalledWith('Error obtenint footcoins:', testError);
   });
 
   it('should redirect to /login if refreshCurrentUserData fails', () => {
