@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { User } from '../Classes/user/user.model';
+import { IUserApiResponse } from '../Interfaces/user-api-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,22 +16,17 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  // Retrieve token from localStorage and return the headers
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' });
   }
 
   getCurrentUser(): Observable<User | null> {
     return this.currentUserSubject.asObservable();
   }
 
-  // Include auth headers in the request
   getUsers(): Observable<User[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users`, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<IUserApiResponse[]>(`${this.apiUrl}/users`, { headers: this.getAuthHeaders() }).pipe(
       map(users => users.map(u => User.fromApi(u))),
       tap(users => this.usersSubject.next(users))
     );
@@ -40,54 +36,49 @@ export class UserService {
     return this.footcoinsSubject.asObservable();
   }
 
-  // Refresh current user data using the auth header
   refreshCurrentUserData(): Observable<User> {
-    return this.http.get<any>(`${this.apiUrl}/auth/current-user`, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<IUserApiResponse>(`${this.apiUrl}/auth/current-user`, { headers: this.getAuthHeaders() }).pipe(
       tap(userData => {
-        const currentUser = new User(
-          userData.userUUID,
-          userData.name,
-          userData.email,
-          userData.footcoins
-        );
+        console.log('Dades usuari:', userData);
+        const currentUser = User.fromApi(userData);
         this.currentUserSubject.next(currentUser);
         this.footcoinsSubject.next(currentUser.footcoins);
+        localStorage.setItem('userUUID', currentUser.userUUID);
       }),
       catchError(error => {
         console.error('Error updating user data:', error);
         return throwError(() => error);
-      })
+      }),
+      map(userData => User.fromApi(userData))
     );
   }
+  
 
-  updateFootcoins(newAmount: number): void {
-    this.footcoinsSubject.next(newAmount);
+  updateFootcoins(newAmount: number): void { 
+    this.footcoinsSubject.next(newAmount); 
   }
 
-  // Registration method; if the endpoint requires auth headers, they are added here
-  registerUser(user: User): Observable<any> {
+  registerUser(user: User): Observable<unknown> {
     if (!user.isValidForRegistration()) {
       return throwError(() => new Error('Invalid registration data'));
     }
-    return this.http.post(`${this.apiUrl}/users/register`, { 
-      name: user.username, 
-      email: user.email, 
-      password: user.password 
-    }, { headers: this.getAuthHeaders() });
+    return this.http.post<unknown>(`${this.apiUrl}/users/register`, 
+      { name: user.username, email: user.email, password: user.password },
+      { headers: this.getAuthHeaders() }
+    );
   }
 
-  // Login method; once the token is received, it's stored in localStorage and current user data is refreshed
   loginUser(user: User): Observable<{ token: string }> {
     if (!user.isValidForLogin()) {
       return throwError(() => new Error('Invalid login data'));
     }
-    return this.http.post<{ token: string }>(
-      `${this.apiUrl}/users/login`, 
+    return this.http.post<{ token: string }>(`${this.apiUrl}/users/login`, 
       { email: user.email, password: user.password },
       { headers: this.getAuthHeaders() }
     ).pipe(
       tap(response => {
         localStorage.setItem('authToken', response.token);
+        // Refresquem les dades de l'usuari per actualitzar les footcoins
         this.refreshCurrentUserData().subscribe();
       })
     );

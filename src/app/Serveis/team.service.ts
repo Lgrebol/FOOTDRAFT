@@ -11,20 +11,15 @@ export class TeamService {
   private apiUrl = 'http://localhost:3000/api/v1/teams';
   private teamsSubject = new BehaviorSubject<Team[]>([]);
 
-  constructor(private http: HttpClient) {
-    this.fetchTeams();
-  }
+  constructor(private http: HttpClient) { this.fetchTeams(); }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' });
   }
 
   private fetchTeams(): void {
-    this.http.get<any[]>(this.apiUrl, { headers: this.getAuthHeaders() }).subscribe(
+    this.http.get<Team[]>(this.apiUrl, { headers: this.getAuthHeaders() }).subscribe(
       teams => {
         const teamInstances = teams.map(t => Team.fromApi(t));
         this.teamsSubject.next(teamInstances);
@@ -34,30 +29,26 @@ export class TeamService {
   }
 
   getTeams(): Observable<Team[]> {
-    return this.http.get<any[]>(this.apiUrl, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<Team[]>(this.apiUrl, { headers: this.getAuthHeaders() }).pipe(
       map(teams => teams.map(t => Team.fromApi(t)))
     );
   }
 
   addTeam(team: Team): Observable<Team> {
-    return this.http.post<any>(this.apiUrl, team.toPayload(), { headers: this.getAuthHeaders() }).pipe(
+    return this.http.post<Team>(this.apiUrl, team.toPayload(), { headers: this.getAuthHeaders() }).pipe(
       tap(() => this.fetchTeams()),
       map(t => Team.fromApi(t))
     );
   }
 
-  deleteTeam(teamUUID: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${teamUUID}`, { headers: this.getAuthHeaders() }).pipe(
+  deleteTeam(teamUUID: string): Observable<unknown> {
+    return this.http.delete<unknown>(`${this.apiUrl}/${teamUUID}`, { headers: this.getAuthHeaders() }).pipe(
       tap(() => this.fetchTeams())
     );
   }
 
-  assignPlayerToTeam(teamUUID: string, playerUUID: string, userUUID: string): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/${teamUUID}/add-player-from-reserve`,
-      { playerId: playerUUID, userID: userUUID },
-      { headers: this.getAuthHeaders() }
-    ).pipe(
+  assignPlayerToTeam(teamUUID: string, playerUUID: string, userUUID: string): Observable<unknown> {
+    return this.http.post<unknown>(`${this.apiUrl}/${teamUUID}/add-player-from-reserve`, { playerId: playerUUID, userID: userUUID }, { headers: this.getAuthHeaders() }).pipe(
       tap(() => this.fetchTeams())
     );
   }

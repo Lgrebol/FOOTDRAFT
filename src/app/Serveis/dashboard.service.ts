@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DashboardStats } from '../Classes/dashboard/dashboard-stats.model';
+import { IDashboardApiResponse } from '../Interfaces/dashboard-api-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -11,21 +12,16 @@ export class DashboardService {
   private dashboardStats: DashboardStats = new DashboardStats();
   private dashboardStatsSubject = new BehaviorSubject<DashboardStats>(this.dashboardStats);
 
-  constructor(private http: HttpClient) {
-    this.fetchDashboardStats();
-  }
+  constructor(private http: HttpClient) { this.fetchDashboardStats(); }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' });
   }
 
   private fetchDashboardStats(): void {
     this.dashboardStats.setLoading(true);
-    this.http.get<any>(this.apiUrl, { headers: this.getAuthHeaders() }).subscribe({
+    this.http.get<IDashboardApiResponse>(this.apiUrl, { headers: this.getAuthHeaders() }).subscribe({
       next: data => {
         this.dashboardStats.updateStats({
           totalTeams: data.totalTeams,

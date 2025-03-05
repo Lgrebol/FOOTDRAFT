@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { Player } from '../Classes/players/player.model';
+import { IPlayerApiResponse } from '../Interfaces/player-api-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -11,25 +12,17 @@ export class StoreService {
   private apiUrl = 'http://localhost:3000/api/v1/players';
   private storePlayersSubject = new BehaviorSubject<Player[]>([]);
 
-  constructor(private http: HttpClient) {
-    this.fetchStorePlayers();
+  constructor(private http: HttpClient) { 
+    this.fetchStorePlayers(); 
   }
 
-  // Helper function to get auth headers
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken') || '';
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
-
-  private isValidUUID(uuid: string): boolean {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(uuid);
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
   }
 
   private fetchStorePlayers(params?: HttpParams): void {
-    this.http.get<any[]>(`${this.apiUrl}/store`, { headers: this.getAuthHeaders(), params }).pipe(
+    this.http.get<IPlayerApiResponse[]>(`${this.apiUrl}/store`, { headers: this.getAuthHeaders(), params }).pipe(
       map(players => players.map(p => Player.fromApi(p))),
       catchError(error => {
         console.error('Error obtenint jugadors:', error);
@@ -47,28 +40,27 @@ export class StoreService {
 
   refreshStorePlayers(searchTerm?: string, minPrice?: number, maxPrice?: number): void {
     let params = new HttpParams();
-    if (searchTerm) params = params.set('search', searchTerm);
-    if (minPrice !== undefined && minPrice !== null) params = params.set('minPrice', minPrice);
-    if (maxPrice !== undefined && maxPrice !== null) params = params.set('maxPrice', maxPrice);
-    
+    if (searchTerm) { params = params.set('search', searchTerm); }
+    if (minPrice !== undefined && minPrice !== null) { params = params.set('minPrice', minPrice); }
+    if (maxPrice !== undefined && maxPrice !== null) { params = params.set('maxPrice', maxPrice); }
     this.fetchStorePlayers(params);
   }
 
-  buyPlayer(playerUUID: string, userUUID: string): Observable<any> {
+  buyPlayer(playerUUID: string, userUUID: string): Observable<unknown> {
     if (!this.isValidUUID(playerUUID) || !this.isValidUUID(userUUID)) {
       return throwError(() => new Error('ID invàlid'));
     }
-
-    return this.http.post(
-      `${this.apiUrl}/buy/${playerUUID}`, 
-      { userID: userUUID },
-      { headers: this.getAuthHeaders() }
-    ).pipe(
+    return this.http.post<unknown>(`${this.apiUrl}/buy/${playerUUID}`, { userID: userUUID }, { headers: this.getAuthHeaders() }).pipe(
       tap(() => this.refreshStorePlayers()),
       catchError(error => {
         console.error('Error en la compra:', error);
-        return throwError(() => error);
+        return throwError(() => new Error(JSON.stringify(error.error)));
       })
     );
+  }
+  
+  private isValidUUID(uuid: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
   }
 }
