@@ -13,9 +13,8 @@ import { StoreModel } from '../../Classes/store/store.model';
 })
 export class StoreComponent implements OnInit {
   storeModel: StoreModel = new StoreModel();
-  currentUserUUID: string = '97C72798-B79D-4248-AC5C-11457F2E38AC';
+  currentUserUUID: string = localStorage.getItem('userUUID') || '';
 
-  // Aquests atributs s'utilitzen per els filtres en els tests
   searchTerm: string = '';
   minPrice: number | null = null;
   maxPrice: number | null = null;
@@ -23,22 +22,15 @@ export class StoreComponent implements OnInit {
   constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
-    this.storeService.getStorePlayers().subscribe(
-      players => this.storeModel.setPlayers(players)
-    );
+    this.storeService.getStorePlayers().subscribe(players => { 
+      this.storeModel.setPlayers(players); 
+    });
   }
 
-  // Getter per facilitar l'accés als jugadors disponibles en els tests
-  get storePlayers() {
-    return this.storeModel.store.availablePlayers;
-  }
+  get storePlayers() { return this.storeModel.store.availablePlayers; }
 
   fetchStorePlayers(): void {
-    this.storeService.refreshStorePlayers(
-      this.searchTerm, 
-      this.minPrice ?? undefined, 
-      this.maxPrice ?? undefined
-    );
+    this.storeService.refreshStorePlayers(this.searchTerm, this.minPrice ?? undefined, this.maxPrice ?? undefined);
   }
 
   applyFilters(): void {
@@ -49,15 +41,18 @@ export class StoreComponent implements OnInit {
     );
   }
   
-
   buyPlayer(playerUUID: string): void {
+    if (!this.currentUserUUID) {
+      this.storeModel.setError('Usuari no identificat. Inicia sessió per comprar jugadors.');
+      return;
+    }
     this.storeService.buyPlayer(playerUUID, this.currentUserUUID).subscribe({
       next: () => {
         this.storeModel.setSuccess('Jugador comprat correctament!');
         this.storeModel.removePlayer(playerUUID);
       },
-      error: error => {
-        this.storeModel.setError(error.error?.error || 'Error en la compra');
+      error: error => { 
+        this.storeModel.setError(error.error?.error || 'Error en la compra'); 
       }
     });
   }
