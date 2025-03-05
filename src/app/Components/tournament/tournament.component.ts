@@ -9,11 +9,7 @@ import { Tournament, TournamentFormModel } from '../../Classes/tournament/tourna
   templateUrl: './tournament.component.html',
   styleUrls: ['./tournament.component.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule
-  ]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
 export class TournamentComponent implements OnInit {
   tournaments: Tournament[] = [];
@@ -22,9 +18,7 @@ export class TournamentComponent implements OnInit {
   constructor(private tournamentService: TournamentService) {}
 
   ngOnInit(): void {
-    this.tournamentService.getTournaments().subscribe(
-      (tournaments) => this.tournaments = tournaments
-    );
+    this.tournamentService.getTournaments().subscribe((tournaments) => { this.tournaments = tournaments; });
   }
 
   addTournament(): void {
@@ -39,9 +33,7 @@ export class TournamentComponent implements OnInit {
           console.error("Error adding tournament:", error);
           this.tournamentForm.setError('Error afegint torneig');
         },
-        complete: () => {
-          this.tournamentForm.setLoading(false);
-        }
+        complete: () => { this.tournamentForm.setLoading(false); }
       });
     } else {
       this.tournamentForm.setError('Error afegint torneig');
@@ -50,14 +42,10 @@ export class TournamentComponent implements OnInit {
 
   deleteTournament(tournamentUUID: string): void {
     this.tournamentService.deleteTournament(tournamentUUID).subscribe({
-      next: () => {
-        this.tournaments = this.tournaments.filter(t => t.tournamentUUID !== tournamentUUID);
-      },
+      next: () => { this.tournaments = this.tournaments.filter(t => t.tournamentUUID !== tournamentUUID); },
       error: (error) => console.error("Error deleting tournament:", error)
     });
-  }  
-
-  trackById(index: number, item: Tournament): string {
-    return item.tournamentUUID;
   }
+
+  trackById(index: number, item: Tournament): string { return item.tournamentUUID; }
 }

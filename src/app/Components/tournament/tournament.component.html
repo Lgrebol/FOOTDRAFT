@@ -25,19 +25,10 @@
       </tr>      
     </tbody>
   </table>
-
   <h2>Afegir Torneig</h2>
   <form (ngSubmit)="addTournament()" role="form" aria-labelledby="add-tournament-title">
     <div class="mb-2">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Nom del torneig"
-        [(ngModel)]="tournamentForm.tournament.tournamentName"
-        name="name"
-        required
-        aria-required="true"
-        aria-label="Nom del torneig" />
+      <input type="text" class="form-control" placeholder="Nom del torneig" [(ngModel)]="tournamentForm.tournament.tournamentName" name="name" required aria-required="true" aria-label="Nom del torneig" />
     </div>
     <div class="mb-2">
       <select class="form-control" [(ngModel)]="tournamentForm.tournament.tournamentType" name="type" aria-label="Tipus de torneig">
@@ -46,31 +37,13 @@
       </select>
     </div>
     <div class="mb-2">
-      <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="tournamentForm.tournament.startDate"
-        name="startDate"
-        required
-        aria-required="true"
-        aria-label="Data d'inici" />
+      <input type="date" class="form-control" [(ngModel)]="tournamentForm.tournament.startDate" name="startDate" required aria-required="true" aria-label="Data d'inici" />
     </div>
     <div class="mb-2">
-      <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="tournamentForm.tournament.endDate"
-        name="endDate"
-        aria-label="Data de finalització" />
+      <input type="date" class="form-control" [(ngModel)]="tournamentForm.tournament.endDate" name="endDate" aria-label="Data de finalització" />
     </div>
-    <button type="submit" class="btn btn-success" [disabled]="tournamentForm.loading" aria-label="Afegir Torneig">
-      Afegir Torneig
-    </button>
+    <button type="submit" class="btn btn-success" [disabled]="tournamentForm.loading" aria-label="Afegir Torneig">Afegir Torneig</button>
   </form>
-  <div *ngIf="tournamentForm.error" class="alert alert-danger mt-2" role="alert">
-    {{ tournamentForm.error }}
-  </div>
-  <div *ngIf="tournamentForm.success" class="alert alert-success mt-2" role="alert">
-    {{ tournamentForm.success }}
-  </div>
+  <div *ngIf="tournamentForm.error" class="alert alert-danger mt-2" role="alert">{{ tournamentForm.error }}</div>
+  <div *ngIf="tournamentForm.success" class="alert alert-success mt-2" role="alert">{{ tournamentForm.success }}</div>
 </div>
