@@ -5,12 +5,6 @@ import { Router } from '@angular/router';
 import { UserService } from '../../Serveis/user.service';
 import { User } from '../../Classes/user/user.model';
 
-interface JwtPayload {
-  userUUID: string;
-  email: string;
-  footcoins?: number;
-}
-
 @Component({
   selector: 'app-login-register',
   standalone: true,
@@ -34,14 +28,9 @@ export class LoginRegisterComponent implements AfterViewInit {
     passwordRegexError: false
   };
 
-  constructor(
-    private router: Router,
-    private userService: UserService
-  ) {}
+  constructor(private router: Router, private userService: UserService) {}
 
-  ngAfterViewInit(): void {
-    this.initViewTransition();
-  }
+  ngAfterViewInit(): void { this.initViewTransition(); }
 
   private initViewTransition(): void {
     if (this.signUpBtn?.nativeElement && this.container?.nativeElement) {
@@ -49,7 +38,6 @@ export class LoginRegisterComponent implements AfterViewInit {
         this.container.nativeElement.classList.add('sign-up-mode');
       });
     }
-
     if (this.signInBtn?.nativeElement && this.container?.nativeElement) {
       this.signInBtn.nativeElement.addEventListener('click', () => {
         this.container.nativeElement.classList.remove('sign-up-mode');
@@ -59,9 +47,7 @@ export class LoginRegisterComponent implements AfterViewInit {
 
   onSubmit(): void {
     this.validateRegistrationForm();
-    if (this.userModel.isValidForRegistration()) {
-      this.registerUser();
-    }
+    if (this.userModel.isValidForRegistration()) { this.registerUser(); }
   }
 
   private validateRegistrationForm(): void {
@@ -79,38 +65,29 @@ export class LoginRegisterComponent implements AfterViewInit {
         this.clearForm();
         this.switchToLogin();
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('Error durant el registre', error);
-        alert(error.error?.error || 'Error en el registre');
+        const errObj = error as { error?: { error?: string } };
+        alert(errObj.error?.error || 'Error en el registre');
       }
     });
   }
 
-  private clearForm(): void {
-    this.userModel = new User();
-  }
-
-  private switchToLogin(): void {
-    this.container.nativeElement.classList.remove('sign-up-mode');
-  }
+  private clearForm(): void { this.userModel = new User(); }
+  private switchToLogin(): void { this.container.nativeElement.classList.remove('sign-up-mode'); }
 
   handleSignIn(): void {
     this.loginErrorMessage = '';
-
     if (!this.userModel.isValidForLogin()) {
       this.loginErrorMessage = 'Si us plau, omple tots els camps correctament';
       return;
     }
-
     this.userService.loginUser(this.userModel).subscribe({
-      next: (response) => {
-        if (response.token) {
-          this.handleSuccessfulLogin(response.token);
-        }
-      },
-      error: (error) => {
+      next: (response) => { if (response.token) { this.handleSuccessfulLogin(response.token); } },
+      error: (error: unknown) => {
         console.error("Error d'inici de sessió:", error);
-        this.loginErrorMessage = error.error?.error || 'Credencials incorrectes';
+        const errObj = error as { error?: { error?: string } };
+        this.loginErrorMessage = errObj.error?.error || 'Credencials incorrectes';
       }
     });
   }
@@ -119,10 +96,10 @@ export class LoginRegisterComponent implements AfterViewInit {
     localStorage.setItem('authToken', token);
     this.userService.refreshCurrentUserData().subscribe({
       next: () => this.router.navigate(['/dashboard']),
-      error: (err) => {
+      error: (err: unknown) => {
         console.error('Error actualitzant dades:', err);
         this.router.navigate(['/dashboard']);
       }
     });
   }
-}
+}  

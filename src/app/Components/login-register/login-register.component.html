@@ -6,149 +6,59 @@
         <h2 class="title" id="signin-title">Entreu al terreny de joc</h2>
         <div class="input-field-2" [class.input-error]="errors.emailError">
           <label for="signin-email" class="visually-hidden">Email</label>
-          <input type="email" 
-                 id="signin-email"
-                 name="email"
-                 [(ngModel)]="userModel.email" 
-                 placeholder="Email"
-                 aria-required="true"
-                 [attr.aria-invalid]="errors.emailError"
-                 aria-describedby="signin-email-error">
-          <div *ngIf="errors.emailError" class="error-message" id="signin-email-error" role="alert" aria-live="assertive">
-            Email obligatori
-          </div>
+          <input type="email" id="signin-email" name="email" [(ngModel)]="userModel.email" placeholder="Email" aria-required="true" [attr.aria-invalid]="errors.emailError" aria-describedby="signin-email-error">
+          <div *ngIf="errors.emailError" class="error-message" id="signin-email-error" role="alert" aria-live="assertive">Email obligatori</div>
         </div>
         <div class="input-field-2" [class.input-error]="errors.passwordError">
           <label for="signin-password" class="visually-hidden">Contrasenya</label>
-          <input type="password"
-                 id="signin-password"
-                 name="password"
-                 [(ngModel)]="userModel.password"
-                 placeholder="Contrasenya"
-                 aria-required="true"
-                 [attr.aria-invalid]="errors.passwordError"
-                 aria-describedby="signin-password-error">
-          <div *ngIf="errors.passwordError" class="error-message" id="signin-password-error" role="alert" aria-live="assertive">
-            Contrasenya obligatòria
-          </div>
+          <input type="password" id="signin-password" name="password" [(ngModel)]="userModel.password" placeholder="Contrasenya" aria-required="true" [attr.aria-invalid]="errors.passwordError" aria-describedby="signin-password-error">
+          <div *ngIf="errors.passwordError" class="error-message" id="signin-password-error" role="alert" aria-live="assertive">Contrasenya obligatòria</div>
         </div>
-        
-        <!-- Missatge d'error integrat al formulari d'inici de sessió -->
-        <div *ngIf="loginErrorMessage" class="error-message" role="alert" aria-live="assertive">
-          {{ loginErrorMessage }}
-        </div>
-        
-        <button class="btn solid" type="submit" aria-label="Iniciar sessió">
-          Inicieu Sessió
-        </button>
+        <div *ngIf="loginErrorMessage" class="error-message" role="alert" aria-live="assertive">{{ loginErrorMessage }}</div>
+        <button class="btn solid" type="submit" aria-label="Iniciar sessió">Inicieu Sessió</button>
       </form>
-
       <!-- Sign Up Form -->
       <form class="sign-up-form" role="form" aria-labelledby="signup-title" (ngSubmit)="onSubmit()">
         <h2 class="title" id="signup-title">Registreu-vos a FOOTDRAFT</h2>
         <div class="input-field" [class.input-error]="errors.usernameError">
           <label for="signup-username" class="visually-hidden">Usuari</label>
-          <input type="text"
-                 id="signup-username"
-                 name="username"
-                 [(ngModel)]="userModel.username"
-                 required
-                 placeholder="Usuari"
-                 aria-required="true"
-                 [attr.aria-invalid]="errors.usernameError"
-                 aria-describedby="username-error">
-          <div *ngIf="errors.usernameError" class="error-message" id="username-error" role="alert" aria-live="polite">
-            El nom d'usuari és obligatori
-          </div>
+          <input type="text" id="signup-username" name="username" [(ngModel)]="userModel.username" required placeholder="Usuari" aria-required="true" [attr.aria-invalid]="errors.usernameError" aria-describedby="username-error">
+          <div *ngIf="errors.usernameError" class="error-message" id="username-error" role="alert" aria-live="polite">El nom d'usuari és obligatori</div>
         </div>
-          
         <div class="input-field" [class.input-error]="errors.emailError">
           <label for="signup-email" class="visually-hidden">Email</label>
-          <input type="email"
-                 id="signup-email"
-                 name="email"
-                 [(ngModel)]="userModel.email"
-                 required
-                 placeholder="Email"
-                 aria-required="true"
-                 [attr.aria-invalid]="errors.emailError"
-                 aria-describedby="email-error">
-          <div *ngIf="errors.emailError" class="error-message" id="email-error" role="alert" aria-live="polite">
-            Format d'email invàlid
-          </div>
+          <input type="email" id="signup-email" name="email" [(ngModel)]="userModel.email" required placeholder="Email" aria-required="true" [attr.aria-invalid]="errors.emailError" aria-describedby="email-error">
+          <div *ngIf="errors.emailError" class="error-message" id="email-error" role="alert" aria-live="polite">Format d'email invàlid</div>
         </div>
-          
         <div class="input-field" [class.input-error]="errors.passwordError || errors.passwordRegexError">
           <label for="signup-password" class="visually-hidden">Contrasenya</label>
-          <input type="password"
-                 id="signup-password"
-                 name="password"
-                 [(ngModel)]="userModel.password"
-                 required
-                 placeholder="Contrasenya"
-                 aria-required="true"
-                 [attr.aria-invalid]="errors.passwordError || errors.passwordRegexError"
-                 aria-describedby="password-main-error password-regex-error">
-          <div *ngIf="errors.passwordError" class="error-message" id="password-main-error" role="alert" aria-live="polite">
-            Contrasenya obligatòria
-          </div>
-          <div *ngIf="errors.passwordRegexError" class="error-message-2" id="password-regex-error" role="alert" aria-live="polite">
-            Mínim 6 caràcters amb 1 símbol (&#64;#$%^&*)
-          </div>
+          <input type="password" id="signup-password" name="password" [(ngModel)]="userModel.password" required placeholder="Contrasenya" aria-required="true" [attr.aria-invalid]="errors.passwordError || errors.passwordRegexError" aria-describedby="password-main-error password-regex-error">
+          <div *ngIf="errors.passwordError" class="error-message" id="password-main-error" role="alert" aria-live="polite">Contrasenya obligatòria</div>
+          <div *ngIf="errors.passwordRegexError" class="error-message-2" id="password-regex-error" role="alert" aria-live="polite">Mínim 6 caràcters amb 1 símbol (&#64;#$%^&*)</div>
         </div>
-          
         <div class="input-field" [class.input-error]="errors.confirmPasswordMismatchError">
           <label for="signup-confirm-password" class="visually-hidden">Confirmar contrasenya</label>
-          <input type="password"
-                 id="signup-confirm-password"
-                 name="confirmPassword"
-                 [(ngModel)]="userModel.confirmPassword"
-                 required
-                 placeholder="Confirmar contrasenya"
-                 aria-required="true"
-                 [attr.aria-invalid]="errors.confirmPasswordMismatchError"
-                 aria-describedby="confirm-password-error">
-          <div *ngIf="errors.confirmPasswordMismatchError" class="error-message" id="confirm-password-error" role="alert" aria-live="polite">
-            Les contrasenyes no coincideixen
-          </div>
+          <input type="password" id="signup-confirm-password" name="confirmPassword" [(ngModel)]="userModel.confirmPassword" required placeholder="Confirmar contrasenya" aria-required="true" [attr.aria-invalid]="errors.confirmPasswordMismatchError" aria-describedby="confirm-password-error">
+          <div *ngIf="errors.confirmPasswordMismatchError" class="error-message" id="confirm-password-error" role="alert" aria-live="polite">Les contrasenyes no coincideixen</div>
         </div>
-          
-        <button type="submit" class="btn" aria-label="Registrar-se">
-          Registra't
-        </button>
+        <button type="submit" class="btn" aria-label="Registrar-se">Registra't</button>
       </form>
     </div>
   </div>
-  
   <div class="panels-container">
-    <!-- Left Panel -->
     <div class="panel left-panel" role="region" aria-label="Panell de benvinguda">
       <div class="content">
         <h1 class="service-title">FOOTDRAFT</h1>
         <p>Gestió d'equips, competicions i molt més!!!</p>
-        <button class="btn transparent" 
-                id="sign-up-btn" 
-                #signUpBtn
-                aria-label="Mostrar formulari de registre"
-                aria-controls="sign-up-form">
-          Registra't
-        </button>
+        <button class="btn transparent" id="sign-up-btn" #signUpBtn aria-label="Mostrar formulari de registre" aria-controls="sign-up-form">Registra't</button>
       </div>
       <img src="/player2.png" class="image" alt="Il·lustració d'un jugador de futbol amb la pilota"> 
     </div>
-  
-    <!-- Right Panel -->
     <div class="panel right-panel" role="region" aria-label="Panell de benvinguda per a usuaris registrats">
       <div class="content">
         <h1>FOOTDRAFT</h1>
         <p>Tornejos, estadístiques i molt més!!!</p>
-        <button class="btn transparent" 
-                id="sign-in-btn" 
-                #signInBtn
-                aria-label="Mostrar formulari d'inici de sessió"
-                aria-controls="sign-in-form">
-          Inicieu sessió
-        </button> 
+        <button class="btn transparent" id="sign-in-btn" #signInBtn aria-label="Mostrar formulari d'inici de sessió" aria-controls="sign-in-form">Inicieu sessió</button> 
       </div>
       <img src="/player.png" class="image" alt="Il·lustració d'un porter de futbol en acció">
     </div>
