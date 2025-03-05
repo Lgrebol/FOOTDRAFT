@@ -5,10 +5,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
   dashboardStats!: DashboardStats;
@@ -17,9 +17,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.dashboardService.getDashboardStats().subscribe({
-      next: (stats) => {
-        this.dashboardStats = stats;
-      },
+      next: (stats) => { this.dashboardStats = stats; },
       error: (error) => console.error('Error loading dashboard stats:', error)
     });
   }

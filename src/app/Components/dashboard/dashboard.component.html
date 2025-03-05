@@ -2,7 +2,6 @@
   <h2 id="dashboard-title" class="dashboard-title">🏆 Dashboard Global</h2>
   <div *ngIf="dashboardStats?.loading" class="loading" aria-live="polite">Carregant...</div>
   <div *ngIf="dashboardStats?.error" class="error" role="alert">{{ dashboardStats.error }}</div>
-
   <div class="football-field" *ngIf="!dashboardStats?.loading && !dashboardStats?.error">
     <div class="stat-card top-left" role="region" aria-label="Estadística d'Equips">
       <div class="stat-icon">⚽</div>
