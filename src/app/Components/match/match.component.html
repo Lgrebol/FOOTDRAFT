@@ -1,125 +1,106 @@
 <div class="match-page" role="main">
-  <!-- Selectors d'equips -->
-  <div class="team-selectors" role="region" aria-label="Selecció d'equips">
-    <div class="team-selector">
-      <h3 id="home-team-label">Equip Local</h3>
-      <select [(ngModel)]="selectedHomeTeam" aria-labelledby="home-team-label">
-        <option value="" disabled>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.teamUUID">
-          {{ team.teamName }}
-        </option>
-      </select>
-    </div>
-
-    <div class="team-selector">
-      <h3 id="away-team-label">Equip Visitant</h3>
-      <select [(ngModel)]="selectedAwayTeam" aria-labelledby="away-team-label">
-        <option value="" disabled>Selecciona un equip</option>
-        <option *ngFor="let team of teams" [value]="team.teamUUID">
-          {{ team.teamName }}
-        </option>
-      </select>
-    </div>
+  <!-- Selector de Torneig -->
+  <div class="tournament-selector" role="region" aria-label="Selecciona un torneig">
+    <label for="tournament-select">Torneig:</label>
+    <select id="tournament-select" [(ngModel)]="selectedTournamentId" name="tournamentId" required>
+      <option value="" disabled selected>Selecciona un torneig</option>
+      <option *ngFor="let torneig of tournamentList" [value]="torneig.tournamentUUID">
+        {{ torneig.tournamentName }}
+      </option>
+    </select>
   </div>
 
-  <!-- Secció d'apostes -->
-  <div class="betting-section" *ngIf="!matchStarted" role="form" aria-labelledby="betting-section-title">
-    <h3 id="betting-section-title">Fes una aposta</h3>
-    <form (ngSubmit)="placeBet()">
-      <div class="form-group">
-        <label for="bet-amount">Quantitat:</label>
-        <input type="number" id="bet-amount" [(ngModel)]="betAmount" name="betAmount" required aria-required="true">
-      </div>
-      <div class="form-group">
-        <label for="predicted-winner">Predicció:</label>
-        <select id="predicted-winner" [(ngModel)]="predictedWinner" name="predictedWinner" required aria-required="true">
-          <option value="home">Equip Local</option>
-          <option value="away">Equip Visitant</option>
-        </select>
-      </div>
-      <button type="submit" aria-label="Apostar">Apostar</button>
-    </form>
+  <!-- Selector d'Equips -->
+  <div class="team-selectors" role="region" aria-label="Selecció d'equips">
+    <div class="team-selector">
+      <label for="home-team">Equip Local:</label>
+      <select id="home-team" [(ngModel)]="selectedHomeTeam" name="homeTeam" required>
+        <option value="" disabled selected>Selecciona un equip</option>
+        <option *ngFor="let team of teamList" [value]="team.teamUUID">
+          {{ team.teamName }}
+        </option>
+      </select>
+    </div>
+    <div class="team-selector">
+      <label for="away-team">Equip Visitant:</label>
+      <select id="away-team" [(ngModel)]="selectedAwayTeam" name="awayTeam" required>
+        <option value="" disabled selected>Selecciona un equip</option>
+        <option *ngFor="let team of teamList" [value]="team.teamUUID">
+          {{ team.teamName }}
+        </option>
+      </select>
+    </div>
   </div>
 
   <!-- Controls del partit -->
   <div class="controls" role="region" aria-label="Controls del partit">
-    <button class="btn-start" [disabled]="!canStartMatch()" (click)="startMatch()" aria-label="Iniciar Partida">
-      ▶ Iniciar Partida
-    </button>
-    <button class="btn-reset" (click)="resetMatch()" [disabled]="!matchStarted" aria-label="Reiniciar Partida">
-      ↻ Reiniciar
-    </button>
+    <button class="btn-start" (click)="startMatch()" [disabled]="!canStartMatch()" aria-label="Iniciar Partida">▶ Iniciar Partida</button>
+    <button class="btn-reset" (click)="resetMatch()" [disabled]="!matchStarted" aria-label="Reiniciar Partida">↻ Reiniciar</button>
   </div>
 
-  <!-- Partit en curs -->
-  <div class="match-display" *ngIf="matchStarted && match && !matchSummary?.matchEnded" role="region" aria-label="Partit en curs" aria-live="polite">
+  <!-- Partit en curs (mostra marcador i esdeveniments en temps real) -->
+  <div class="match-display" *ngIf="matchStarted && match && !matchSummary" role="region" aria-label="Partit en curs" aria-live="polite">
     <div class="scoreboard" role="region" aria-label="Marcador">
       <div class="team local">
-        <h3>{{ getTeamName(match.homeTeamUUID) || 'Equip Local' }}</h3>
+        <h3>Equip Local</h3>
         <div class="score">{{ match.homeGoals || 0 }}</div>
       </div>
-      
       <div class="match-info">
         <div class="minute">{{ match.currentMinute || 0 }}'</div>
         <div class="vs" aria-hidden="true">VS</div>
       </div>
-      
       <div class="team visitor">
-        <h3>{{ getTeamName(match.awayTeamUUID) || 'Equip Visitant' }}</h3>
+        <h3>Equip Visitant</h3>
         <div class="score">{{ match.awayGoals || 0 }}</div>
       </div>
     </div>
-
     <div class="events-log" role="log" aria-live="polite" aria-label="Llista d'esdeveniments">
       <h4>📝 Esdeveniments</h4>
-      <div class="event-card" *ngFor="let event of match.events">
+      <div class="event-card" *ngFor="let event of match?.events">
         <div class="event-time">{{ event.minute }}'</div>
         <div class="event-description">{{ event.description }}</div>
       </div>
-      <div *ngIf="!match.events?.length" class="no-events">
-        Encara no hi ha esdeveniments
-      </div>
+      <div *ngIf="!match?.events?.length" class="no-events">Encara no hi ha esdeveniments</div>
     </div>
   </div>
 
-  <!-- Resum final -->
-  <div class="match-summary" *ngIf="match && matchSummary?.matchEnded" role="region" aria-label="Resum del partit" aria-live="polite">
+  <!-- Resum final (estadístiques finals i llista completa d'esdeveniments) -->
+  <div class="match-summary" *ngIf="matchSummary" role="region" aria-label="Resum del partit" aria-live="polite">
     <h2>🏆 PARTIT FINALITZAT 🏆</h2>
-    
     <div class="stats-container">
-      <!-- Marcador final -->
       <div class="stat-card main-score" role="region" aria-label="Marcador final">
         <h3>Marcador Final</h3>
         <div class="final-score">
-          <span class="team">{{ getTeamName(match.homeTeamUUID) }}</span>
+          <span class="team">Equip Local</span>
           <span class="goals-spacer">{{ matchSummary.homeGoals }}</span>
           <span class="separator">-</span>
           <span class="goals-spacer">{{ matchSummary.awayGoals }}</span>
-          <span class="team">{{ getTeamName(match.awayTeamUUID) }}</span>
+          <span class="team">Equip Visitant</span>
         </div>
       </div>
-  
-      <!-- Estadístiques completes -->
       <div class="stats-grid">
         <div class="stat-card" role="region" aria-label="Gols Totals">
           <h4>Gols Totals</h4>
           <div class="stat-value">{{ matchSummary.totalGoals }}</div>
         </div>
-        
         <div class="stat-card" role="region" aria-label="Falts Totals">
           <h4>Falts Totals</h4>
           <div class="stat-value">{{ matchSummary.totalFouls || 0 }}</div>
         </div>
-        
         <div class="stat-card" role="region" aria-label="Targetes Vermelles">
           <h4>Targetes Vermelles</h4>
           <div class="stat-value">{{ matchSummary.totalRedCards || 0 }}</div>
         </div>
       </div>
-  
-      <div class="match-message" role="alert">
-        {{ matchSummary.message }}
+      <div class="match-message" role="alert">{{ matchSummary.message }}</div>
+    </div>
+    <div class="events-log" role="log" aria-live="polite" aria-label="Esdeveniments finals">
+      <h4>📝 Esdeveniments del Partit</h4>
+      <div class="event-card" *ngFor="let event of match?.events">
+        <div class="event-time">{{ event.minute }}'</div>
+        <div class="event-description">{{ event.description }}</div>
       </div>
+      <div *ngIf="!match?.events?.length" class="no-events">No s'han registrat esdeveniments</div>
     </div>
   </div>
 </div>

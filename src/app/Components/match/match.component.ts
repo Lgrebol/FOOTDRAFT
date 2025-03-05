@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, interval } from 'rxjs';
 import { MatchService } from '../../Serveis/match.service';
+import { TournamentService } from '../../Serveis/tournament.service';
 import { TeamService } from '../../Serveis/team.service';
 import { Match } from '../../Classes/match/match.model';
+import { IMatchSummary } from '../../Interfaces/match-summary.interface';
+import { Tournament } from '../../Classes/tournament/tournament.model';
 import { Team } from '../../Classes/teams/team.model';
 
 @Component({
@@ -15,43 +18,56 @@ import { Team } from '../../Classes/teams/team.model';
   styleUrls: ['./match.component.css']
 })
 export class MatchComponent implements OnInit, OnDestroy {
-  teams: Team[] = [];
+  // Propietats per al selector de torneig
+  tournamentList: Tournament[] = [];
+  selectedTournamentId: string = '';
+
+  // Propietats per al selector d'equips
+  teamList: Team[] = [];
   selectedHomeTeam: string | null = null;
   selectedAwayTeam: string | null = null;
-  match: Match | null = null;
-  matchSummary: any = null;
-  matchStarted: boolean = false;
-  pollingSubscription: Subscription | undefined;
 
+  // Dades del partit
+  match: Match | null = null;
+  matchSummary: IMatchSummary | null = null;
+  matchStarted: boolean = false;
+  pollingSubscription?: Subscription;
+
+  // Apostes
   betAmount: number = 0;
   predictedWinner: string = 'home';
-  currentUserUUID: string = '6';
+
+  // Conservem l'identificador del partit per al reset
+  currentMatchID: string | null = null;
 
   constructor(
     private matchService: MatchService,
+    private tournamentService: TournamentService,
     private teamService: TeamService
   ) {}
 
   ngOnInit(): void {
+    this.loadTournaments();
     this.loadTeams();
+  }
+
+  private loadTournaments(): void {
+    this.tournamentService.getTournaments().subscribe({
+      next: (tornejos) => { this.tournamentList = tornejos; },
+      error: (error: unknown) => console.error('Error carregant tornejos:', error)
+    });
   }
 
   private loadTeams(): void {
     this.teamService.getTeams().subscribe({
-      next: (teams) => this.teams = teams,
-      error: (error) => console.error('Error carregant equips:', error)
+      next: (teams) => { this.teamList = teams; },
+      error: (error: unknown) => console.error('Error carregant equips:', error)
     });
-  }
-
-  // Accepta també undefined i retorna un valor per defecte
-  getTeamName(teamUUID: string | undefined): string {
-    if (!teamUUID) return 'Equip Desconegut';
-    const team = this.teams.find(t => t.teamUUID === teamUUID);
-    return team?.teamName || 'Equip Desconegut';
   }
 
   canStartMatch(): boolean {
     return !!(
+      this.selectedTournamentId &&
       this.selectedHomeTeam &&
       this.selectedAwayTeam &&
       this.selectedHomeTeam !== this.selectedAwayTeam &&
@@ -60,89 +76,79 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   startMatch(): void {
-    if (!this.canStartMatch()) return;
-
-    // Creem una nova instància de Match
+    if (!this.canStartMatch()) {
+      alert('Si us plau, selecciona el torneig i els equips correctament.');
+      return;
+    }
     const newMatch = Match.createNew(
-      '7E405744-880B-4D33-84A1-FCEB95C076A5',
+      this.selectedTournamentId,
       this.selectedHomeTeam!,
       this.selectedAwayTeam!,
       new Date()
     );
-
     this.matchService.createMatch(newMatch).subscribe({
-      next: (res: any) => {
+      next: (res: { matchID: string }) => {
         const matchID = res.matchID;
+        this.currentMatchID = matchID; 
         this.matchStarted = true;
         this.startPolling(matchID);
         this.simulateMatch(matchID);
       },
-      error: (error) => console.error('Error creant partit:', error)
+      error: (error: unknown) => console.error('Error creant partit:', error)
     });
   }
 
   private startPolling(matchID: string): void {
-    this.pollingSubscription = interval(1000).subscribe(() => {
+    this.pollingSubscription = interval(500).subscribe(() => {
       this.matchService.getMatch(matchID).subscribe({
         next: (match) => {
           this.match = match;
-          if (match.isMatchEnded()) {
-            this.handleMatchEnd();
-          }
         },
-        error: (error) => console.error('Error carregant dades:', error)
+        error: (error: unknown) => console.error('Error carregant dades:', error)
       });
     });
   }
-
-  private handleMatchEnd(): void {
-    if (!this.match) return;
-    this.matchSummary = this.match.getSummary();
-    this.pollingSubscription?.unsubscribe();
-  }
-
+  
   simulateMatch(matchID: string): void {
     this.matchService.simulateMatch(matchID).subscribe({
-      next: () => console.log('Simulació completada'),
-      error: (error) => console.error('Error en simulació:', error)
+      next: (finalSummary: any) => {
+         console.log('Simulació completada', finalSummary);
+         this.matchSummary = finalSummary;
+         if (this.currentMatchID) {
+           finalSummary.id = this.currentMatchID;
+         }
+         this.match = finalSummary;
+         this.pollingSubscription?.unsubscribe();
+      },
+      error: (error: unknown) => console.error('Error en simulació:', error)
     });
   }
 
   resetMatch(): void {
-    if (!this.match) return;
-
-    this.matchService.resetMatch(this.match.id).subscribe({
+    if (!this.currentMatchID) { return; }
+    this.matchService.resetMatch(this.currentMatchID).subscribe({
       next: () => {
-        this.resetComponentState();
-        this.loadTeams();
+        this.match = null;
+        this.matchSummary = null;
+        this.matchStarted = false;
+        this.selectedHomeTeam = null;
+        this.selectedAwayTeam = null;
+        this.currentMatchID = null;
+        this.pollingSubscription?.unsubscribe();
       },
-      error: (error) => console.error('Error en reinici:', error)
+      error: (error: unknown) => console.error('Error en reinici:', error)
     });
   }
 
-  private resetComponentState(): void {
-    this.match = null;
-    this.matchSummary = null;
-    this.matchStarted = false;
-    this.selectedHomeTeam = null;
-    this.selectedAwayTeam = null;
-    this.pollingSubscription?.unsubscribe();
-  }
-
   placeBet(): void {
-    if (!this.selectedHomeTeam || !this.selectedAwayTeam || !this.match) return;
-
-    // Generem l'objecte d'aposta a partir de la instància de Match
-    const betData = this.match.toBetApi(
-      this.betAmount,
-      this.predictedWinner,
-      this.selectedHomeTeam,
-      this.selectedAwayTeam
-    );
-
+    if (!this.selectedHomeTeam || !this.selectedAwayTeam || !this.match) { return; }
+    const betData = this.match.toBetApi(this.betAmount, this.predictedWinner, this.selectedHomeTeam, this.selectedAwayTeam);
     this.matchService.placeBet(betData).subscribe({
       next: () => alert('Aposta realitzada amb èxit!'),
-      error: (error) => alert(error.error?.error || "Error en l'aposta")
+      error: (error: unknown) => {
+        const errObj = error as { error?: { error?: string } };
+        alert(errObj.error?.error || "Error en l'aposta");
+      }
     });
   }
 
