@@ -17,6 +17,9 @@ import { TeamList } from '../../Classes/teams/team-list.model';
 export class PlayersComponent implements OnInit {
   playerList: PlayerList = new PlayerList();
   teamList: TeamList = new TeamList();
+  
+  reservedPlayers: Player[] = [];
+  currentUserId: string = localStorage.getItem('userUUID') || '';
 
   editingPlayer: Player | null = null;
   newPlayer: Player = new Player();
@@ -31,6 +34,7 @@ export class PlayersComponent implements OnInit {
   ngOnInit(): void {
     this.loadPlayers();
     this.loadTeams();
+    this.loadReservedPlayers();
   }
 
   private loadPlayers(): void {
@@ -43,6 +47,15 @@ export class PlayersComponent implements OnInit {
     this.teamService.getTeams().subscribe((teams) => {
       this.teamList.teams = teams;
     });
+  }
+  
+  private loadReservedPlayers(): void {
+    if (this.currentUserId) {
+      this.playerService.getReservedPlayers(this.currentUserId).subscribe({
+        next: (players) => { this.reservedPlayers = players; },
+        error: (err) => console.error('Error carregant jugadors reservats:', err)
+      });
+    }
   }
 
   addPlayer(): void {
@@ -57,6 +70,12 @@ export class PlayersComponent implements OnInit {
     const formData = this.newPlayer.toFormData();
     this.playerService.addPlayer(formData).subscribe({
       next: (createdPlayer: Player) => {
+        if (!createdPlayer.teamName && this.newPlayer.teamUUID) {
+          const teamFound = this.teamList.teams.find(t => t.teamUUID === this.newPlayer.teamUUID);
+          if (teamFound) {
+            createdPlayer.teamName = teamFound.teamName;
+          }
+        }
         this.playerList.add(createdPlayer);
         this.newPlayer = new Player();
       },
@@ -66,6 +85,7 @@ export class PlayersComponent implements OnInit {
       }
     });
   }
+  
 
   deletePlayer(playerUUID: string): void {
     this.playerService.deletePlayer(playerUUID).subscribe({

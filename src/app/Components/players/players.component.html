@@ -4,7 +4,6 @@
   <!-- Filtre per equip -->
   <div class="filter-container">
     <label for="teamFilter">Filtra per Equip:</label>
-    <!-- En lloc de 'availableTeams', fem servir directament teamList.teams -->
     <select id="teamFilter" [(ngModel)]="playerList.selectedTeam" aria-label="Filtra per Equip">
       <option value="">Tots els equips</option>
       <option *ngFor="let team of teamList.teams" [value]="team.teamUUID">{{ team.teamName }}</option>
@@ -38,7 +37,6 @@
 
   <!-- Controls de paginació -->
   <div class="pagination" *ngIf="playerList.filteredPlayers.length > playerList.itemsPerPage" role="navigation" aria-label="Paginació">
-    <!-- Invoca directament els mètodes del model -->
     <button (click)="playerList.prevPage()" [disabled]="playerList.currentPage === 1">Anterior</button>
     <ng-container *ngFor="let page of [].constructor(playerList.totalPages); let i = index">
       <button (click)="playerList.goToPage(i + 1)" [class.active]="playerList.currentPage === (i + 1)">{{ i + 1 }}</button>
@@ -63,7 +61,6 @@
       </div>
       <div class="form-group">
         <label for="editTeam">Equip:</label>
-        <!-- Utilitza teamList.teams per la llista d'equips -->
         <select id="editTeam" [(ngModel)]="editingPlayer.teamUUID" name="editTeam" required aria-required="true">
           <option value="" disabled>Selecciona un equip</option>
           <option *ngFor="let team of teamList.teams" [value]="team.teamUUID">{{ team.teamName }}</option>
