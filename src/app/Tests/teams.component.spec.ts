@@ -104,7 +104,7 @@ describe('TeamsComponent', () => {
 
     component.ngOnInit();
 
-    expect(component.users).toEqual(usersMock);
+    expect(component.userList.users).toEqual(usersMock);
     expect(userServiceSpy.getUsers).toHaveBeenCalled();
   });
 
