@@ -26,7 +26,7 @@
       <label for="user">Usuari:</label>
       <select id="user" [(ngModel)]="newTeam.userUUID" name="userID" required aria-label="Selecciona un usuari">
         <option value="" disabled selected>Selecciona un usuari</option>
-        <option *ngFor="let user of users" [value]="user.userUUID">{{ user.displayLabel() }}</option>
+        <option *ngFor="let user of userList.users" [value]="user.userUUID">{{ user.displayLabel() }}</option>
       </select>
     </div>
     <button type="submit" aria-label="Afegir Equip">Afegir Equip</button>
