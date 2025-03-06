@@ -1,7 +1,3 @@
-A continuació et passo una documentació completa dels endpoints del backend de FOOTDRAFT. Aquesta guia inclou la ruta, el mètode HTTP, un exemple del cos de la petició (en format JSON o multipart/form-data segons el cas) i un exemple de resposta. Aquesta documentació et servirà per provar amb Postman o qualsevol altre client HTTP.
-
----
-
 # Documentació dels Endpoints del Backend de FOOTDRAFT
 
 > **Nota:** Tots els endpoints són protegits (excepte potser alguns de registre i login) i requereixen que s’inclogui l’header d’autorització amb un token JWT, per exemple:  
