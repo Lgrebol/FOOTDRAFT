@@ -1,7 +1,3 @@
-A continuació tens una guia molt detallada per instal·lar i configurar l'aplicació FOOTDRAFT, des de la instal·lació de tots els requisits fins a la posada en marxa del sistema (backend i frontend). També es fa referència al port per defecte que s'utilitza amb Microsoft SQL Server.
-
----
-
 # Guia Completa d'Instal·lació i Configuració de FOOTDRAFT
 
 Aquesta guia està pensada per a usuaris sense experiència tècnica. Segueix els passos següents per posar en marxa l'aplicació.
